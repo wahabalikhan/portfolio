@@ -19,11 +19,11 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       <p className="text-md text-gray-700 mb-6 leading-relaxed">
         A <span class="font-bold">Product Designer</span> @ Matillion <span className="inline-flex items-center gap-2 align-middle">
           <img src="/images/matillion-logo.svg" alt="Matillion" className="w-6 h-6 rounded inline-block" />
-        </span>, and <span class="font-bold">vibe coder</span> with a background in <span class="font-bold">Computer Science</span> that furthers my problem-solving abilties. I occasionally dabble in a few coding projects too!
+        </span>, and <span class="font-bold">vibe coder</span> with a background in <span class="font-bold">BSc Computer Science</span>. I occasionally dabble in a few <span class="font-bold">coding</span> projects too!
       </p>
 
       <div className="text-md text-gray-700 space-y-2 mb-6">
-        <p className="font-bold">Some things about me:</p>
+        <p className="font-bold">Other things about me:</p>
         <ul className="space-y-1">
           <li>• Nielsen Norman Group (NN/g) UX Certified (ID: 1081116)<img 
         src="/images/nng2.png" 
@@ -36,7 +36,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       </div>
 
       <a 
-        href="https://linkedin.com/wahabalikhan" 
+        href="https://www.linkedin.com/in/wahabalikhan/" 
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 hover:underline inline-flex items-center gap-1"
