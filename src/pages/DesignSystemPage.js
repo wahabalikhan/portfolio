@@ -16,6 +16,16 @@ export default function DesignSystemPage({ setCurrentPage }) {
         className="w-full rounded-lg mb-8 border border-gray-200"
       />
 
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">Case study coming soon</h2>
+        
+        <p className="text-gray-700 leading-relaxed mb-6">
+          Just prepping up the materials for this case study, will be live shortly!
+        </p>
+      </section>
+
+      {/*
+
       <div className="grid grid-cols-2 gap-8 mb-12 pb-12 border-b border-gray-200">
         <div>
           <h3 className="font-bold text-gray-900 mb-2">Project Involvement</h3>
@@ -23,7 +33,7 @@ export default function DesignSystemPage({ setCurrentPage }) {
             <span className="font-semibold">Role:</span> Product Designer
           </p>
           <p className="text-gray-700">
-            <span className="font-semibold">Team:</span> Design Team
+            <span className="font-semibold">Team:</span> ETL Engineering Team
           </p>
         </div>
         <div>
@@ -33,6 +43,7 @@ export default function DesignSystemPage({ setCurrentPage }) {
           </p>
         </div>
       </div>
+
 
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Context & Challenge</h2>
@@ -125,7 +136,7 @@ export default function DesignSystemPage({ setCurrentPage }) {
         <p className="text-gray-700 leading-relaxed">
           The ETL Design System continues to evolve as a living system. It has become foundational to how Matillion builds products and has set the standard for cross-functional collaboration in the organization.
         </p>
-      </section>
+      </section> */}
       <footer className="border-t border-gray-200 pt-8 pb-12">
         <p className="text-gray-600 text-sm">
           Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025

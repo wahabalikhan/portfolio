@@ -16,6 +16,17 @@ export default function SchemasPage({ setCurrentPage }) {
         className="w-full rounded-lg mb-8 border border-gray-200"
       />
 
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">Case study coming soon</h2>
+        
+        <p className="text-gray-700 leading-relaxed mb-6">
+          Just prepping up the materials for this case study, will be live shortly!
+        </p>
+      </section>
+
+
+
+      {/* 
       <div className="grid grid-cols-2 gap-8 mb-12 pb-12 border-b border-gray-200">
         <div>
           <h3 className="font-bold text-gray-900 mb-2">Project Involvement</h3>
@@ -117,7 +128,7 @@ export default function SchemasPage({ setCurrentPage }) {
         <p className="text-gray-700 leading-relaxed">
           This project established a precedent for research-first decision making in our team. It demonstrated the value of questioning assumptions and using data to guide product strategy, a practice that has influenced subsequent roadmap planning.
         </p>
-      </section>
+      </section> */}
       <footer className="border-t border-gray-200 pt-8 pb-12">
         <p className="text-gray-600 text-sm">
           Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
