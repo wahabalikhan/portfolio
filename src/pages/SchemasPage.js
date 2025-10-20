@@ -6,15 +6,15 @@ export default function SchemasPage({ setCurrentPage }) {
     <div className="max-w-3xl mx-auto px-6 py-16">
       <BackButton onClick={() => setCurrentPage('home')} />
       
-      <img 
-        src="/api/placeholder/800/500" 
-        alt="Schemas"
-        className="w-full rounded-lg mb-8"
-      />
-      
       <h1 className="text-4xl font-bold mb-8 text-gray-900">
         Validating stakeholder assumptions with research-driven insights
       </h1>
+      
+      <img 
+        src="/images/slides.png" 
+        alt="Schemas"
+        className="w-full rounded-lg mb-8 border border-gray-200"
+      />
 
       <div className="grid grid-cols-2 gap-8 mb-12 pb-12 border-b border-gray-200">
         <div>
