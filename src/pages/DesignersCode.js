@@ -1,17 +1,18 @@
 import React from 'react';
 import BackButton from '../components/BackButton';
 import { blogPosts } from '../data/blogPosts';
+import Footer from '../components/Footer';
 
-export default function KeepingBarHighPage({ setCurrentPage }) {
+export default function DesignersCode({ setCurrentPage }) {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <BackButton onClick={() => setCurrentPage('home')} />
 
-      <h1 className="text-5xl font-bold mb-4 text-gray-900" style={{ fontFamily: 'monospace' }}>
+      <h1 className="text-5xl font-bold mb-4 text-gray-900">
         Should designers learn how to code?
       </h1>
 
-      <p className="text-gray-600 mb-12">June 18, 2025</p>
+      <p className="text-gray-600 mb-12">October 20, 2025</p>
 
       <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">
@@ -51,7 +52,7 @@ export default function KeepingBarHighPage({ setCurrentPage }) {
               onClick={() => setCurrentPage(post.id)}
               className="block text-left w-full"
             >
-              <h3 className="text-blue-600 hover:underline text-xl font-semibold mb-2">
+              <h3 className="text-blue-600 hover:underline text-xl mb-2">
                 {post.title}
               </h3>
               <p className="text-gray-600 text-sm mb-2">{post.date}</p>
@@ -61,11 +62,7 @@ export default function KeepingBarHighPage({ setCurrentPage }) {
         </div>
       </div>
 
-      <footer className="border-t border-gray-200 pt-8 pb-12">
-        <p className="text-gray-600 text-sm">
-          Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }
