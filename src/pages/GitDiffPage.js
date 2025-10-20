@@ -48,8 +48,8 @@ export default function GitDiffPage({ setCurrentPage }) {
         </p>
 
         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-6">
-          <p className="font-semibold text-gray-900 mb-2">🎯 Value to business and user</p>
-          <p className="text-gray-700">
+          <p className="font-semibold text-gray-900 bg-emerald-50 mb-2">🎯 Value to business and user</p>
+          <p className="text-gray-700 bg-emerald-50">
             Improving Git visibility would increase user confidence, reduce errors, and improve team collaboration—ultimately leading to better adoption of Git features within Matillion.
           </p>
         </div>
@@ -96,8 +96,8 @@ export default function GitDiffPage({ setCurrentPage }) {
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Outcomes & Impact</h2>
         
         <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-          <p className="text-2xl font-bold text-gray-900 mb-2">25-26% increase</p>
-          <p className="text-gray-700">in key user interactions with Git features</p>
+          <p className="text-2xl font-bold text-gray-900 bg-blue-50 mb-2">25-26% increase</p>
+          <p className="text-gray-700 bg-blue-50">in key user interactions with Git features</p>
         </div>
 
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Results</h3>
@@ -119,6 +119,11 @@ export default function GitDiffPage({ setCurrentPage }) {
           This project reinforced the importance of transparent interfaces, especially for technical users. The principle of "show, don't tell" became a guiding principle for future platform features.
         </p>
       </section>
+      <footer className="border-t border-gray-200 pt-8 pb-12">
+        <p className="text-gray-600 text-sm">
+          Made with ❤️ using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
+        </p>
+      </footer>
     </div>
   );
 }

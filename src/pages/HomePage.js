@@ -1,28 +1,29 @@
 import React from 'react';
 import { blogPosts } from '../data/blogPosts';
-import { codingProjects } from '../data/codingProjects';
+import { useGithubRepos } from '../hooks/UseGitHubRepos';
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
+    const { repos, loading, error } = useGithubRepos('wahabalikhan');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <img 
-        src="/api/placeholder/120/120" 
+        src="/images/profile.png" 
         alt="Wahab"
         className="w-32 h-32 rounded-full mb-6 object-cover"
       />
       
-      <h1 className="text-5xl font-bold mb-6 text-gray-900">
+      <h1 className="text-4xl font-bold mb-6 text-gray-900">
         Hey! I'm Wahab 👋
       </h1>
       
-      <p className="text-xl text-gray-700 mb-6 leading-relaxed">
+      <p className="text-md text-gray-700 mb-6 leading-relaxed">
         I'm a Product Designer @ <span className="inline-flex items-center gap-2 align-middle">
           <span className="font-medium">Matillion</span>
-          <img src="/api/placeholder/24/24" alt="Matillion" className="w-6 h-6 rounded inline-block" />
+          <img src="/images/matillion-logo.svg" alt="Matillion" className="w-6 h-6 rounded inline-block" />
         </span> with a background in Computer Science and know enough to be a vibe-coder. Also dabble in a few coding projects here and there
       </p>
 
-      <div className="text-lg text-gray-700 space-y-2 mb-6">
+      <div className="text-md text-gray-700 space-y-2 mb-6">
         <p className="font-medium">Some things about me:</p>
         <ul className="space-y-1">
           <li>• Nielsen Norman Group (NN/g) UX Certified (ID: 1081116) 🎓</li>
@@ -32,15 +33,17 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       </div>
 
       <a 
-        href="https://linkedin.com" 
+        href="https://linkedin.com/wahabalikhan" 
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 hover:underline inline-flex items-center gap-1"
       >
-        Full experience on LinkedIn ↗
+        <b>LinkedIn ↗</b>
       </a>
 
-      <div className="mt-20 mb-20">
+
+      <div className="mt-10 mb-10">
+        <section className="border-t border-gray-200 pt-8 pb-0" />
         <h2 className="text-3xl font-bold mb-8 text-gray-900">Case studies</h2>
         
         {/* Tabs */}
@@ -74,22 +77,30 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
               {
                 id: 'git-diff',
                 title: 'How user-centric design improved visibility of user changes',
-                description: 'Focusing on user needs, Git Diff, plus quality of life improvements to the overall Git experience leading to a 25-26% increase in key user interactions'
+                description: 'Focusing on user needs, Git Diff, plus quality of life improvements to the overall Git experience leading to a 25-26% increase in key user interactions',
+                logo_src: '/images/matillion-logo.svg',
+                bg_src: '/images/matillion-bg.png',
               },
               {
                 id: 'schemas',
                 title: 'Validating stakeholder assumptions with research-driven insights',
-                description: 'Securing stakeholder buy-in to validate a time-sensitive \'quick-win\' request for \'Schemas\' with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. Increased stakeholder confidence by 12.3%'
+                description: 'Securing stakeholder buy-in to validate a time-sensitive \'quick-win\' request for \'Schemas\' with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. Increased stakeholder confidence by 12.3%',
+                logo_src: '/images/matillion-logo.svg',
+                bg_src: '/images/matillion-bg.png',
               },
               {
                 id: 'design-system',
                 title: 'Bridging gaps between UX x Eng through a Design System',
-                description: '36.1% design task speed increase through building and maintaining the \'ETL Design System\' that bridged gaps and fostered a UX culture between teams'
+                description: '36.1% design task speed increase through building and maintaining the \'ETL Design System\' that bridged gaps and fostered a UX culture between teams',
+                logo_src: '/images/matillion-logo.svg',
+                bg_src: '/images/matillion-bg.png',
               },
               {
                 id: 'workflows',
                 title: 'Resolving workflow blockers to increase decision-making and productivity',
-                description: 'Resolving workflow blockers to \'in-context workflows\' to improve productivity. Usability testing achieved an 7.4% task speed increase, with expected gains in product adoption post-implementation'
+                description: 'Resolving workflow blockers to \'in-context workflows\' to improve productivity. Usability testing achieved an 7.4% task speed increase, with expected gains in product adoption post-implementation',
+                logo_src: '/images/matillion-logo.svg',
+                bg_src: '/images/matillion-bg.png',
               }
             ].map((study) => (
               <button
@@ -97,17 +108,10 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
                 onClick={() => setCurrentPage(study.id)}
                 className="block group w-full text-left"
               >
-                <div className="mb-4 overflow-hidden rounded-lg">
-                  <img 
-                    src="/api/placeholder/800/500" 
-                    alt={study.title}
-                    className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
                 
                 <div className="flex items-start gap-3 mb-3">
                   <img 
-                    src="/api/placeholder/32/32" 
+                    src={study.logo_src}
                     alt="Matillion"
                     className="w-8 h-8 rounded"
                   />
@@ -123,6 +127,13 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
                 <p className="text-gray-700 leading-relaxed">
                   {study.description}
                 </p>
+                <div className="mb-4 mt-4 rounded-lg">
+                  <img 
+                    src={study.bg_src}
+                    alt={study.title}
+                    className="w-full h-96 rounded-lg"
+                  />
+                </div>
               </button>
             ))}
           </div>
@@ -130,58 +141,89 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
 
         {/* Near-coder Tab Content */}
         {activeTab === 'near-coder' && (
-          <div className="space-y-8">
-            {codingProjects.map((project) => (
-              <div
-                key={project.id}
-                className="border border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-colors"
-              >
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">
-                  {project.title}
-                </h3>
-                
-                <p className="text-gray-700 leading-relaxed mb-4">
-                  {project.description}
-                </p>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tech.map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                
-                <div className="flex gap-4">
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline inline-flex items-center gap-1"
-                  >
-                    View on GitHub →
-                  </a>
-                  {project.demo && (
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline inline-flex items-center gap-1"
-                    >
-                      Live Demo →
-                    </a>
-                  )}
-                </div>
+          <div className="space-y-12">
+            {loading && (
+              <div className="text-center py-12">
+                <p className="text-gray-600">Loading repositories...</p>
               </div>
+            )}
+
+            {error && (
+              <div className="text-center py-12">
+                <p className="text-red-600">Error loading repos: {error}</p>
+              </div>
+            )}
+
+            {!loading && !error && repos.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-600">No repositories found.</p>
+              </div>
+            )}
+
+            {!loading && !error && repos.map((repo) => (
+              <a
+                key={repo.id}
+                href={repo.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group"
+              >
+                <div className="mb-4 overflow-hidden rounded-lg bg-gray-50 p-8 border border-gray-200 hover:border-gray-400 transition-all">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      {repo.language && (
+                        <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-medium">
+                          {repo.language}
+                        </span>
+                      )}
+                      {repo.stars > 0 && (
+                        <span className="text-gray-600 text-sm flex items-center gap-1">
+                          ⭐ {repo.stars}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
+                    {repo.title}
+                  </h3>
+                  
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    {repo.description}
+                  </p>
+                  
+                  {repo.tech.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {repo.tech.map((tech, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded-full"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex gap-4 items-center">
+                    <span className="text-blue-600 group-hover:underline inline-flex items-center gap-1">
+                      View on GitHub →
+                    </span>
+                    {repo.demo && (
+                      <span className="text-blue-600 hover:underline inline-flex items-center gap-1">
+                        Live Demo →
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </a>
             ))}
           </div>
         )}
       </div>
 
       <div className="mb-20">
+        <section className="border-t border-gray-200 pt-8 pb-0" />
         <h2 className="text-3xl font-bold mb-10 text-gray-900">Thoughts, ideas, & experiences</h2>
         
         <div className="space-y-6">
@@ -203,9 +245,9 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         </div>
       </div>
 
-      <footer className="border-t border-gray-200 pt-8 pb-12">
+      <footer className="border-t border-gray-200 pt-8 pb-0">
         <p className="text-gray-600 text-sm">
-          Made with ❤️ in Figma. © Wahab Ali Khan 2025
+          Made with ❤️ using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
         </p>
       </footer>
     </div>
