@@ -17,16 +17,19 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       </h1>
       
       <p className="text-md text-gray-700 mb-6 leading-relaxed">
-        I'm a Product Designer @ <span className="inline-flex items-center gap-2 align-middle">
-          <span className="font-medium">Matillion</span>
+        A <span class="font-bold">Product Designer</span> @ Matillion <span className="inline-flex items-center gap-2 align-middle">
           <img src="/images/matillion-logo.svg" alt="Matillion" className="w-6 h-6 rounded inline-block" />
-        </span> with a background in Computer Science and know enough to be a vibe-coder. Also dabble in a few coding projects here and there
+        </span>, and <span class="font-bold">vibe coder</span> with a background in <span class="font-bold">Computer Science</span> that furthers my problem-solving abilties. I occasionally dabble in a few coding projects too!
       </p>
 
       <div className="text-md text-gray-700 space-y-2 mb-6">
-        <p className="font-medium">Some things about me:</p>
+        <p className="font-bold">Some things about me:</p>
         <ul className="space-y-1">
-          <li>• Nielsen Norman Group (NN/g) UX Certified (ID: 1081116) 🎓</li>
+          <li>• Nielsen Norman Group (NN/g) UX Certified (ID: 1081116)<img 
+        src="/images/nng2.png" 
+        alt="Ceritification"
+        className="w-10 h-4 inline-block pl-2"
+      /></li>
           <li>• Metrics-driven 📊</li>
           <li>• Advocate for DEI and BAME 🗣️</li>
         </ul>
@@ -77,7 +80,8 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
               {
                 id: 'git-diff',
                 title: 'How user-centric design improved visibility of user changes',
-                description: 'Focusing on user needs, Git Diff, plus quality of life improvements to the overall Git experience leading to a 25-26% increase in key user interactions',
+                description: <>Introduced the Git Diff experience around real user needs, streamlining how data engineers review and commit changes to improve clarity, reduce errors, and build trust.
+The result: <span className="font-bold">34% more commits</span> and <span className="font-bold">15% fewer resets</span>.</>, 
                 logo_src: '/images/matillion-logo.svg',
                 bg_src: '/images/matillion-bg.png',
               },
@@ -86,22 +90,15 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
                 title: 'Validating stakeholder assumptions with research-driven insights',
                 description: 'Securing stakeholder buy-in to validate a time-sensitive \'quick-win\' request for \'Schemas\' with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. Increased stakeholder confidence by 12.3%',
                 logo_src: '/images/matillion-logo.svg',
-                bg_src: '/images/matillion-bg.png',
+                bg_src: '/images/slides.png',
               },
               {
                 id: 'design-system',
                 title: 'Bridging gaps between UX x Eng through a Design System',
                 description: '36.1% design task speed increase through building and maintaining the \'ETL Design System\' that bridged gaps and fostered a UX culture between teams',
                 logo_src: '/images/matillion-logo.svg',
-                bg_src: '/images/matillion-bg.png',
+                bg_src: '/images/ds.png',
               },
-              {
-                id: 'workflows',
-                title: 'Resolving workflow blockers to increase decision-making and productivity',
-                description: 'Resolving workflow blockers to \'in-context workflows\' to improve productivity. Usability testing achieved an 7.4% task speed increase, with expected gains in product adoption post-implementation',
-                logo_src: '/images/matillion-logo.svg',
-                bg_src: '/images/matillion-bg.png',
-              }
             ].map((study) => (
               <button
                 key={study.id}
@@ -131,7 +128,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
                   <img 
                     src={study.bg_src}
                     alt={study.title}
-                    className="w-full h-96 rounded-lg"
+                    className="w-full h-96 rounded-lg border border-gray-200"
                   />
                 </div>
               </button>
@@ -185,7 +182,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
                   </div>
 
                   <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
-                    {repo.title}
+                    {repo.title} ↗
                   </h3>
                   
                   <p className="text-gray-700 leading-relaxed mb-4">
@@ -224,7 +221,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
 
       <div className="mb-20">
         <section className="border-t border-gray-200 pt-8 pb-0" />
-        <h2 className="text-3xl font-bold mb-10 text-gray-900">Thoughts, ideas, & experiences</h2>
+        <h2 className="text-3xl font-bold mb-10 text-gray-900">What's in my head!</h2>
         
         <div className="space-y-6">
           {blogPosts.map((post) => (
@@ -247,7 +244,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
 
       <footer className="border-t border-gray-200 pt-8 pb-0">
         <p className="text-gray-600 text-sm">
-          Made with ❤️ using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
+          Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
         </p>
       </footer>
     </div>

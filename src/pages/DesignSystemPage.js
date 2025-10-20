@@ -7,7 +7,7 @@ export default function DesignSystemPage({ setCurrentPage }) {
       <BackButton onClick={() => setCurrentPage('home')} />
       
       <img 
-        src="/api/placeholder/800/500" 
+        src="/images/ds.png" 
         alt="Design System"
         className="w-full rounded-lg mb-8"
       />
@@ -128,7 +128,7 @@ export default function DesignSystemPage({ setCurrentPage }) {
       </section>
       <footer className="border-t border-gray-200 pt-8 pb-12">
         <p className="text-gray-600 text-sm">
-          Made with ❤️ using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
+          Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
         </p>
       </footer>
     </div>
