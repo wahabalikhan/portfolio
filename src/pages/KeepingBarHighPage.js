@@ -89,7 +89,7 @@ export default function KeepingBarHighPage({ setCurrentPage }) {
       </div>
       <footer className="border-t border-gray-200 pt-8 pb-12">
         <p className="text-gray-600 text-sm">
-          Made with ❤️ using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
+          Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
         </p>
       </footer>
     </div>
