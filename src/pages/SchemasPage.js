@@ -129,11 +129,7 @@ export default function SchemasPage({ setCurrentPage }) {
           This project established a precedent for research-first decision making in our team. It demonstrated the value of questioning assumptions and using data to guide product strategy, a practice that has influenced subsequent roadmap planning.
         </p>
       </section> */}
-      <footer className="border-t border-gray-200 pt-8 pb-12">
-        <p className="text-gray-600 text-sm">
-          Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }
