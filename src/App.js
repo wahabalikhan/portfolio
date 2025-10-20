@@ -3,7 +3,7 @@ import HomePage from './pages/HomePage';
 import GitDiffPage from './pages/GitDiffPage';
 import SchemasPage from './pages/SchemasPage';
 import DesignSystemPage from './pages/DesignSystemPage';
-import KeepingBarHighPage from './pages/KeepingBarHighPage';
+import DesignersCode from './pages/DesignersCode';
 import BuildingPortfolioPage from './pages/BuildingPortfolioPage';
 import DesignSystemsBlogPage from './pages/DesignSystemsBlogPage';
 
@@ -26,8 +26,8 @@ export default function App() {
                 return <SchemasPage setCurrentPage={setCurrentPage} />;
             case 'design-system':
                 return <DesignSystemPage setCurrentPage={setCurrentPage} />;
-            case 'keeping-bar-high':
-                return <KeepingBarHighPage setCurrentPage={setCurrentPage} />;
+            case 'designers-code':
+                return <DesignersCode setCurrentPage={setCurrentPage} />;
             case 'building-portfolio':
                 return <BuildingPortfolioPage setCurrentPage={setCurrentPage} />;
             case 'design-systems':
