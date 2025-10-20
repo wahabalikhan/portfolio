@@ -128,7 +128,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                   <img 
                     src={study.bg_src}
                     alt={study.title}
-                    className="w-full h-96 rounded-lg border border-gray-200"
+                    className="w-full h-auto rounded-lg border border-gray-200"
                   />
                 </div>
               </button>
@@ -167,18 +167,6 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               >
                 <div className="mb-4 overflow-hidden rounded-lg bg-gray-50 p-8 border border-gray-200 hover:border-gray-400 transition-all">
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      {repo.language && (
-                        <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-medium">
-                          {repo.language}
-                        </span>
-                      )}
-                      {repo.stars > 0 && (
-                        <span className="text-gray-600 text-sm flex items-center gap-1">
-                          ⭐ {repo.stars}
-                        </span>
-                      )}
-                    </div>
                   </div>
 
                   <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
@@ -219,7 +207,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
         )}
       </div>
 
-      <div className="mb-20">
+      <div className="mb-10">
         <section className="border-t border-gray-200 pt-8 pb-0" />
         <h2 className="text-3xl font-bold mb-10 text-gray-900">What's in my head!</h2>
         
