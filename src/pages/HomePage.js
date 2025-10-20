@@ -1,6 +1,7 @@
 import React from 'react';
 import { blogPosts } from '../data/blogPosts';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
+import Footer from '../components/Footer';
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
@@ -208,7 +209,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
       </div>
 
       <div className="mb-10">
-        <section className="border-t border-gray-200 pt-8 pb-0" />
+        <section className="border-t border-gray-200 pt-10 pb-0" />
         <h2 className="text-3xl font-bold mb-10 text-gray-900">What's in my head!</h2>
         
         <div className="space-y-6">
@@ -230,11 +231,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
         </div>
       </div>
 
-      <footer className="border-t border-gray-200 pt-8 pb-0">
-        <p className="text-gray-600 text-sm">
-          Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }

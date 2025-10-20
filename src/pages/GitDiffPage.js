@@ -1,5 +1,6 @@
 import React from 'react';
 import BackButton from '../components/BackButton';
+import Footer from '../components/Footer';
 
 export default function GitDiffPage({ setCurrentPage }) {
     return (
@@ -201,11 +202,7 @@ Inline visibility, where users could see changes directly within their workspace
                     This project reinforced the importance of transparent interfaces, especially for technical users. The principle of "show, don't tell" became a guiding principle for future platform features.
                 </p>
             </section>
-            <footer className="border-t border-gray-200 pt-8 pb-12">
-                <p className="text-gray-600 text-sm">
-                    Made with 🫶 using my current coding knowledge, Claude, VS Code Copilot and anything else I got my hands on! © Wahab Ali Khan 2025
-                </p>
-            </footer>
+            <Footer />
         </div>
     );
 }
