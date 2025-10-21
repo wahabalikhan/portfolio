@@ -88,10 +88,10 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               },
               {
                 id: 'schemas',
-                title: 'Validating stakeholder assumptions with research-driven insights',
-                description: 'Securing stakeholder buy-in to validate a time-sensitive \'quick-win\' request for \'Schemas\' with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. Increased stakeholder confidence by 12.3%',
+                title: 'Turning an anecdotal feature request into a validated, user-driven strategy',
+                description: 'Securing stakeholder buy-in to validate a time-sensitive \'quick-win\' request for with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. Increased stakeholder confidence by 12.3%',
                 logo_src: '/images/matillion-logo.svg',
-                bg_src: '/images/slides.png',
+                bg_src: '/images/schema_bg.png',
               },
               {
                 id: 'design-system',

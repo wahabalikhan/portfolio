@@ -31,7 +31,7 @@ export default function GitDiffPage({ setCurrentPage }) {
                     <h3 className="font-bold text-gray-900 mb-2">Challenge</h3>
                     <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
                         <p className="text-gray-700 bg-yellow-50">
-                            ⚠️ Data engineers struggled to see what changed before committing, creating <span className='font-semibold text-gray-900'>uncertainty</span> and frequent Git resets. The challenge was to <span className='font-semibold text-gray-900'>build trust and visibility</span> into version control workflows without disrupting established habits
+                            ⚠️ Data engineers struggled to see what changed before committing, creating <span className='font-semibold text-gray-900 bg-yellow-50'>uncertainty</span> and frequent Git resets. The challenge was to <span className='font-semibold text-gray-900 bg-yellow-50'>build trust and visibility</span> into version control workflows without disrupting established habits
                         </p>
                     </div>
                 </div>
@@ -44,9 +44,15 @@ export default function GitDiffPage({ setCurrentPage }) {
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Impact</h3>
                     <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
-                        <p className="text-gray-700 bg-emerald-50">
-                            <span className="font-bold bg-emerald-50">✅ 34% increase</span> in Committing and <span className="font-bold bg-emerald-50">15% decrease</span> in Git Resets as a result of Git Diff and seeing changes before committing
+                        <p className="text-gray-700 bg-emerald-50 mb-2">
+                            <span className="font-bold bg-emerald-50">✅ 34% increase</span> in Git Committing
                         </p>
+                        <p className="text-gray-700 bg-emerald-50 mb-2">
+                            <span className="font-bold bg-emerald-50">✅ 15% decrease</span> in Git Resets
+                        </p>
+                        <p className="text-gray-700 bg-emerald-50">as a result of Git Diff and seeing changes before committing
+                        </p>
+
                     </div>
                 </div>
             </div>
