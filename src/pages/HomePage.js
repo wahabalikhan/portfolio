@@ -89,14 +89,14 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               {
                 id: 'schemas',
                 title: 'Turning an anecdotal feature request into a validated, user-driven strategy',
-                description: 'Securing stakeholder buy-in to validate a time-sensitive \'quick-win\' request for with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. Increased stakeholder confidence by 12.3%',
+                description: <>Securing stakeholder buy-in to validate a time-sensitive 'quick-win' request for with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. <span className="font-bold">Increased stakeholder confidence by 12.3%</span></>, 
                 logo_src: '/images/matillion-logo.svg',
                 bg_src: '/images/schema_bg.png',
               },
               {
                 id: 'design-system',
                 title: 'Bridging gaps between UX x Eng through a Design System',
-                description: '36.1% design task speed increase through building and maintaining the \'ETL Design System\' that bridged gaps and fostered a UX culture between teams',
+                description: <><span className="font-bold">36.1% design task speed increase </span> through building and maintaining the 'ETL Design System' that bridged gaps and fostered a UX culture between teams</>, 
                 logo_src: '/images/matillion-logo.svg',
                 bg_src: '/images/ds.png',
               },
