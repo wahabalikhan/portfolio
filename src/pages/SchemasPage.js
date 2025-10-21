@@ -1,5 +1,6 @@
 import React from 'react';
 import BackButton from '../components/BackButton';
+import Footer from '../components/Footer';
 
 export default function SchemasPage({ setCurrentPage }) {
   return (
