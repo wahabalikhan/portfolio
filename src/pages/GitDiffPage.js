@@ -29,21 +29,23 @@ export default function GitDiffPage({ setCurrentPage }) {
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Challenge</h3>
-                    <p className="text-gray-700">
-                        How do we ensure users have confidence in seeing changes—when performing Git operations?
-                    </p>
+                    <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
+                        <p className="text-gray-700 bg-yellow-50">
+                            ⚠️ Data engineers struggled to see what changed before committing, creating <span className='font-semibold text-gray-900'>uncertainty</span> and frequent Git resets. The challenge was to <span className='font-semibold text-gray-900'>build trust and visibility</span> into version control workflows without disrupting established habits
+                        </p>
+                    </div>
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Approach</h3>
                     <p className="text-gray-700">
-                        I owned the end-to-end process of discovery, design & testing strategy and metric tracking (on-going) to ensure the success of the feature—and suggest changes for future phases
+                        I owned the end-to-end process of discovery, design & testing strategy and metric tracking to ensure the success of the feature, and suggest changes for future phases
                     </p>
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Impact</h3>
-                    <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-6">
+                    <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
                         <p className="text-gray-700 bg-emerald-50">
-                            <span className="font-bold bg-emerald-50">✅ 34% increase</span> in Committing and <span className="font-bold bg-emerald-50">15% decrease</span> in Git resets as a result of Git Diff and seeing changes before committing
+                            <span className="font-bold bg-emerald-50">✅ 34% increase</span> in Committing and <span className="font-bold bg-emerald-50">15% decrease</span> in Git Resets as a result of Git Diff and seeing changes before committing
                         </p>
                     </div>
                 </div>
@@ -56,45 +58,38 @@ export default function GitDiffPage({ setCurrentPage }) {
                 </p>
 
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    I led the design of Git Diff, a new visibility feature within Matillion’s data transformation platform that gave data engineers confidence when managing version control. Working within the Platform team, I shaped the end-to-end experience — from discovery and user research through to design, testing, and metric tracking. Git Diff enabled users to see exactly what changed before committing, reducing uncertainty and streamlining collaboration. The rollout drove a 34% increase in commits, a 15% reduction in Git resets, and a broader 25% uplift in engagement across Git workflows.
+                    I led the design of Git Diff, a new visibility feature within Matillion’s Data Producutivity Cloud that gave data engineers confidence when managing version control. Working within the DataOps team, I shaped the end-to-end experience from discovery and user research through to design, testing, and metric tracking. Git Diff enabled users to see exactly what changed before committing, reducing uncertainty and streamlining collaboration.
                 </p>
             </section>
 
             <section className="mb-12">
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Problem Statement</h3>
-                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
-                    <p className="font-semibold text-gray-900 bg-yellow-50 mb-2">⚠️ Lack of visibility, uncertainty and reduced confidence</p>
-                    <p className="text-gray-700 bg-yellow-50">
-                        Users struggled to understand what changes were being made when performing Git operations. The lack of visibility created uncertainty and reduced confidence in the platform, particularly for teams collaborating on complex data transformation projects.
-                    </p>
-                </div>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Design Goals</h3>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                    <li>Add real-time capability for changed jobs and pipelines</li>
-                    <li>Maintain familiarity for users already comfortable with Git workflows</li>
+                    <li>Add real-time capability for changed pipelines</li>
+                    <li>Maintain familiarity for data engineers already comfortable with Git workflows</li>
                     <li>Increase confidence through better visibility</li>
                 </ul>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
                     <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 Value to business and user</p>
                     <p className="text-gray-700 bg-blue-50">
-                        Improving Git visibility would increase user confidence, reduce errors, and improve team collaboration—ultimately leading to better adoption of Git features within Matillion.
+                        Improving Git visibility would increase user confidence, reduce errors, and improve team collaboration ultimately leading to better adoption of Git features within Matillion.
                     </p>
                 </div>
             </section>
 
             <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Strategic Approach</h2>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">Approach</h2>
+                <p className="text-gray-700 leading-relaxed mb-8">I led discovery, design, and testing across the full lifecycle — from competitor analysis and user interviews to prototyping and rollout. I defined the research plan, facilitated ideation workshops, and set up ongoing metrics to track adoption and confidence post-launch.</p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Research & Discovery</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                    I conducted competitor analysis and user research to understand pain points around Git operations:
+                    I ran competitive analysis on leading IDEs, user interviews on workflow pain points, and a cross-functional workshop to co-create solutions. This revealed that:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                    <li>Users couldn't see what changed before committing</li>
-                    <li>Teams struggled to review changes from collaborators</li>
-                    <li>The existing Git UI lacked clarity on file modifications</li>
-                    <li>Users wanted a familiar Git experience similar to traditional dev tools</li>
+                    <li>users needed side-by-side comparisons</li>
+                    <li>clearer change indicators</li>
+                    <li>familiar Git experience tailored to data workflows</li>
                 </ul>
 
                 <img
@@ -114,20 +109,26 @@ export default function GitDiffPage({ setCurrentPage }) {
 
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Key findings</h3>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                    <li>Highlighting differences (added, changed, deleted) clearly through text format</li>
-                    <li>Previous vs current commit comparison</li>
-                    <li>Accept/reject differences when merging files</li>
-                </ul>
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
+                    <ul className="list-disc list-inside text-gray-700 bg-blue-50 space-y-2">
+                        <li className='bg-blue-50'>Highlighting differences (added, changed, deleted) clearly through text format</li>
+                        <li className='bg-blue-50'>Previous vs current commit comparison</li>
+                        <li className='bg-blue-50'>Accept/reject differences when merging files</li>
+                    </ul>
+                </div>
             </section>
 
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Ideation & Design</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    We explored multiple ways to make Git changes more transparent without disrupting existing workflows. Two main directions emerged:
-Inline visibility, where users could see changes directly within their workspace, and side-by-side comparison, mirroring the familiarity of established Git tools. The latter was prioritised for its clarity and alignment with user expectations uncovered in research.</p>
+                    We explored two concepts: inline visibility and side-by-side comparison.
+                    <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 mt-4">
+                        <li>Inline visibility</li>
+                        <li>side-by-side comparison</li>
+                    </ul>
+                    Testing showed users preferred the latter for clarity and familiarity, so I refined the design into an interactive diff view with colour-coded indicators and contextual filters. The result was a transparent, scannable experience that built user confidence.</p>
 
-<p className="text-gray-700 leading-relaxed mb-6">From early flows to high-fidelity prototypes, I focused on making diffs scannable and trustworthy — introducing visual indicators, contextual metadata, and lightweight animations to help users understand what changed and why. Alongside the core feature, I identified and designed several quality-of-life improvements across the Git experience, reducing friction and aligning interactions with broader platform patterns.
+                <p className="text-gray-700 leading-relaxed mb-6">From early flows to high-fidelity prototypes, I focused on making diffs scannable and trustworthy by introducing visual indicators to help users understand what changed and why.
                 </p>
 
                 <img
@@ -135,11 +136,12 @@ Inline visibility, where users could see changes directly within their workspace
                     alt="Git Diff flow"
                     className="w-full rounded-lg mb-4"
                 />
-                <p className='mb-8 text-xs'>A collaborative workshop that moved from discovery and scoping through How Might We framing, two rounds of ideation, and group voting to select iterations to progress into design.</p>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Implementation</h3>
+                <p className='mb-8 text-xs'>The flow illustrates how Git Diff activates within a branch showing the relationship between local (uncommitted) and remote (committed) changes. It defines when users can trigger a diff, view comparisons, or see an empty state, ensuring clarity and control throughout the workflow.</p>
+</section>
+<section className="mb-12">
+    <h2 className="text-2xl font-bold mb-4 text-gray-900">Execution</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    I designed and shipped a comprehensive Git Diff feature that showed users exactly what changed in their pipelines and transformations. The solution included visual indicators, side-by-side comparisons, and contextual information about modifications. Additionally, I implemented several quality-of-life improvements to streamline the entire Git workflow.
+                    I partnered with engineering to design and deliver Git Diff as a scalable, technically feasible feature. Through iterative builds and design QA, we balanced performance with clarity, ensuring the final implementation matched the intended UX. Regular check-ins with Product helped prioritise and sequence improvements for rollout.
                 </p>
 
                 <img
@@ -148,58 +150,58 @@ Inline visibility, where users could see changes directly within their workspace
                     className="w-full mb-4"
                 />
 
-                <p className='mb-8 text-xs'>User interviews exploring topics such as experience with existing Git functions, what worked well, what needed improvement, workarounds, priority of information, and defining the Minimum Viable Product from the user’s perspective.</p>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Collaboration</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    I worked closely with engineering to ensure technical feasibility while maintaining design quality. Regular check-ins with the product team helped prioritize features, and user testing sessions validated our approach before full rollout.
-                </p>
+                <p className='mb-8 text-xs'>The Git Diff design providing a side-by-side comparison view showing exactly what changed between local and committed versions. Visual indicators highlight additions and deletions, while contextual filters like All files or Modified files only give users flexible control.</p>
             </section>
 
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Validation & Testing</h2>
+                <p className="text-gray-700 leading-relaxed mb-6">In usability testing with five data engineers, <span className='font-semibold text-gray-900'>100% completed the task successfully</span> and rated the experience <span className='font-semibold text-gray-900'>“easy” or “very easy.” </span> Feedback confirmed that the feature was clear, discoverable, and aligned with their mental model of Git workflows.
+                </p>
                 <img
                     src="/images/testing1.png"
                     alt="Git Diff testing"
                     className="w-full rounded-lg mb-4"
                 />
-                <p className='mb-8 text-xs'>A collaborative workshop that moved from discovery and scoping through How Might We framing, two rounds of ideation, and group voting to select iterations to progress into design.</p>
+                <p className='mb-8 text-xs'>I ran tests with data engineers to test Git Diff’s findability and clarity. Participants were asked to locate and use the feature within realistic tasks, all successfully completed the comparison flow, describing it as “clear,” “easy,” and “intuitive.”</p>
 
                 <img
                     src="/images/testing2.png"
                     alt="Git Diff testing"
                     className="w-full rounded-lg mb-4"
                 />
-                <p className='mb-8 text-xs'>A collaborative workshop that moved from discovery and scoping through How Might We framing, two rounds of ideation, and group voting to select iterations to progress into design.</p>
+                <p className='mb-8 text-xs'>All participants successfully completed the Git Diff task, confirming the feature was easy to find and understand. Most rated the experience as “very easy,” validating the clarity of the design and overall discoverability of the comparison flow.</p>
 
             </section>
 
-            
+
 
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Outcomes & Impact</h2>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Results</h3>
 
                 <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-6">
-                    <p className="font-bold text-gray-900 bg-emerald-50 mb-2">✅ 34% increase in Committing and 15% decrease in Git resets</p>
-                    <p className="text-gray-700 bg-emerald-50">as a result of Git Diff and seeing changes before committing</p>
+                    <ul className="list-disc list-inside text-gray-700 bg-emerald-50 space-y-2">
+                        <li className='bg-emerald-50'>📈 +34% commits</li>
+                        <li className='bg-emerald-50'>🧩 −15% Git resets</li>
+                        <li className='bg-emerald-50'>✅ 100% success rate in usability testing</li>
+                    </ul>
                 </div>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    The Git Diff feature significantly improved user confidence and engagement with version control features. Users reported feeling more secure when making changes, and collaboration between team members became smoother. The quality-of-life improvements reduced friction in daily workflows.
+                    Git Diff improved confidence, reduced errors, and strengthened collaboration across engineering teams.
                 </p>
-            </section>
 
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Key Learnings & Takeaways</h2>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Lessons Learned</h3>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">Feedback</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    Visibility builds confidence. By showing users exactly what was changing, we removed uncertainty and increased their willingness to use advanced features. Small quality-of-life improvements alongside major features can significantly enhance the overall experience.
+                    Users described Git Diff as “clear,” “intuitive,” and “something we’ve wanted for a while.” Data engineers found it easier to review changes and trust the commit process. Internally, Product and Engineering teams saw fewer support queries and greater confidence in Git operations, prompting plans to extend Diff functionality in future releases.
+                </p>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">Reflection</h3>
+                <p className="text-gray-700 leading-relaxed mb-6">
+                    The project reinforced that clarity builds confidence. Close collaboration and incremental iteration proved that even small UX improvements can unlock measurable behavioural and business impact.
                 </p>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Application</h3>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">Next steps</h3>
                 <p className="text-gray-700 leading-relaxed">
-                    This project reinforced the importance of transparent interfaces, especially for technical users. The principle of "show, don't tell" became a guiding principle for future platform features.
+                    Next, we’ll extend Git Diff to support merge-level comparisons, conflict resolution, and side-by-side commit comparison — deepening transparency across the full version control workflow.
                 </p>
             </section>
             <Footer />
