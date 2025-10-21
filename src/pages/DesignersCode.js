@@ -14,31 +14,29 @@ export default function DesignersCode({ setCurrentPage }) {
 
       <p className="text-gray-600 mb-12">October 20, 2025</p>
 
-      <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">
-          This question pops up every few months — sometimes as a debate, sometimes as a humble-brag. The truth? There’s no single answer. But after a few years designing with one hand on Figma and the other occasionally buried in VS Code, I’ve landed on this: designers don’t need to code — but learning to think in code changes everything.
+          This question pops up every few months, sometimes as a debate and sometimes as a humble brag. The truth is, there's no single answer. But after a few years of designing with one hand in Figma and the other occasionally buried in VS Code, I've come to believe this: designers don't need to code, but learning to think in code changes everything.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          When I first started, I treated design and development as two separate worlds: the dreamers and the builders. But the more I worked on complex systems, the more that line blurred. I realised that understanding how components behave, how states change, and how data flows doesn’t make me less of a designer — it makes me a better one.
+          When I started out, I saw design and development as two separate worlds, the dreamers and the builders. Over time, especially working on more complex systems, that line started to fade. Understanding how components behave, how states change, and how data flows doesn't make me less of a designer; it makes me a better one.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          Knowing how to code isn’t about writing production-ready apps. It’s about empathy.
-          It’s about understanding why your “simple animation” request might take half a sprint, or why a design system token actually matters. It’s about communicating with engineers in their language, so collaboration feels less like a handoff and more like a conversation.
+          Knowing how to code isn't about shipping production apps. It's about empathy. It's understanding why a "simple animation" might take half a sprint, or why design system tokens actually matter. It's about speaking the same language as engineers so collaboration feels less like a handoff and more like building something together.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          And here’s the secret benefit: once you start coding, you stop designing in screenshots. You start designing in flow — thinking about interactions, constraints, performance, and behaviour. That awareness shapes cleaner, more realistic designs that ship faster and break less.
+          And here's the real benefit: once you start coding, you stop designing in screenshots. You start designing in flow, thinking about interactions, constraints, performance, and behaviour. That awareness leads to cleaner, more realistic designs that ship faster and hold up better.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          So no, you don’t need to be a front-end developer. But you should get comfortable opening a text editor, tweaking some CSS, or prototyping logic in a sandbox. Even a tiny bit of code literacy changes how you see your craft.
+          You don't need to become a front-end developer, but it helps to be comfortable opening a text editor, tweaking some CSS, or experimenting with logic in a sandbox. Even a little bit of code literacy changes how you see your craft.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          For me, it’s not about being a “unicorn.” It’s about curiosity.
-          And that curiosity — to understand how things actually work — is one of the most powerful design tools you can have.
+          For me, it's not about being a "unicorn." It's about curiosity. And that curiosity, the drive to understand how things actually work, is one of the most powerful design tools you can have.
         </p>
       </div>
 

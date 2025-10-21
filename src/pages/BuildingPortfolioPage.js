@@ -14,9 +14,9 @@ export default function BuildingPortfolioPage({ setCurrentPage }) {
 
       <p className="text-gray-600 mb-12">October 19, 2025</p>
 
-      <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">
-          Designing my own portfolio has always felt like an identity crisis in code form. You want it to look polished enough to reflect your craft — but still feel alive, personal, and a little bit you. So instead of treating it like a static showcase, I decided to vibe-code it — part design, part development, and a lot of creative improvisation.
+          Designing my own portfolio has always felt like an identity crisis in code form. You want it to look polished enough to reflect your craft but still feel alive, personal, and a little bit you. Instead of treating it like a static showcase, I decided to vibe-code it: part design, part development, and a lot of creative improvisation.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
@@ -24,15 +24,15 @@ export default function BuildingPortfolioPage({ setCurrentPage }) {
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          Under the hood, it’s built with Tailwind CSS — lightweight, fast, and expressive enough to let me design directly in the browser. I’m pulling live repo data from GitHub’s API using personal tokens, so case studies and projects update dynamically as I commit new work. It’s a small touch, but it makes the portfolio feel less like a frozen snapshot and more like an evolving log of what I’m actually building.
+          Under the hood, it's built with Tailwind CSS, which is lightweight, fast, and expressive enough to let me design directly in the browser. I'm pulling live repo data from GitHub's API using personal tokens so case studies and projects update dynamically as I commit new work. It's a small touch that makes the portfolio feel less like a frozen snapshot and more like an evolving log of what I'm actually building.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          Every component, every line of code is a reminder that design and engineering are never separate. My own coding knowledge helps bridge the gap — turning visual ideas into living, interactive pieces without waiting on a full build pipeline. It’s hands-on, sometimes messy, but deeply satisfying.
+          Every component and every line of code is a reminder that design and engineering are never separate. My own coding knowledge helps bridge the gap, turning visual ideas into living, interactive pieces without waiting on a full build pipeline. It's hands-on, sometimes messy, but deeply satisfying.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          Building this site wasn’t just about having a nice place to host projects. It was about owning the process end-to-end — from concept to commit. Every gradient, hover, and animation is a design decision expressed through code. That’s what vibe-coding means to me: creating things that feel designed and built in the same heartbeat.
+          Building this site wasn't just about having a nice place to host projects. It was about owning the process end to end, from concept to commit. Every gradient, hover, and animation is a design decision expressed through code. That's what vibe-coding means to me: creating things that feel designed and built in the same heartbeat.
         </p>
       </div>
 
