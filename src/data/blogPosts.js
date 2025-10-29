@@ -7,7 +7,7 @@ export const blogPosts = [
   },
   {
     id: 'building-portfolio',
-    title: 'Building this portfolio',
+    title: 'Vibe coding my portfolio',
     date: 'October 19, 2025',
     preview: 'How I built this portfolio...'
   },

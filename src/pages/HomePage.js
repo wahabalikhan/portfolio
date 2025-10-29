@@ -10,17 +10,15 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       <img 
         src="/images/profile.png" 
         alt="Wahab"
-        className="w-32 h-32 rounded-full mb-6 object-cover"
+        className="w-24 h-24 rounded-full mb-6 object-cover"
       />
       
-      <h1 className="text-4xl font-bold mb-6 text-gray-900">
-        Hey! I'm Wahab 👋
+      <h1 className="text-4xl font-bold mb-4 text-gray-900">
+        Hey! I'm Wahab 👋 (portfolio WIP)
       </h1>
       
       <p className="text-md text-gray-700 mb-6 leading-relaxed">
-        A <span class="font-bold">Product Designer</span> @ Matillion <span className="inline-flex items-center gap-2 align-middle">
-          <img src="/images/matillion-logo.svg" alt="Matillion" className="w-6 h-6 rounded inline-block" />
-        </span>, and <span class="font-bold">vibe coder</span> with a background in <span class="font-bold">BSc Computer Science</span>. I occasionally dabble in a few <span class="font-bold">coding</span> projects too!
+        <span class="font-bold">Product Designer</span> & <span class="font-bold">Vibe Coder</span> with a background in <span class="font-bold">BSc Computer Science</span>.
       </p>
 
       <div className="text-md text-gray-700 space-y-2 mb-6">
@@ -31,8 +29,10 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         alt="Ceritification"
         className="w-10 h-4 inline-block pl-2"
       /></li>
+      <li>• Design @ Matillion <span className="inline-flex items-center gap-2 align-middle">
+          <img src="/images/matillion-logo.svg" alt="Matillion" className="w-6 h-6 rounded inline-block" />
+        </span></li>
           <li>• Metrics-driven 📊</li>
-          <li>• Advocate for DEI and BAME 🗣️</li>
         </ul>
       </div>
 
@@ -42,7 +42,12 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         rel="noopener noreferrer"
         className="text-blue-600 hover:underline inline-flex items-center gap-1"
       >
-        <b>LinkedIn ↗</b>
+        <b>LinkedIn ↗<a 
+          href="mailto:wahab-ali-khan@hotmail.com"
+          className="text-blue-600 hover:underline ml-4"
+        >
+          Contact ↗
+        </a></b>
       </a>
 
 
@@ -53,29 +58,29 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         {/* Tabs */}
         <div className="flex gap-3 mb-10">
           <button
-            onClick={() => setActiveTab('designer')}
+            onClick={() => setActiveTab('Design')}
             className={`px-6 py-2.5 rounded-full text-base font-medium transition-all ${
-              activeTab === 'designer'
+              activeTab === 'Design'
                 ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            🎨 Designer
+            🎨 Design
           </button>
           <button
-            onClick={() => setActiveTab('near-coder')}
+            onClick={() => setActiveTab('Development')}
             className={`px-6 py-2.5 rounded-full text-base font-medium transition-all ${
-              activeTab === 'near-coder'
+              activeTab === 'Development'
                 ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            💻 Near-coder
+            💻 Development
           </button>
         </div>
 
         {/* Designer Tab Content */}
-        {activeTab === 'designer' && (
+        {activeTab === 'Design' && (
           <div className="space-y-12">
             {[
               {
@@ -137,8 +142,8 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
           </div>
         )}
 
-        {/* Near-coder Tab Content */}
-        {activeTab === 'near-coder' && (
+        {/* Development Tab Content */}
+        {activeTab === 'Development' && (
           <div className="space-y-12">
             {loading && (
               <div className="text-center py-12">

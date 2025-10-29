@@ -9,7 +9,7 @@ import DesignSystemsBlogPage from './pages/DesignSystemsBlogPage';
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState('home');
-    const [activeTab, setActiveTab] = useState('designer');
+    const [activeTab, setActiveTab] = useState('Design');
 
     // Scroll to top whenever page changes
     useEffect(() => {
