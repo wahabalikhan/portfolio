@@ -13,6 +13,8 @@ export default function SchemasPage() {
         Turning an anecdotal feature request into a validated, user-driven strategy
       </h1>
 
+      <p className="text-gray-600 mb-4">August 2024 — September 2024 • ~1 month</p>
+
       <img
         src="/images/schema_bg.png"
         alt="Schemas"

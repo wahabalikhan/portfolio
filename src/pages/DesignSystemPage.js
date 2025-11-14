@@ -12,6 +12,8 @@ export default function DesignSystemPage() {
       <h1 className="text-4xl font-bold mb-8 text-gray-900">
         Bridging gaps between UX x Eng through a Design System
       </h1>
+
+      <p className="text-gray-600 mb-4">February 2022 — June 2022• ~5 months</p>
       
       <img 
         src="/images/ds.png" 
