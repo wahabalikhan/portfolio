@@ -1,11 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import Footer from '../components/Footer';
 
-export default function DesignSystemPage({ setCurrentPage }) {
+export default function DesignSystemPage() {
+  const navigate = useNavigate();
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
-      <BackButton onClick={() => setCurrentPage('home')} />
+      <BackButton onClick={() => navigate(-1)} />
       
       <h1 className="text-4xl font-bold mb-8 text-gray-900">
         Bridging gaps between UX x Eng through a Design System
