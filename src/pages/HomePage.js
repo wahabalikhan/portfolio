@@ -1,4 +1,6 @@
+
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
@@ -14,7 +16,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       />
       
       <h1 className="text-4xl font-bold mb-4 text-gray-900">
-        Hey! I'm Wahab 👋 (portfolio WIP)
+        Hey! I'm Wahab 👋 (portfolio WIP as we speak!)
       </h1>
       
       <p className="text-md text-gray-700 mb-6 leading-relaxed">
@@ -90,6 +92,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
 The result: <span className="font-bold">34% more commits</span> and <span className="font-bold">15% fewer resets</span>.</>, 
                 logo_src: '/images/matillion-logo.svg',
                 bg_src: '/images/matillion-bg.png',
+                link: '/git-diff',
               },
               {
                 id: 'schemas',
@@ -97,6 +100,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                 description: <>Securing stakeholder buy-in to validate a time-sensitive 'quick-win' request for with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. <span className="font-bold">Increased stakeholder confidence by 12.3%</span></>, 
                 logo_src: '/images/matillion-logo.svg',
                 bg_src: '/images/schema_bg.png',
+                link: '/schemas',
               },
               {
                 id: 'design-system',
@@ -104,14 +108,14 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                 description: <><span className="font-bold">36.1% design task speed increase </span> through building and maintaining the 'ETL Design System' that bridged gaps and fostered a UX culture between teams</>, 
                 logo_src: '/images/matillion-logo.svg',
                 bg_src: '/images/ds.png',
+                link: '/design-system',
               },
             ].map((study) => (
-              <button
+              <Link
                 key={study.id}
-                onClick={() => setCurrentPage(study.id)}
+                to={study.link}
                 className="block group w-full text-left"
               >
-                
                 <div className="flex items-start gap-3 mb-3">
                   <img 
                     src={study.logo_src}
@@ -122,11 +126,9 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                     Matillion
                   </span>
                 </div>
-                
                 <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
                   {study.title}
                 </h3>
-                
                 <p className="text-gray-700 leading-relaxed">
                   {study.description}
                 </p>
@@ -137,7 +139,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                     className="w-full h-auto rounded-lg border border-gray-200"
                   />
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
         )}
@@ -219,9 +221,9 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
         
         <div className="space-y-6">
           {blogPosts.map((post) => (
-            <button
+            <Link
               key={post.id}
-              onClick={() => setCurrentPage(post.id)}
+              to={`/${post.id}`}
               className="block text-left w-full group"
             >
               <h3 className="text-blue-600 hover:underline text-xl mb-1 group-hover:underline">
@@ -231,7 +233,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               <p className="text-gray-600 leading-relaxed">
                 {post.preview}
               </p>
-            </button>
+            </Link>
           ))}
         </div>
       </div>
