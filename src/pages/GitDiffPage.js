@@ -13,7 +13,7 @@ export default function GitDiffPage() {
                 How user-centric design improved visibility of user changes
             </h1>
 
-            <p className="text-gray-600 mb-4">Oct 2023 — Dec 2023 • ~3 months</p>
+            <p className="text-gray-600 mb-4">January 2025 — March 2023 • ~3 months</p>
 
             <img
                 src="/images/matillion-bg.png"
