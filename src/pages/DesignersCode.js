@@ -1,12 +1,14 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import { blogPosts } from '../data/blogPosts';
 import Footer from '../components/Footer';
 
-export default function DesignersCode({ setCurrentPage }) {
+export default function DesignersCode() {
+  const navigate = useNavigate();
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
-      <BackButton onClick={() => setCurrentPage('home')} />
+      <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-5xl font-bold mb-4 text-gray-900">
         Should designers learn how to code?
@@ -45,9 +47,9 @@ export default function DesignersCode({ setCurrentPage }) {
 
         <div className="space-y-8">
           {blogPosts.filter(post => post.id !== 'designers-code').map((post) => (
-            <button
+            <Link
               key={post.id}
-              onClick={() => setCurrentPage(post.id)}
+              to={`/${post.id}`}
               className="block text-left w-full"
             >
               <h3 className="text-blue-600 hover:underline text-xl mb-2">
@@ -55,7 +57,7 @@ export default function DesignersCode({ setCurrentPage }) {
               </h3>
               <p className="text-gray-600 text-sm mb-2">{post.date}</p>
               <p className="text-gray-700">{post.preview}</p>
-            </button>
+            </Link>
           ))}
         </div>
       </div>

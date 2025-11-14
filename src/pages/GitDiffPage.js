@@ -1,15 +1,19 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import Footer from '../components/Footer';
 
-export default function GitDiffPage({ setCurrentPage }) {
+export default function GitDiffPage() {
+    const navigate = useNavigate();
     return (
         <div className="max-w-3xl mx-auto px-6 py-16">
-            <BackButton onClick={() => setCurrentPage('home')} />
+            <BackButton onClick={() => navigate(-1)} />
 
-            <h1 className="text-4xl font-bold mb-8 text-gray-900">
+            <h1 className="text-4xl font-bold mb-2 text-gray-900">
                 How user-centric design improved visibility of user changes
             </h1>
+
+            <p className="text-gray-600 mb-4">Oct 2023 — Dec 2023 • ~3 months</p>
 
             <img
                 src="/images/matillion-bg.png"
@@ -17,42 +21,36 @@ export default function GitDiffPage({ setCurrentPage }) {
                 className="w-full rounded-lg mb-8 border border-gray-200"
             />
 
+            {/* Make Challenge prominent and full-width on small screens */}
+            <div className="mb-8">
+                <h3 className="font-bold text-gray-900 mb-2 text-xl">Challenge</h3>
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
+                    <p className="text-gray-700 bg-yellow-50">
+                        ⚠️ Data engineers struggled to see what changed before committing, creating <span className='font-semibold text-gray-900 bg-yellow-50'>uncertainty</span> and frequent Git resets. The challenge: <span className='font-semibold text-gray-900 bg-yellow-50'>build trust and visibility</span> into version control workflows without disrupting established habits.
+                    </p>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 pb-12 border-b border-gray-200">
                 <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Project Involvement</h3>
+                    <h3 className="font-bold text-gray-900 mb-2">What I did</h3>
                     <p className="text-gray-700 mb-4">
-                        <span className="font-semibold">Role:</span> Product Designer
+                        I led end-to-end discovery, design and testing: drafting the research plan, running interviews, defining flows, prototyping side-by-side diffs, and working with engineers on implementation and metric instrumentation. I owned stakeholder communication and prioritisation across Product and Engineering.
                     </p>
+                    <h3 className="font-bold text-gray-900 mb-2">Team</h3>
                     <p className="text-gray-700">
-                        <span className="font-semibold">Team:</span> DataOps Team (PO, Engs) and another Product Designer
+                        Product Designer (me), Product Owner, 2 Engineers + DataOps stakeholders
                     </p>
                 </div>
                 <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Challenge</h3>
-                    <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
-                        <p className="text-gray-700 bg-yellow-50">
-                            ⚠️ Data engineers struggled to see what changed before committing, creating <span className='font-semibold text-gray-900 bg-yellow-50'>uncertainty</span> and frequent Git resets. The challenge was to <span className='font-semibold text-gray-900 bg-yellow-50'>build trust and visibility</span> into version control workflows without disrupting established habits
-                        </p>
-                    </div>
-                </div>
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Approach</h3>
-                    <p className="text-gray-700">
-                        I owned the end-to-end process of discovery, design & testing strategy and metric tracking to ensure the success of the feature, and suggest changes for future phases
-                    </p>
-                </div>
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Impact</h3>
+                    <h3 className="font-bold text-gray-900 mb-2">Impact (metrics)</h3>
                     <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ 34% increase</span> in Git Committing
+                            <span className="font-bold bg-emerald-50">✅ 34% increase</span> in Git commits
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ 15% decrease</span> in Git Resets
+                            <span className="font-bold bg-emerald-50">✅ 15% decrease</span> in Git resets
                         </p>
-                        <p className="text-gray-700 bg-emerald-50">as a result of Git Diff and seeing changes before committing
-                        </p>
-
                     </div>
                 </div>
             </div>
@@ -90,12 +88,12 @@ export default function GitDiffPage({ setCurrentPage }) {
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Research & Discovery</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                    I ran competitive analysis on leading IDEs, user interviews on workflow pain points, and a cross-functional workshop to co-create solutions. This revealed that:
+                    I ran competitive analysis on leading IDEs, conducted 5 interviews with internal data engineers, and ran a cross-functional workshop to co-create solutions. Interviews focused on workflows, pain points, and how engineers currently validate changes before committing. The goal was to surface clear user needs to inform concept selection.
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                    <li>users needed side-by-side comparisons</li>
-                    <li>clearer change indicators</li>
-                    <li>familiar Git experience tailored to data workflows</li>
+                    <li>Users need a way to easily understand what changed with a commit (side-by-side comparison)</li>
+                    <li>Users need clearer, scannable change indicators to reduce cognitive load</li>
+                    <li>Users need a Git experience that feels familiar to their existing workflows while surfacing the right context for data pipelines</li>
                 </ul>
 
                 <img
@@ -193,7 +191,7 @@ export default function GitDiffPage({ setCurrentPage }) {
                     </ul>
                 </div>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    Git Diff improved confidence, reduced errors, and strengthened collaboration across engineering teams.
+                    Git Diff improved confidence, reduced errors, and strengthened collaboration across engineering teams. So what does that mean for Matillion and end users? Reduced Git resets translate to less time spent troubleshooting and reverting work — saving engineering and support time. Increased commits indicate smoother workflows and higher velocity: teams can iterate faster and ship improvements with more confidence. Together, these outcomes reduced friction in the development workflow, improved product reliability, and contributed to better customer satisfaction and lower support overhead.
                 </p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Feedback</h3>
