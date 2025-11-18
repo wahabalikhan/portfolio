@@ -61,6 +61,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         <div className="flex gap-3 mb-10">
           <button
             onClick={() => setActiveTab('Design')}
+            style={{ cursor: 'pointer' }}
             className={`px-6 py-2.5 rounded-full text-base font-medium transition-all ${
               activeTab === 'Design'
                 ? 'bg-gray-900 text-white'
@@ -71,6 +72,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
           </button>
           <button
             onClick={() => setActiveTab('Development')}
+            style={{ cursor: 'pointer' }}
             className={`px-6 py-2.5 rounded-full text-base font-medium transition-all ${
               activeTab === 'Development'
                 ? 'bg-gray-900 text-white'
