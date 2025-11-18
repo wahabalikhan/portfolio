@@ -510,3 +510,35 @@ html.dark .case-study-link:hover,
 html.dark .dev-tile:hover {
   box-shadow: 0 20px 12px -8px rgba(0, 0, 0, 0.35);
 }
+
+/* Spotify Player Styling */
+.spotify-player {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  animation-delay: 500ms;
+}
+
+.spotify-player a {
+  border-color: #e5e7eb;
+}
+
+html.dark .spotify-player a {
+  border-color: #2d3748;
+}
+
+.spotify-player a:hover {
+  border-color: #d1d5db;
+}
+
+html.dark .spotify-player a:hover {
+  border-color: #374151;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
