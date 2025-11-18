@@ -55,6 +55,9 @@ export default function App() {
         <ScrollToTop />
         <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
         <SpotifyPlayerPill playlistId="37i9dQZF1DWWQRwui0ExPn" />
+        <p className="fixed text-xs text-gray-500 dark:text-gray-400 z-40" style={{ top: 'calc(25px + 3.1rem + 50px)', right: 'calc(1.5rem)', maxWidth: '155px', textAlign: 'left' }}>
+          What I'm currently listening to at the moment!
+        </p>
         <Routes>
           <Route path="/" element={<HomePage activeTab={activeTab} setActiveTab={setActiveTab} />} />
           <Route path="/git-diff" element={<GitDiffPage />} />

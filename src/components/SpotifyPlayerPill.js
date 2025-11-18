@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSpotifyPlaylist } from '../hooks/useSpotifyPlaylist';
-import { Music, SkipForward, ChevronDown } from 'lucide-react';
+import { Music, SkipForward, ChevronDown, Play } from 'lucide-react';
 
 const SpotifyPlayerPill = ({ playlistId = null }) => {
   const { currentTrack, playNextTrack } = useSpotifyPlaylist(playlistId);
@@ -59,6 +59,16 @@ const SpotifyPlayerPill = ({ playlistId = null }) => {
             <SkipForward className="w-3 h-3" />
             <span className="text-xs font-medium">Next track</span>
           </button>
+          <a
+            href={trackUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 flex items-center gap-2 justify-center px-3 py-2 rounded-md transition-colors spotify-player-play-button"
+            style={{ width: '100%', display: 'flex' }}
+          >
+            <Play className="w-3 h-3 fill-current" />
+            <span className="text-xs font-medium">Play on Spotify</span>
+          </a>
         </div>
       )}
 

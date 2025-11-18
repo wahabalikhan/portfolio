@@ -612,6 +612,16 @@ html.dark .spotify-player-next-button:hover {
   background-color: #374151;
 }
 
+.spotify-player-play-button {
+  background-color: #1db954;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.spotify-player-play-button:hover {
+  background-color: #1ed760;
+}
+
 /* Spotify Player Pill Button Styles - Match Theme Toggle */
 .spotify-player-pill-button {
   display: flex;
