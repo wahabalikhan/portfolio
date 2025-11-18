@@ -7,6 +7,7 @@ export default function ThemeToggle({ isDarkMode, toggleTheme }) {
       <button
         onClick={toggleTheme}
         className="theme-toggle-button"
+        style={{ minWidth: '160px', maxWidth: '140px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         aria-label="Toggle dark mode"
         title={isDarkMode ? "Let there be light ☀️" : "Embrace the darkness 🌙"}
       >

@@ -198,20 +198,12 @@ html.dark .hover\:border-gray-400:hover {
   border-color: #4b5563 !important;
 }
 
-/* Theme Toggle & Spotify Player Container */
-.theme-toggle-container,
-.spotify-player-pill {
+/* Theme Toggle Styling */
+.theme-toggle-container {
   position: fixed;
+  top: 1.5rem;
   right: 1.5rem;
   z-index: 50;
-}
-
-.theme-toggle-container {
-  top: 1.5rem;
-}
-
-.spotify-player-pill {
-  top: 4.5rem;
 }
 
 .theme-toggle-button {
@@ -224,10 +216,8 @@ html.dark .hover\:border-gray-400:hover {
   color: #111827;
   font-weight: 500;
   font-size: 0.875rem;
-  border: 1px solid #e5e7eb;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-  width: 140px;
-  justify-content: center;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
   cursor: pointer;
 }
 
@@ -242,40 +232,6 @@ html.dark .theme-toggle-button {
 
 html.dark .theme-toggle-button:hover {
   background-color: #374151;
-}
-
-/* Spotify Player Pill Styling */
-.spotify-player-pill button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  background-color: #f3f4f6;
-  color: #111827;
-  font-weight: 500;
-  font-size: 0.875rem;
-  border: 1px solid #e5e7eb;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-  width: 140px;
-  justify-content: center;
-  font-family: inherit;
-}
-
-.spotify-player-pill button:hover {
-  background-color: #e5e7eb;
-  border-color: #d1d5db;
-}
-
-html.dark .spotify-player-pill button {
-  background-color: #1f2937;
-  color: #f3f4f6;
-  border-color: #374151;
-}
-
-html.dark .spotify-player-pill button:hover {
-  background-color: #374151;
-  border-color: #4b5563;
 }
 
 /* Smooth underline animation for text links - ONLY for specific cases */
@@ -585,4 +541,125 @@ html.dark .spotify-player a:hover {
   50% {
     opacity: 0.5;
   }
+}
+
+/* Spotify Player Modal Styles */
+.spotify-player-modal {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+}
+
+html.dark .spotify-player-modal {
+  background-color: #0f172a;
+  border-color: #374151;
+}
+
+.spotify-player-modal-title {
+  color: #111827;
+}
+
+html.dark .spotify-player-modal-title {
+  color: #ffffff;
+}
+
+.spotify-player-modal-artist {
+  color: #374151;
+}
+
+html.dark .spotify-player-modal-artist {
+  color: #f0f0f0;
+}
+
+.spotify-player-modal-label {
+  color: #9ca3af;
+}
+
+html.dark .spotify-player-modal-label {
+  color: #d1d5db;
+}
+
+.spotify-player-modal-button:hover {
+  background-color: #f3f4f6;
+}
+
+html.dark .spotify-player-modal-button:hover {
+  background-color: #1f2937;
+}
+
+.spotify-player-modal-icon {
+  color: #4b5563;
+}
+
+html.dark .spotify-player-modal-icon {
+  color: #9ca3af;
+}
+
+.spotify-player-next-button {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.spotify-player-next-button:hover {
+  background-color: #e5e7eb;
+}
+
+html.dark .spotify-player-next-button {
+  background-color: #1f2937;
+  color: #ffffff;
+}
+
+html.dark .spotify-player-next-button:hover {
+  background-color: #374151;
+}
+
+/* Spotify Player Pill Button Styles - Match Theme Toggle */
+.spotify-player-pill-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.spotify-player-pill-button:hover {
+  background-color: #e5e7eb;
+}
+
+html.dark .spotify-player-pill-button {
+  background-color: #1f2937;
+  color: #f0f0f0;
+}
+
+html.dark .spotify-player-pill-button:hover {
+  background-color: #374151;
+}
+
+.spotify-player-pill-text {
+  color: #111827;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+  font-size: 0.75rem;
+}
+
+html.dark .spotify-player-pill-text {
+  color: #f0f0f0;
+}
+
+.spotify-player-pill-icon {
+  color: #4b5563;
+  transition: color 0.2s ease;
+}
+
+html.dark .spotify-player-pill-icon {
+  color: #9ca3af;
 }
