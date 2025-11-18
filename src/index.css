@@ -8,6 +8,7 @@
 
 html {
   color-scheme: light;
+  transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html.dark {
@@ -21,6 +22,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html.dark body {
@@ -230,4 +232,281 @@ html.dark .theme-toggle-button {
 
 html.dark .theme-toggle-button:hover {
   background-color: #374151;
+}
+
+/* Smooth underline animation for text links - ONLY for specific cases */
+@keyframes slideUnderline {
+  from {
+    width: 0;
+    left: 0;
+  }
+  to {
+    width: 100%;
+    left: 0;
+  }
+}
+
+/* Default link styling - no underline animation */
+a {
+  position: relative;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer !important;
+}
+
+button {
+  position: relative;
+  cursor: pointer !important;
+}
+
+span.link-text {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Remove underline from all links by default */
+a::after {
+  display: none;
+}
+
+/* Only apply underline animation to specific link types */
+/* LinkedIn, Contact, Back home, Blog post titles, Case study titles */
+a.link-text::after,
+button.link-text::after,
+span.link-text::after,
+.inline-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+  display: block;
+}
+
+a.link-text:hover::after,
+button.link-text:hover::after,
+span.link-text:hover::after,
+.inline-link:hover::after {
+  width: 100%;
+}
+
+/* Case study titles - underline only on title, not whole block */
+.case-study-link h3::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+  display: block;
+}
+
+.case-study-link h3:hover::after {
+  width: 100%;
+}
+
+.case-study-link h3 {
+  position: relative;
+  display: inline-block;
+}
+
+/* Blog post titles - underline only on title */
+.blog-post-link h3::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+  display: block;
+}
+
+.blog-post-link h3:hover::after {
+  width: 100%;
+}
+
+.blog-post-link h3 {
+  position: relative;
+  display: inline-block;
+}
+
+/* Make sure blog post link itself doesn't get underline */
+.blog-post-link::after {
+  display: none !important;
+}
+
+/* Remove default underline animation from dev tiles */
+.dev-tile::after {
+  display: none !important;
+}
+
+/* Programming language/tech pills - accessibility fix */
+.tech-pill {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  background-color: #e5e7eb;
+  color: #111827;
+  font-size: 0.875rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+html.dark .tech-pill {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+/* Colored info tiles - Challenge, Impact, Info etc - using existing Tailwind color classes */
+/* Light mode - ensure good contrast */
+.bg-yellow-50 {
+  background-color: #fffbf0 !important;
+}
+
+.bg-yellow-50 p,
+.bg-yellow-50 span {
+  color: #854d0e !important;
+}
+
+.bg-emerald-50 {
+  background-color: #ecfdf5 !important;
+}
+
+.bg-emerald-50 p,
+.bg-emerald-50 span {
+  color: #065f46 !important;
+}
+
+.bg-blue-50 {
+  background-color: #eff6ff !important;
+}
+
+.bg-blue-50 p,
+.bg-blue-50 span {
+  color: #0c2d6b !important;
+}
+
+/* Dark mode - ensure good contrast and readability */
+html.dark .bg-yellow-50 {
+  background-color: #3a3a2e !important;
+}
+
+html.dark .bg-yellow-50.border-l-4 {
+  border-left-color: #f59e0b !important;
+}
+
+html.dark .border-yellow-500 {
+  border-left-color: #f59e0b !important;
+}
+
+html.dark .bg-yellow-50 p,
+html.dark .bg-yellow-50 span {
+  color: #fbbf24 !important;
+}
+
+/* Success/emerald tile */
+html.dark .bg-emerald-50 {
+  background-color: #2d3a2e !important;
+}
+
+html.dark .bg-emerald-50.border-l-4 {
+  border-left-color: #10b981 !important;
+}
+
+html.dark .border-emerald-500 {
+  border-left-color: #10b981 !important;
+}
+
+html.dark .bg-emerald-50 p,
+html.dark .bg-emerald-50 span {
+  color: #86efac !important;
+}
+
+/* Blue info tile - consistent with others */
+html.dark .bg-blue-50 {
+  background-color: #2d3a3a !important;
+}
+
+html.dark .bg-blue-50.border-l-4 {
+  border-left-color: #3b82f6 !important;
+}
+
+html.dark .border-blue-500 {
+  border-left-color: #3b82f6 !important;
+}
+
+html.dark .bg-blue-50 p,
+html.dark .bg-blue-50 span {
+  color: #93c5fd !important;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+/* Keyframe animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes liftOnHover {
+  from {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  to {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Fade-in sections with stagger */
+.case-study-link,
+.blog-post-link,
+.dev-tile {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.case-study-link:nth-child(1) { animation-delay: 0ms; }
+.case-study-link:nth-child(2) { animation-delay: 100ms; }
+.case-study-link:nth-child(3) { animation-delay: 200ms; }
+
+.blog-post-link:nth-child(1) { animation-delay: 0ms; }
+.blog-post-link:nth-child(2) { animation-delay: 100ms; }
+.blog-post-link:nth-child(3) { animation-delay: 200ms; }
+.blog-post-link:nth-child(4) { animation-delay: 300ms; }
+.blog-post-link:nth-child(5) { animation-delay: 400ms; }
+
+.dev-tile:nth-child(1) { animation-delay: 0ms; }
+.dev-tile:nth-child(2) { animation-delay: 100ms; }
+.dev-tile:nth-child(3) { animation-delay: 200ms; }
+.dev-tile:nth-child(4) { animation-delay: 300ms; }
+
+/* Card hover lift effect */
+.case-study-link:hover,
+.dev-tile:hover {
+  transform: translateY(-8px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 16px 20px -4px rgba(0, 0, 0, 0.08);
+}
+
+html.dark .case-study-link:hover,
+html.dark .dev-tile:hover {
+  box-shadow: 0 16px 20px -4px rgba(0, 0, 0, 0.4);
 }

@@ -48,7 +48,7 @@ export default function BuildingPortfolioPage() {
               to={`/${post.id}`}
               className="block text-left w-full"
             >
-              <h3 className="text-blue-600 hover:underline text-xl mb-2">
+              <h3 className="text-blue-600 text-xl mb-2">
                 {post.title}
               </h3>
               <p className="text-gray-600 text-sm mb-2">{post.date}</p>
