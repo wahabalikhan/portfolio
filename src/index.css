@@ -673,3 +673,16 @@ html.dark .spotify-player-pill-text {
 html.dark .spotify-player-pill-icon {
   color: #9ca3af;
 }
+
+/* Custom breakpoint for 1150px */
+@media (max-width: 1150px) {
+  .hidden-below-1150 {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1151px) {
+  .hidden-above-1150 {
+    display: none !important;
+  }
+}
