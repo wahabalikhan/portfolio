@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
-import SpotifyPlayerPill from '../components/SpotifyPlayerPill';
+import SpotifyPlayer from '../components/SpotifyPlayer';
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
@@ -232,31 +232,8 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
 
         {/* Extras Tab Content */}
         {activeTab === 'Extras' && (
-          <div className="space-y-4">
-            <a
-              href="https://github.com/wahabalikhan"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-            >
-              → GitHub
-            </a>
-            <a
-              href="https://www.dribbble.com/wahabalikhan"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-            >
-              → Dribbble
-            </a>
-            <a
-              href="https://www.linkedin.com/in/wahabalikhan/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-            >
-              → LinkedIn
-            </a>
+          <div className="py-12">
+            <p className="text-gray-600 text-lg">Currently building at the moment, will update soon!</p>
           </div>
         )}
       </div>
