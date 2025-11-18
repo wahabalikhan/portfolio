@@ -231,8 +231,8 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
 
         {/* Extras Tab Content */}
         {activeTab === 'Extras' && (
-          <div className="py-12">
-            <p className="text-gray-600 text-lg">Currently building at the moment, will update soon!</p>
+          <div>
+            <p className="text-gray-600 text-lg">Thinking about things to build at the moment, will update soon!</p>
           </div>
         )}
       </div>

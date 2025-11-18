@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import Footer from '../components/Footer';
+import ImageModal from '../components/ImageModal';
 
 export default function DesignSystemPage() {
   const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState(null);
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <BackButton onClick={() => navigate(-1)} />
@@ -18,7 +20,8 @@ export default function DesignSystemPage() {
       <img 
         src="/images/ds.png" 
         alt="Design System"
-        className="w-full rounded-lg mb-8 border border-gray-200"
+        className="w-full rounded-lg mb-8 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+        onClick={() => setSelectedImage({ src: '/images/ds.png', alt: 'Design System' })}
       />
 
       <section className="mb-12">
@@ -140,6 +143,12 @@ export default function DesignSystemPage() {
       </section>
 
       <Footer />
+      <ImageModal 
+        isOpen={!!selectedImage} 
+        src={selectedImage?.src} 
+        alt={selectedImage?.alt}
+        onClose={() => setSelectedImage(null)}
+      />
     </div>
   );
 }
