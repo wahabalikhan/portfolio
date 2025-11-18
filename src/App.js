@@ -10,6 +10,7 @@ import BuildingPortfolioPage from './pages/BuildingPortfolioPage';
 import DesignSystemsBlogPage from './pages/DesignSystemsBlogPage';
 import ScrollToTop from './components/ScrollToTop';
 import ThemeToggle from './components/ThemeToggle';
+import SpotifyPlayerPill from './components/SpotifyPlayerPill';
 
 export default function App() {
   // For tab state on homepage only
@@ -53,6 +54,7 @@ export default function App() {
       >
         <ScrollToTop />
         <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+        <SpotifyPlayerPill playlistId="37i9dQZF1DWWQRwui0ExPn" />
         <Routes>
           <Route path="/" element={<HomePage activeTab={activeTab} setActiveTab={setActiveTab} />} />
           <Route path="/git-diff" element={<GitDiffPage />} />

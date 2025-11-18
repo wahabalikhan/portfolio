@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
-import SpotifyPlayer from '../components/SpotifyPlayer';
+import SpotifyPlayerPill from '../components/SpotifyPlayerPill';
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
@@ -56,11 +56,6 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         </a>
       </div>
 
-      {/* Spotify Player */}
-      <div className="mt-8 mb-10">
-        <SpotifyPlayer playlistId="37i9dQZF1DWWQRwui0ExPn" />
-      </div>
-
       <div className="mt-10 mb-10">
         <section className="border-t border-gray-200 pt-8 pb-0" />
         <h2 className="text-3xl font-bold mb-8 text-gray-900">Case studies</h2>
@@ -88,6 +83,17 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
             }`}
           >
             💻 Development
+          </button>
+          <button
+            onClick={() => setActiveTab('Extras')}
+            style={{ cursor: 'pointer' }}
+            className={`px-6 py-2.5 rounded-full text-base font-medium transition-all ${
+              activeTab === 'Extras'
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            ✨ Extras
           </button>
         </div>
 
@@ -221,6 +227,36 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                 </div>
               </a>
             ))}
+          </div>
+        )}
+
+        {/* Extras Tab Content */}
+        {activeTab === 'Extras' && (
+          <div className="space-y-4">
+            <a
+              href="https://github.com/wahabalikhan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+            >
+              → GitHub
+            </a>
+            <a
+              href="https://www.dribbble.com/wahabalikhan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+            >
+              → Dribbble
+            </a>
+            <a
+              href="https://www.linkedin.com/in/wahabalikhan/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+            >
+              → LinkedIn
+            </a>
           </div>
         )}
       </div>

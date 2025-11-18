@@ -198,12 +198,20 @@ html.dark .hover\:border-gray-400:hover {
   border-color: #4b5563 !important;
 }
 
-/* Theme Toggle Styling */
-.theme-toggle-container {
+/* Theme Toggle & Spotify Player Container */
+.theme-toggle-container,
+.spotify-player-pill {
   position: fixed;
-  top: 1.5rem;
   right: 1.5rem;
   z-index: 50;
+}
+
+.theme-toggle-container {
+  top: 1.5rem;
+}
+
+.spotify-player-pill {
+  top: 4.5rem;
 }
 
 .theme-toggle-button {
@@ -216,8 +224,10 @@ html.dark .hover\:border-gray-400:hover {
   color: #111827;
   font-weight: 500;
   font-size: 0.875rem;
-  border: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  border: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  width: 140px;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -232,6 +242,40 @@ html.dark .theme-toggle-button {
 
 html.dark .theme-toggle-button:hover {
   background-color: #374151;
+}
+
+/* Spotify Player Pill Styling */
+.spotify-player-pill button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  width: 140px;
+  justify-content: center;
+  font-family: inherit;
+}
+
+.spotify-player-pill button:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+html.dark .spotify-player-pill button {
+  background-color: #1f2937;
+  color: #f3f4f6;
+  border-color: #374151;
+}
+
+html.dark .spotify-player-pill button:hover {
+  background-color: #374151;
+  border-color: #4b5563;
 }
 
 /* Smooth underline animation for text links - ONLY for specific cases */
