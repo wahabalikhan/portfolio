@@ -544,3 +544,77 @@ html.dark .case-study-link:hover,
 html.dark .dev-tile:hover {
   box-shadow: 0 20px 12px -8px rgba(0, 0, 0, 0.35);
 }
+
+/* Image Modal Styles */
+.image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+
+.image-modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: zoomIn 0.3s ease;
+}
+
+.image-modal-image {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 0.5rem;
+  object-fit: contain;
+}
+
+.image-modal-close {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111827;
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  z-index: 1001;
+}
+
+.image-modal-close:hover {
+  background-color: #ffffff;
+}
+
+html.dark .image-modal-close {
+  background-color: rgba(30, 41, 59, 0.9);
+  color: #f0f0f0;
+}
+
+html.dark .image-modal-close:hover {
+  background-color: #1e293b;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
