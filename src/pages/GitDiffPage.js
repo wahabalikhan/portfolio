@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import Footer from '../components/Footer';
+import ImageModal from '../components/ImageModal';
 
 export default function GitDiffPage() {
     const navigate = useNavigate();
+    const [selectedImage, setSelectedImage] = useState(null);
     return (
         <div className="max-w-3xl mx-auto px-6 py-16">
             <BackButton onClick={() => navigate(-1)} />
@@ -20,7 +22,8 @@ export default function GitDiffPage() {
             <img
                 src="/images/matillion-bg.png"
                 alt="Git Diff"
-                className="w-full rounded-lg mb-8 border border-gray-200"
+                className="w-full rounded-lg mb-8 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => setSelectedImage({ src: '/images/matillion-bg.png', alt: 'Git Diff' })}
             />
 
             <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
@@ -98,7 +101,8 @@ export default function GitDiffPage() {
                 <img
                     src="/images/diff_research_1.png"
                     alt="Git Diff research"
-                    className="w-full rounded-lg mb-4"
+                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/diff_research_1.png', alt: 'Git Diff research' })}
                 />
 
                 <p className='mb-8 text-xs'>User interviews exploring topics such as experience with existing Git functions, what worked well, what needed improvement, workarounds, priority of information, and defining the Minimum Viable Product from the user’s perspective.</p>
@@ -106,7 +110,8 @@ export default function GitDiffPage() {
                 <img
                     src="/images/diff_workshop.png"
                     alt="Git Diff workshop"
-                    className="w-full rounded-lg mb-4"
+                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/diff_workshop.png', alt: 'Git Diff workshop' })}
                 />
                 <p className='mb-8 text-xs'>A collaborative workshop that moved from discovery and scoping through How Might We framing, two rounds of ideation, and group voting to select iterations to progress into design.</p>
 
@@ -137,7 +142,8 @@ export default function GitDiffPage() {
                 <img
                     src="/images/diff_flow.png"
                     alt="Git Diff flow"
-                    className="w-full rounded-lg mb-4"
+                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/diff_flow.png', alt: 'Git Diff flow' })}
                 />
                 <p className='mb-8 text-xs'>The flow illustrates how Git Diff activates within a branch showing the relationship between local (uncommitted) and remote (committed) changes. It defines when users can trigger a diff, view comparisons, or see an empty state, ensuring clarity and control throughout the workflow.</p>
             </section>
@@ -150,7 +156,8 @@ export default function GitDiffPage() {
                 <img
                     src="/images/diff_screen.png"
                     alt="Git Diff screen"
-                    className="w-full mb-4"
+                    className="w-full mb-4 rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/diff_screen.png', alt: 'Git Diff screen' })}
                 />
 
                 <p className='mb-8 text-xs'>The Git Diff design providing a side-by-side comparison view showing exactly what changed between local and committed versions. Visual indicators highlight additions and deletions, while contextual filters like All files or Modified files only give users flexible control.</p>
@@ -163,14 +170,16 @@ export default function GitDiffPage() {
                 <img
                     src="/images/testing1.png"
                     alt="Git Diff testing"
-                    className="w-full rounded-lg mb-4"
+                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/testing1.png', alt: 'Git Diff testing' })}
                 />
                 <p className='mb-8 text-xs'>I ran tests with data engineers to test Git Diff’s findability and clarity. Participants were asked to locate and use the feature within realistic tasks, all successfully completed the comparison flow, describing it as “clear,” “easy,” and “intuitive.”</p>
 
                 <img
                     src="/images/testing2.png"
                     alt="Git Diff testing"
-                    className="w-full rounded-lg mb-4"
+                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/testing2.png', alt: 'Git Diff testing' })}
                 />
                 <p className='mb-8 text-xs'>All participants successfully completed the Git Diff task, confirming the feature was easy to find and understand. Most rated the experience as “very easy,” validating the clarity of the design and overall discoverability of the comparison flow.</p>
 
@@ -183,7 +192,7 @@ export default function GitDiffPage() {
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Results</h3>
 
                 <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-6">
-                    <ul className="list-disc list-inside text-gray-700 bg-emerald-50 space-y-2">
+                    <ul className="list-inside text-gray-700 bg-emerald-50 space-y-2">
                         <li className='bg-emerald-50'>📈 +34% commits</li>
                         <li className='bg-emerald-50'>🧩 −15% Git resets</li>
                         <li className='bg-emerald-50'>✅ 100% success rate in usability testing</li>
@@ -193,9 +202,14 @@ export default function GitDiffPage() {
                     Git Diff improved confidence, reduced errors, and strengthened collaboration across engineering teams.
                 </p>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Feedback</h3>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">But here’s the real so what?</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    Users described Git Diff as “clear,” “intuitive,” and “something we’ve wanted for a while.” Data engineers found it easier to review changes and trust the commit process. Internally, Product and Engineering teams saw fewer support queries and greater confidence in Git operations, prompting plans to extend Diff functionality in future releases.
+                    <ul className='list-disc list-inside'>
+                        <li>Teams trusted Matillion’s Git workflows more, reducing reliance on external tools</li>
+                        <li>Increased commit confidence led to faster pipelines shipped</li>
+                        <li>Reduction in resets meant more time focused on real work, not debugging Git issues</li>
+                        <li>Product’s perception improved: Matillion felt more like an IDE they could rely on, not just a data tool</li>
+                    </ul>
                 </p>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Reflection</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
@@ -206,15 +220,21 @@ export default function GitDiffPage() {
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Next steps</h3>
                 <p className="text-gray-700 leading-relaxed">
-                    <ul>
-                        <li>•	Merge-level diffs</li>
-                        <li>•	Conflict resolution</li>
-                        <li>•	Commit-to-commit comparisons</li>
+                    <ul className='list-disc list-inside'>
+                        <li>Merge-level diffs</li>
+                        <li>Conflict resolution</li>
+                        <li>Commit-to-commit comparisons</li>
                     </ul>
 
                 </p>
             </section>
             <Footer />
+            <ImageModal 
+              isOpen={!!selectedImage} 
+              src={selectedImage?.src} 
+              alt={selectedImage?.alt}
+              onClose={() => setSelectedImage(null)}
+            />
         </div>
     );
 }
