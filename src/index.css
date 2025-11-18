@@ -4,10 +4,18 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #F8FAFD;
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
+  background-color: #F8FAFD;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -15,6 +23,211 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html.dark body {
+  background-color: #050f1b;
+}
+
 #root {
   min-height: 100vh;
+}
+
+/* Cursor pointer for clickable elements */
+a,
+button,
+[role="button"],
+input[type="checkbox"],
+input[type="radio"],
+select {
+  cursor: pointer !important;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: auto !important;
+}
+
+/* Additional cursor styling for links */
+a {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* Button hover state */
+button:hover,
+a:hover,
+[role="button"]:hover {
+  cursor: pointer !important;
+}
+
+/* Specific styles for interactive containers */
+[onclick],
+.clickable {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* Force cursor on body */
+body {
+  cursor: auto !important;
+}
+
+/* Dark mode text colors */
+html.dark {
+  background-color: #050f1b;
+  color: #f0f0f0;
+}
+
+html.dark body {
+  color: #f0f0f0;
+  background-color: #050f1b;
+}
+
+html.dark #root {
+  background-color: #050f1b;
+  color: #f0f0f0;
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  color: #ffffff;
+}
+
+html.dark p,
+html.dark span,
+html.dark li,
+html.dark div {
+  color: #e0e0e0;
+}
+
+html.dark a {
+  color: #60a5fa;
+}
+
+html.dark a:hover {
+  color: #93c5fd;
+}
+
+html.dark button {
+  background-color: transparent;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+html.dark button:hover {
+  background-color: transparent;
+}
+
+html.dark .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #1f2937 !important;
+}
+
+html.dark .bg-gray-900 {
+  background-color: #111827 !important;
+}
+
+html.dark .text-gray-900 {
+  color: #ffffff !important;
+}
+
+html.dark .text-gray-700 {
+  color: #d1d5db !important;
+}
+
+html.dark .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+html.dark .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+html.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+html.dark .hover\:bg-gray-200:hover {
+  background-color: #374151 !important;
+}
+
+html.dark .group:hover .group-hover\:text-blue-600 {
+  color: #60a5fa !important;
+}
+
+html.dark img {
+  opacity: 0.9;
+}
+
+/* Dark mode specific tab and button styling */
+html.dark .bg-gray-100 {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+html.dark .bg-gray-900 {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+html.dark .text-gray-700 {
+  color: #d1d5db !important;
+}
+
+html.dark .hover\:bg-gray-200:hover {
+  background-color: #374151 !important;
+}
+
+/* Dark mode tile styling */
+html.dark .bg-gray-50 {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+html.dark .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+html.dark .hover\:border-gray-400:hover {
+  border-color: #4b5563 !important;
+}
+
+/* Theme Toggle Styling */
+.theme-toggle-container {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 50;
+}
+
+.theme-toggle-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.theme-toggle-button:hover {
+  background-color: #e5e7eb;
+}
+
+html.dark .theme-toggle-button {
+  background-color: #1f2937;
+  color: #f0f0f0;
+}
+
+html.dark .theme-toggle-button:hover {
+  background-color: #374151;
 }
