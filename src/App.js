@@ -11,6 +11,7 @@ import DesignSystemsBlogPage from './pages/DesignSystemsBlogPage';
 import ScrollToTop from './components/ScrollToTop';
 import ThemeToggle from './components/ThemeToggle';
 import SpotifyPlayerPill from './components/SpotifyPlayerPill';
+import ResponsiveMenu from './components/ResponsiveMenu';
 
 export default function App() {
   // For tab state on homepage only
@@ -53,11 +54,20 @@ export default function App() {
         }}
       >
         <ScrollToTop />
-        <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-        <SpotifyPlayerPill playlistId="37i9dQZF1DWWQRwui0ExPn" />
-        <p className="fixed text-xs text-gray-500 dark:text-gray-400 z-40" style={{ top: 'calc(25px + 3.1rem + 50px)', right: 'calc(1.5rem)', maxWidth: '155px', textAlign: 'left' }}>
-          What I'm currently listening to at the moment!
-        </p>
+        {/* Desktop Layout - Hidden below 1150px */}
+        <div className="hidden-below-1150">
+          <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+          <SpotifyPlayerPill playlistId="37i9dQZF1DWWQRwui0ExPn" />
+          <p className="fixed text-xs text-gray-500 dark:text-gray-400 z-40" style={{ top: 'calc(25px + 3.1rem + 50px)', right: 'calc(1.5rem)', maxWidth: '155px', textAlign: 'left' }}>
+            What I'm currently listening to at the moment!
+          </p>
+        </div>
+        
+        {/* Mobile Layout - Shown below 1150px */}
+        <div className="hidden-above-1150">
+          <ResponsiveMenu isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+        </div>
+        
         <Routes>
           <Route path="/" element={<HomePage activeTab={activeTab} setActiveTab={setActiveTab} />} />
           <Route path="/git-diff" element={<GitDiffPage />} />
