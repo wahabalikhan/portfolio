@@ -17,6 +17,7 @@ export default function App() {
   // For tab state on homepage only
   const [activeTab, setActiveTab] = useState('Design');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1150);
   
   // Load theme preference from localStorage
   useEffect(() => {
@@ -25,6 +26,15 @@ export default function App() {
     const shouldBeDark = savedTheme ? savedTheme === 'dark' : prefersDark;
     setIsDarkMode(shouldBeDark);
     applyTheme(shouldBeDark);
+  }, []);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
   
   const applyTheme = (dark) => {
@@ -43,6 +53,8 @@ export default function App() {
     applyTheme(newMode);
   };
   
+  const isDesktop = windowWidth > 1150;
+  
   // ScrollToTop component handles scrolling on route change
   return (
     <Router>
@@ -54,19 +66,21 @@ export default function App() {
         }}
       >
         <ScrollToTop />
-        {/* Desktop Layout - Hidden below 1150px */}
-        <div className="hidden-below-1150">
-          <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-          <SpotifyPlayerPill playlistId="37i9dQZF1DWWQRwui0ExPn" />
-          <p className="fixed text-xs text-gray-500 dark:text-gray-400 z-40" style={{ top: 'calc(25px + 3.1rem + 50px)', right: 'calc(1.5rem)', maxWidth: '155px', textAlign: 'left' }}>
-            What I'm currently listening to at the moment!
-          </p>
-        </div>
+        {/* Desktop Layout - Only render above 1150px */}
+        {isDesktop && (
+          <>
+            <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+            <SpotifyPlayerPill playlistId="37i9dQZF1DWWQRwui0ExPn" />
+            <p className="fixed text-xs text-gray-500 dark:text-gray-400 z-40" style={{ top: 'calc(25px + 3.1rem + 50px)', right: 'calc(1.5rem)', maxWidth: '155px', textAlign: 'left' }}>
+              What I'm currently listening to at the moment!
+            </p>
+          </>
+        )}
         
-        {/* Mobile Layout - Shown below 1150px */}
-        <div className="hidden-above-1150">
+        {/* Mobile Layout - Only render below 1150px */}
+        {!isDesktop && (
           <ResponsiveMenu isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-        </div>
+        )}
         
         <Routes>
           <Route path="/" element={<HomePage activeTab={activeTab} setActiveTab={setActiveTab} />} />
