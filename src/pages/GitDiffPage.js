@@ -13,7 +13,9 @@ export default function GitDiffPage() {
                 How user-centric design improved visibility of user changes
             </h1>
 
-            <p className="text-gray-600 mb-4">January 2025 — March 2023 • ~3 months</p>
+            <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 — March 2025 • ~3 months</p>
+            <p className="text-gray-600"><span className="font-semibold">Team:</span> DataOps (PO, Engineers), 1 additional Product Designer</p>
+            <p className="text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer (research, strategy, design, testing, metrics)</p>
 
             <img
                 src="/images/matillion-bg.png"
@@ -21,16 +23,7 @@ export default function GitDiffPage() {
                 className="w-full rounded-lg mb-8 border border-gray-200"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 pb-12 border-b border-gray-200">
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Project Involvement</h3>
-                    <p className="text-gray-700 mb-4">
-                        <span className="font-semibold">Role:</span> Product Designer
-                    </p>
-                    <p className="text-gray-700">
-                        <span className="font-semibold">Team:</span> DataOps Team (PO, Engs) and another Product Designer
-                    </p>
-                </div>
+            <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Challenge</h3>
                     <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
@@ -206,12 +199,19 @@ export default function GitDiffPage() {
                 </p>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Reflection</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    The project reinforced that clarity builds confidence. Close collaboration and incremental iteration proved that even small UX improvements can unlock measurable behavioural and business impact.
+                    This project reinforced a core principle for me: <span className="font-semibold">Clarity creates confidence. And confidence drives adoption.</span>
                 </p>
+
+                <p className="text-gray-700 leading-relaxed mb-6">I also learned the value of shaping not just UI, but behaviour — supporting engineers in shifting to integrated version control workflows with less friction.</p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Next steps</h3>
                 <p className="text-gray-700 leading-relaxed">
-                    Next, we’ll extend Git Diff to support merge-level comparisons, conflict resolution, and side-by-side commit comparison — deepening transparency across the full version control workflow.
+                    <ul>
+                        <li>•	Merge-level diffs</li>
+                        <li>•	Conflict resolution</li>
+                        <li>•	Commit-to-commit comparisons</li>
+                    </ul>
+
                 </p>
             </section>
             <Footer />

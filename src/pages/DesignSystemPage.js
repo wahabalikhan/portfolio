@@ -29,9 +29,7 @@ export default function DesignSystemPage() {
         </p>
       </section>
 
-      {/*
-
-      <div className="grid grid-cols-2 gap-8 mb-12 pb-12 border-b border-gray-200">
+      <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
         <div>
           <h3 className="font-bold text-gray-900 mb-2">Project Involvement</h3>
           <p className="text-gray-700 mb-4">
@@ -48,8 +46,6 @@ export default function DesignSystemPage() {
           </p>
         </div>
       </div>
-
-
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Context & Challenge</h2>
         
@@ -141,7 +137,8 @@ export default function DesignSystemPage() {
         <p className="text-gray-700 leading-relaxed">
           The ETL Design System continues to evolve as a living system. It has become foundational to how Matillion builds products and has set the standard for cross-functional collaboration in the organization.
         </p>
-      </section> */}
+      </section>
+
       <Footer />
     </div>
   );

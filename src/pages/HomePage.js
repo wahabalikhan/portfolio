@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
-import SpotifyPlayer from '../components/SpotifyPlayer';
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
