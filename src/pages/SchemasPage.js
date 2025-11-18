@@ -21,7 +21,7 @@ export default function SchemasPage() {
         className="w-full rounded-lg mb-8 border border-gray-200"
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 pb-12 border-b border-gray-200">
+      <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
         <div>
           <h3 className="font-bold text-gray-900 mb-2">Project Involvement</h3>
           <p className="text-gray-700 mb-4">
