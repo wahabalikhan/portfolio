@@ -206,16 +206,20 @@ html.dark .hover\:border-gray-400:hover {
   z-index: 50;
 }
 
+.theme-toggle-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .theme-toggle-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
   background-color: #f3f4f6;
   color: #111827;
-  font-weight: 500;
-  font-size: 0.875rem;
   border: none;
   transition: background-color 0.2s ease, color 0.2s ease;
   cursor: pointer;
@@ -232,6 +236,36 @@ html.dark .theme-toggle-button {
 
 html.dark .theme-toggle-button:hover {
   background-color: #374151;
+}
+
+.theme-toggle-tooltip {
+  position: absolute;
+  bottom: -2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #111827;
+  color: #f0f0f0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease;
+}
+
+html.dark .theme-toggle-tooltip {
+  background-color: #f0f0f0;
+  color: #111827;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Smooth underline animation for text links - ONLY for specific cases */
@@ -509,182 +543,4 @@ html.dark .bg-blue-50 span {
 html.dark .case-study-link:hover,
 html.dark .dev-tile:hover {
   box-shadow: 0 20px 12px -8px rgba(0, 0, 0, 0.35);
-}
-
-/* Spotify Player Styling */
-.spotify-player {
-  animation: fadeInUp 0.6s ease-out forwards;
-  opacity: 0;
-  animation-delay: 500ms;
-}
-
-.spotify-player a {
-  border-color: #e5e7eb;
-}
-
-html.dark .spotify-player a {
-  border-color: #2d3748;
-}
-
-.spotify-player a:hover {
-  border-color: #d1d5db;
-}
-
-html.dark .spotify-player a:hover {
-  border-color: #374151;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* Spotify Player Modal Styles */
-.spotify-player-modal {
-  background-color: #ffffff;
-  border-color: #e5e7eb;
-}
-
-html.dark .spotify-player-modal {
-  background-color: #0f172a;
-  border-color: #374151;
-}
-
-.spotify-player-modal-title {
-  color: #111827;
-}
-
-html.dark .spotify-player-modal-title {
-  color: #ffffff;
-}
-
-.spotify-player-modal-artist {
-  color: #374151;
-}
-
-html.dark .spotify-player-modal-artist {
-  color: #f0f0f0;
-}
-
-.spotify-player-modal-label {
-  color: #9ca3af;
-}
-
-html.dark .spotify-player-modal-label {
-  color: #d1d5db;
-}
-
-.spotify-player-modal-button:hover {
-  background-color: #f3f4f6;
-}
-
-html.dark .spotify-player-modal-button:hover {
-  background-color: #1f2937;
-}
-
-.spotify-player-modal-icon {
-  color: #4b5563;
-}
-
-html.dark .spotify-player-modal-icon {
-  color: #9ca3af;
-}
-
-.spotify-player-next-button {
-  background-color: #f3f4f6;
-  color: #111827;
-}
-
-.spotify-player-next-button:hover {
-  background-color: #e5e7eb;
-}
-
-html.dark .spotify-player-next-button {
-  background-color: #1f2937;
-  color: #ffffff;
-}
-
-html.dark .spotify-player-next-button:hover {
-  background-color: #374151;
-}
-
-.spotify-player-play-button {
-  background-color: #1db954;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.spotify-player-play-button:hover {
-  background-color: #1ed760;
-}
-
-/* Spotify Player Pill Button Styles - Match Theme Toggle */
-.spotify-player-pill-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  background-color: #f3f4f6;
-  color: #111827;
-  font-weight: 500;
-  font-size: 0.875rem;
-  border: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  cursor: pointer;
-}
-
-.spotify-player-pill-button:hover {
-  background-color: #e5e7eb;
-}
-
-html.dark .spotify-player-pill-button {
-  background-color: #1f2937;
-  color: #f0f0f0;
-}
-
-html.dark .spotify-player-pill-button:hover {
-  background-color: #374151;
-}
-
-.spotify-player-pill-text {
-  color: #111827;
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: color 0.2s ease;
-  font-size: 0.75rem;
-}
-
-html.dark .spotify-player-pill-text {
-  color: #f0f0f0;
-}
-
-.spotify-player-pill-icon {
-  color: #4b5563;
-  transition: color 0.2s ease;
-}
-
-html.dark .spotify-player-pill-icon {
-  color: #9ca3af;
-}
-
-/* Custom breakpoint for 1150px */
-@media (max-width: 1150px) {
-  .hidden-below-1150 {
-    display: none !important;
-    visibility: hidden !important;
-  }
-}
-
-@media (min-width: 1151px) {
-  .hidden-above-1150 {
-    display: none !important;
-    visibility: hidden !important;
-  }
 }
