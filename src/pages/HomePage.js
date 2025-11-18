@@ -38,19 +38,22 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         </ul>
       </div>
 
-      <a 
-        href="https://www.linkedin.com/in/wahabalikhan/" 
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline inline-flex items-center gap-1"
-      >
-        <b>LinkedIn ↗<a 
-          href="mailto:wahab-ali-khan@hotmail.com"
-          className="text-blue-600 hover:underline ml-4"
+      <div className="flex gap-4 items-center">
+        <a 
+          href="https://www.linkedin.com/in/wahabalikhan/" 
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link-text text-blue-600 dark:text-blue-400 inline-flex items-center gap-1"
         >
-          Contact ↗
-        </a></b>
-      </a>
+          <b>LinkedIn ↗</b>
+        </a>
+        <a 
+          href="mailto:wahab-ali-khan@hotmail.com"
+          className="link-text text-blue-600 dark:text-blue-400 inline-flex items-center gap-1"
+        >
+          <b>Contact ↗</b>
+        </a>
+      </div>
 
 
       <div className="mt-10 mb-10">
@@ -116,7 +119,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               <Link
                 key={study.id}
                 to={study.link}
-                className="block group w-full text-left"
+                className="case-study-link block group w-full text-left"
               >
                 <div className="flex items-start gap-3 mb-3">
                   <img 
@@ -173,7 +176,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                 href={repo.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block group"
+                className="dev-tile block group"
               >
                 <div className="mb-4 overflow-hidden rounded-lg bg-gray-50 p-8 border border-gray-200 hover:border-gray-400 transition-all">
                   <div className="flex items-start justify-between mb-3">
@@ -201,11 +204,11 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                   )}
 
                   <div className="flex gap-4 items-center">
-                    <span className="text-blue-600 group-hover:underline inline-flex items-center gap-1">
+                    <span className="text-blue-600 inline-flex items-center gap-1 link-text">
                       View on GitHub →
                     </span>
                     {repo.demo && (
-                      <span className="text-blue-600 hover:underline inline-flex items-center gap-1">
+                      <span className="text-blue-600 inline-flex items-center gap-1 link-text">
                         Live Demo →
                       </span>
                     )}
@@ -226,9 +229,9 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
             <Link
               key={post.id}
               to={`/${post.id}`}
-              className="block text-left w-full group"
+              className="blog-post-link block text-left w-full group"
             >
-              <h3 className="text-blue-600 hover:underline text-xl mb-1 group-hover:underline">
+              <h3 className="text-blue-600 dark:text-blue-400 text-xl mb-1">
                 {post.title}
               </h3>
               <p className="text-gray-500 text-sm mb-2">{post.date}</p>

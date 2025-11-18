@@ -56,7 +56,7 @@ export default function DesignSystemsBlogPage() {
               to={`/${post.id}`}
               className="block text-left w-full"
             >
-              <h3 className="text-blue-600 hover:underline text-xl font-semibold mb-2">
+              <h3 className="text-blue-600 text-xl font-semibold mb-2">
                 {post.title}
               </h3>
               <p className="text-gray-600 text-sm mb-2">{post.date}</p>
@@ -73,10 +73,10 @@ export default function DesignSystemsBlogPage() {
         <div className="flex items-center justify-between">
           <p className="text-gray-600 text-sm">© 2025 Wahab Ali Khan. All rights reserved.</p>
           <div className="flex gap-4">
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm">
               LinkedIn
             </a>
-            <a href="mailto:contact@wahab.com" className="text-blue-600 hover:underline text-sm">
+            <a href="mailto:contact@wahab.com" className="text-blue-600 text-sm">
               Contact
             </a>
           </div>
