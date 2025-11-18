@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
+import SpotifyPlayer from '../components/SpotifyPlayer';
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
@@ -55,6 +56,10 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         </a>
       </div>
 
+      {/* Spotify Player */}
+      <div className="mt-8 mb-10">
+        <SpotifyPlayer playlistId="37i9dQZF1DWWQRwui0ExPn" />
+      </div>
 
       <div className="mt-10 mb-10">
         <section className="border-t border-gray-200 pt-8 pb-0" />
