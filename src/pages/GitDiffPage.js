@@ -16,8 +16,7 @@ export default function GitDiffPage() {
             </h1>
 
             <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 — March 2025 ~ 3 months</p>
-            <p className="text-gray-600"><span className="font-semibold">Team:</span> DataOps (PO, Engineers), 1 additional Product Designer</p>
-            <p className="text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer (research, strategy, design, testing, metrics)</p>
+            <p className="text-gray-600 mb-4"><span className="font-semibold">Team:</span> DataOps (PO, Engineers), 1 additional Product Designer</p>
 
             <img
                 src="/images/matillion-bg.png"
@@ -40,7 +39,7 @@ export default function GitDiffPage() {
                     </div>
                 </div>
                 <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Approach</h3>
+                    <h3 className="font-bold text-gray-900 mb-2">Role: Product Designer (research, strategy, design, testing, metrics)</h3>
                     <p className="text-gray-700 leading-relaxed mb-2">I led the full design process end-to-end:</p>
                     <p className="text-gray-700 mb-6">
                         <ul className='list-disc list-inside'>
@@ -72,7 +71,7 @@ export default function GitDiffPage() {
             </div>
 
             <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Overview</h2>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">Context</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">
                     Matillion’s Data Productivity Cloud helps data engineers build and manage cloud-native data pipelines. Git was already part of the workflow, but users had no way to see what changed before committing. That lack of visibility created uncertainty, mistakes, and frequent Git resets — making version control feel risky.
                 </p>
@@ -138,7 +137,7 @@ export default function GitDiffPage() {
                 <p className='mb-8 text-xs'>The flow illustrates how Git Diff activates within a branch showing the relationship between local (uncommitted) and remote (committed) changes. It defines when users can trigger a diff, view comparisons, or see an empty state, ensuring clarity and control throughout the workflow.</p>
 
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Key User Needs (framed as problems)</h3>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">Key User Needs (framed as problems)</h3>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
                     
                 <p className="text-gray-700 mb-6">
@@ -280,6 +279,18 @@ export default function GitDiffPage() {
                         <li>Increased commit confidence led to faster pipelines shipped</li>
                         <li>Reduction in resets meant more time focused on real work, not debugging Git issues</li>
                         <li>Product’s perception improved: Matillion felt more like an IDE they could rely on, not just a data tool</li>
+                    </ul>
+                </p>
+
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">What would have happened without me</h3>
+                <p className="text-gray-700 leading-relaxed mb-6">
+                    <ul className='list-disc list-inside'>
+                        <li>The team would have shipped a “basic diff” — not a user-trusted diff aligned to IDE mental models</li>
+                        <li>No discovery = no understanding of scannability vs inline patterns</li>
+                        <li>No testing = uncertainty about user expectations</li>
+                        <li>No UX flow mapping = edge cases missed</li>
+                        <li>No metric tracking = no way to measure behaviour change</li>
+                        <li>No workshop = fewer divergent solutions explored</li>
                     </ul>
                 </p>
                 <p className="text-gray-700 leading-relaxed mb-6">My involvement ensured the feature was <span className="font-bold">researched, validated, testable, and measurable</span>.</p>
