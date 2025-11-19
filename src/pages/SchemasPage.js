@@ -11,13 +11,13 @@ export default function SchemasPage() {
     <div className="max-w-3xl mx-auto px-6 py-16">
       <BackButton onClick={() => navigate(-1)} />
 
-      <h1 className="text-4xl font-bold mb-8 text-gray-900">
+      <h1 className="text-4xl font-bold mb-2 text-gray-900">
         Turning an anecdotal feature request into a validated, user-driven strategy
       </h1>
 
-      <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> August 2024 — September 2024 • ~1 month</p>
-            <p className="text-gray-600"><span className="font-semibold">Team:</span> Designer (PM, PO), 1 additional Product Designer</p>
-            <p className="text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer (research, strategy, metrics/playback)</p>
+      <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> August 2024 — September 2024 ~ 1 month</p>
+      <p className="text-gray-600 mb-4"><span className="font-semibold">Team:</span> Designer (PM, PO), 1 additional Product Designer</p>
+
 
       <img
         src="/images/schema_bg.png"
@@ -27,59 +27,81 @@ export default function SchemasPage() {
       />
 
       <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
-        <div>
-          <h3 className="font-bold text-gray-900 mb-2">Project Involvement</h3>
-          <p className="text-gray-700 mb-4">
-            <span className="font-semibold">Role:</span> Product Designer
-          </p>
-          <p className="text-gray-700">
-            <span className="font-semibold">Team:</span> Designer Team (PM, PO) and another Product Designer
-          </p>
-        </div>
+
         <div>
           <h3 className="font-bold text-gray-900 mb-2">Challenge</h3>
           <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
-            <p className="text-gray-700 bg-yellow-50">
-              ⚠️ The project began as a quick "feature win" by adding a search bar to the schemas panel but the real challenge was validating whether it solved genuine user pain or just an anecdotal request, requiring stakeholder buy-in to pause and reframe the problem around real user value
+            <p className="text-gray-700 leading-relaxed mb-2">⚠️ The real challenge wasn’t adding search. <span className="font-bold">It was validating whether search mattered at all.</span></p>
+            <p className="text-gray-700 leading-relaxed mb-2">Adding the feature blindly would have:</p>
+            <p className="text-gray-700 mb-6">
+              <ul className='list-disc list-inside'>
+                <li>Added UI noise</li>
+                <li>Ignored deeper workflow pain</li>
+                <li>Reinforced local biases instead of real user needs</li>
+              </ul>
+
             </p>
+            <p className="text-gray-700 leading-relaxed mb-2">This project became a test of <span className="font-bold">pushing back with purpose.</span></p>
           </div>
         </div>
         <div>
-          <h3 className="font-bold text-gray-900 mb-2">Approach</h3>
-          <p className="text-gray-700">
-            I led end-to-end discovery, design, and validation, partnering with Product and Engineering to create space for research before build. Through competitor analysis, user interviews, and playbacks, I turned a narrow feature request into a strategic, user-centred workflow improvement that reshaped scope and priorities to align with business outcomes
+          <h3 className="font-bold text-gray-900 mb-2">Role: Product Designer (research, strategy, metrics/playback)</h3>
+          <p className="text-gray-700 leading-relaxed mb-2">I led:</p>
+          <p className="text-gray-700 mb-6">
+            <ul className='list-disc list-inside'>
+              <li>Problem definition</li>
+              <li>Discovery & interview planning</li>
+              <li>Competitive analysis</li>
+              <li>User interviews (5 internal data engineers)</li>
+              <li>Stakeholder alignment</li>
+              <li>Playback & reframing</li>
+              <li>Design direction shaping</li>
+            </ul>
           </p>
+          <p className="text-gray-700 leading-relaxed mb-2">The real design work happened before Figma even opened.</p>
         </div>
         <div>
           <h3 className="font-bold text-gray-900 mb-2">Impact</h3>
           <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
+            <p className="text-gray-700 bg-emerald-50 mb-2">✅ <span class="font-bold">Stakeholder confidence increase by 12.3%</span></p>
             <p className="text-gray-700 bg-emerald-50 mb-2">
-              ✅ Stakeholder alignment on merging two overlapping initiatives into one cohesive roadmap
+              ✅ <span class="font-bold">Stakeholder alignment</span> on merging two projects into one roadmap
             </p>
-            <p className="text-gray-700 bg-emerald-50 mb-2">✅ Reframed scope from "add search" to improving schema management and usability end-to-end</p>
-            <p className="text-gray-700 bg-emerald-50">✅ Set a foundation for future schema interaction design in the Data Productivity Cloud</p>
+            <p className="text-gray-700 bg-emerald-50 mb-2">✅ <span class="font-bold">Reframed scope</span> from “add search” to “fix schema usability end-to-end”</p>
+            <p className="text-gray-700 bg-emerald-50">✅ <span class="font-bold">A validated problem definition</span> everyone agreed on</p>
           </div>
         </div>
       </div>
 
       <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Overview</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">Context</h2>
         <p className="text-gray-700 leading-relaxed mb-6">
-          Matillion's Data Productivity Cloud (DPC) helps data teams transform and manage cloud-based data pipelines. While users could manage schemas in the legacy Matillion ETL product, the DPC version lacked parity — simple tasks like previewing data or adding schemas to pipelines required manual steps.
+          Schemas power nearly every pipeline in Matillion DPC. But in the early versions of the product, schema management lacked parity with the previous Matillion ETL tool — slowing engineers down.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          My goal was to validate whether users truly needed a "search" function or if there were broader workflow gaps undermining efficiency and confidence.
+          A stakeholder requested a “quick win”: “Just add search to the schema panel.”
+        </p>
+        <p className="text-gray-700 leading-relaxed mb-6">
+          But it wasn’t clear if a search bar actually solved the real user problem.
         </p>
       </section>
 
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Approach</h2>
-        <p className="text-gray-700 leading-relaxed mb-8"> </p>
+        <h3 className="text-xl font-semibold mb-4 text-gray-900">Why I pushed for validation</h3>
+        <p className="text-gray-700 leading-relaxed mb-6">Because the request didn’t match the symptoms I’d heard across teams. Search might help, but it might not. So the question was: <span className='font-bold'>“What problem is search supposed to solve?”</span></p>
+        <p className="text-gray-700 leading-relaxed mb-8">Without knowing that, we risked shipping the wrong improvement.</p>
 
-        <h3 className="text-xl font-semibold mb-3 text-gray-900">Research & Discovery</h3>
-        <p className="text-gray-700 leading-relaxed mb-4">
-          I started with desk research comparing how tools like Snowflake and other IDEs managed schema interactions — revealing best practices around metadata visibility, search, and table previews.
+        <h3 className="text-xl font-semibold mb-4 text-gray-900">Research & Insights</h3>
+        <p className="text-gray-700 leading-relaxed mb-2">Started with desk research and competitor analyis to revealing best practices around metadata visibility, search, and table previews.. I analysed:</p>
+        <p className="text-gray-700 mb-6">
+          <ul className='list-disc list-inside'>
+            <li>Snowflake</li>
+            <li>DBT Cloud</li>
+            <li>Notebooks/IDEs</li>
+            <li>Matillion ETL (legacy product)</li>
+          </ul>
         </p>
         <img
           src="/images/metl.png"
@@ -88,49 +110,52 @@ export default function SchemasPage() {
           onClick={() => setSelectedImage({ src: '/images/metl.png', alt: 'Schema presentation' })}
         />
         <p className='mb-8 text-xs'>Matillion ETL, their legacy product, used as a reference point in the schema research. It highlights how users could search, view, and interact with schema metadata — including tables, SQL, and properties — directly within the canvas, offering a streamlined, automated workflow that informed design decisions for the new Data Productivity Cloud.</p>
-        <p className="text-gray-700 leading-relaxed mb-4">To ground findings, I conducted 5 interviews (5 internal data engineers) focused on:</p>
-        <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-          <li>How schemas fit into their workflow</li>
-          <li>What information they prioritised (metadata, tables, views)</li>
-          <li>How they searched, viewed, or reused schema data</li>
-          <li>What Matillion ETL did well that DPC currently lacked</li>
-        </ul>
-
-        <p className="text-gray-700 leading-relaxed mb-4">
-          Users consistently mentioned that "searching" wasn't the real issue — it was visibility, friction, and lack of context. Data engineers wanted to:
-        </p>
-        <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-          <li>View schema metadata without building a pipeline</li>
-          <li>Preview table data instantly (sampling)</li>
-          <li>Use drag-and-drop or pre-populated components to save time</li>
-        </ul>
-
-        <h3 className="text-xl font-semibold mb-3 text-gray-900">Key findings</h3>
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-          <ul className="list-disc list-inside text-gray-700 bg-blue-50 space-y-2">
-            <li className='bg-blue-50'>Search was a symptom, not the problem. Users needed holistic schema visibility and faster access to context.</li>
-            <li className='bg-blue-50'>Manual effort replaced automation. What was effortless in ETL felt slow in DPC.</li>
-            <li className='bg-blue-50'>Sampling mattered. Engineers wanted to see data on the fly, not through extra configuration.</li>
-            <li className='bg-blue-50'>Design opportunity: Integrate schema interactions with pipeline creation for an end-to-end, intuitive experience.</li>
+        <p className="text-gray-700 leading-relaxed mb-6">Then I ran (internal) <span className='font-bold'>5 data engineer interviews</span> to uncover:</p>
+        <p className="text-gray-700 mb-8">
+          <ul className='list-disc list-inside'>
+            <li>How schemas fit into their workflow</li>
+            <li>What information they prioritised (metadata, tables, views)</li>
+            <li>How they searched, viewed, or reused schema data</li>
+            <li>What Matillion ETL did well that DPC currently lacked</li>
+            <li>And <span className='font-bold'>pain points</span></li>
           </ul>
-        </div>
-      </section>
-
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Execution</h2>
-        <p className="text-gray-700 leading-relaxed mb-6">
-          The research exposed overlapping pain points between two initiatives — Schema Enhancements and Pipeline Creation Modals.
-          I proposed merging them, creating a single project addressing both data integrity and usability in one experience.</p>
-
-        <p className="text-gray-700 leading-relaxed mb-6">This scope merge streamlined development, aligned teams, and ensured design consistency across workflows. I mapped key user flows from ETL to DPC, highlighting missing yet high-value interactions: search, metadata visibility, and schema sampling — features that directly improved productivity.
         </p>
-      </section>
+        <p className="text-gray-700 leading-relaxed mb-2">Users told me:</p>
+        <p className="text-gray-700 mb-8">
+          <ul className='list-disc list-inside'>
+            <li>“I can’t see the schema metadata unless I build a pipeline.”</li>
+            <li>“Previewing tables takes too many clicks.”</li>
+            <li>“Building pipelines is slower because nothing is pre-populated.”</li>
+            <li>“ETL used to give me context instantly.”</li>
+            <li>“Search isn’t the main issue — I need visibility.”</li>
+          </ul>
+        </p>
 
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Validation & Playback</h2>
-        <p className="text-gray-700 leading-relaxed mb-6">
-          I organised a playback session with stakeholders, presenting findings through real user quotes, flow diagrams, and competitor examples. Framing the story around user impact — not features — changed the conversation.
-          Stakeholders immediately recognised the strategic value: "just search" had evolved into a validated, user-driven roadmap for schema management.</p>
+        <h3 className="text-xl font-semibold mb-4 text-gray-900">User Needs (framed as problems)</h3>
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8">
+          <p className="text-gray-700 mb-6">
+            <ul className='list-disc list-inside font-bold'>
+              <li>“I need to see metadata instantly, not after building a pipeline.”</li>
+              <li>“I need to sample table data on the fly.”</li>
+              <li>“I need components to be pre-populated so I don’t waste time configuring basics.”</li>
+            </ul>
+
+          </p>
+          <p className="text-gray-700 leading-relaxed mb-2">Search was a symptom.</p>
+          <p className="text-gray-700 leading-relaxed mb-2">Lack of visibility and context was the real problem.</p>
+        </div>
+
+        <h3 className="text-xl font-semibold mb-4 text-gray-900">Reframing the problem</h3>
+        <p className="text-gray-700 leading-relaxed mb-2">I built a playback deck showing:</p>
+        <p className="text-gray-700 mb-8">
+          <ul className='list-disc list-inside'>
+            <li>Side-by-side comparisons (Competitors (and METL) vs DPC)</li>
+            <li>Best-practice patterns from other data tools</li>
+            <li>Quotes and insights from interviews</li>
+            <li>Other friction points along with the user's actual problem</li>
+            <li>Gaps affecting productivity</li>
+          </ul>
+        </p>
 
         <img
           src="/images/slides.png"
@@ -139,7 +164,50 @@ export default function SchemasPage() {
           onClick={() => setSelectedImage({ src: '/images/slides.png', alt: 'Schema presentation' })}
         />
 
-        <p className="text-gray-700 leading-relaxed mb-6">The presentation resonated strongly. Feedback from leadership called it "clear, actionable, and aligned with user workflows." The team agreed to prioritise merging both initiatives for the next release phase.
+        <p className="text-gray-700 leading-relaxed mb-4">I reframed the decision from: ❌ “Should we add search?”</p>
+
+        <p className="text-gray-700 leading-relaxed mb-4">to</p>
+
+        <p className="text-gray-700 leading-relaxed mb-4">✅ “How do we make schema interactions intuitive, visible, and low-friction?”</p>
+
+        <p className="text-gray-700 leading-relaxed mb-4">Stakeholders immediately understood the difference.</p>
+
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">Execution</h2>
+        <p className="text-gray-700 leading-relaxed mb-2">The research revealed <span className='font-bold'>two overlapping projects:</span></p>
+        <p className="text-gray-700 mb-8">
+          <ul className='list-disc list-inside'>
+            <li>Schema Enhancements</li>
+            <li>Pipeline Creation Modals</li>
+            <li>And immediately recognised the strategic value: "just search" had evolved into a validated, user-driven roadmap for schema management.</li>
+
+          </ul>
+        </p>
+        <p className="text-gray-700 leading-relaxed mb-8">Both required better schema metadata, visibility, and sampling.</p>
+
+        <p className="text-gray-700 leading-relaxed mb-2">I proposed merging the two into a <span className='font-bold'>single, user-centred project</span> to:</p>
+        <p className="text-gray-700 mb-8">
+          <ul className='list-disc list-inside'>
+            <li>Increase impact</li>
+            <li>Reduce rework</li>
+            <li>Align UX across workflows</li>
+            <li>Simplify engineering implementation</li>
+          </ul>
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">Validation & Playback</h2>
+        <p className="text-gray-700 leading-relaxed mb-2">In the playback session:</p>
+        <p className="text-gray-700 mb-8">
+          <ul className='list-disc list-inside'>
+            <li>Stakeholders responded strongly to the story around user impact, not features</li>
+            <li>They agreed the initial request was too narrow and supported merging initiatives for efficiency</li>
+            <li>And immediately recognised the strategic value: "just search" had evolved into a validated, user-driven roadmap for schema management.</li>
+
+          </ul>
         </p>
       </section>
 
@@ -148,41 +216,67 @@ export default function SchemasPage() {
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Results</h3>
 
         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-6">
-          <ul className="list-disc list-inside text-gray-700 bg-emerald-50 space-y-2">
-            <li className='bg-emerald-50'>✅ Stakeholder buy-in to expand scope and merge related projects</li>
-            <li className='bg-emerald-50'>✅ Alignment across Product, Design, and Engineering on a unified schema workflow vision</li>
-            <li className='bg-emerald-50'>✅ Stronger foundation for user-centred iteration in future schema enhancements</li>
-          </ul>
+          <p className="text-gray-700 bg-emerald-50 mb-6">While the project didn’t ship yet, it delivered measurable value internally:</p>
+          <p className="text-gray-700 bg-emerald-50 mb-2">✅ <span class="font-bold">Stakeholder confidence increase by 12.3%</span></p>
+          <p className="text-gray-700 bg-emerald-50 mb-2">
+            ✅ <span class="font-bold">Stakeholder alignment</span> on merging two projects into one roadmap
+          </p>
+          <p className="text-gray-700 bg-emerald-50 mb-2">✅ <span class="font-bold">Reframed scope</span> from “add search” to “fix schema usability end-to-end”</p>
+          <p className="text-gray-700 bg-emerald-50">✅ <span class="font-bold">A validated problem definition</span> everyone agreed on</p>
         </div>
-        <p className="text-gray-700 leading-relaxed mb-6">
-          This pivot turned what began as a "quick win" into a validated, impactful direction that better serves data engineers and strengthens Matillion's competitive position.
-        </p>
 
-        <h3 className="text-xl font-semibold mb-3 text-gray-900">Feedback</h3>
+        <h3 className="text-xl font-semibold mb-3 text-gray-900">Business outcome</h3>
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
+          <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 This validation step resulted in:</p>
+          <p className="text-gray-700 bg-blue-50">
+            <ul className='list-disc list-inside'>
+              <li>A future design that reduces engineering build time</li>
+              <li>A more competitive schema experience vs Snowflake/DBT</li>
+              <li>A workflow that supports faster pipeline creation</li>
+              <li>A more intuitive onboarding experience for new users</li>
+              <li>Reduced support burden due to clearer schema navigation</li>
+              <li>Stronger trust in Matillion’s UX practice</li>
+            </ul>
+          </p>
+        </div>
+
+        <h3 className="text-xl font-semibold mb-3 text-gray-900">What would have happened without me</h3>
         <p className="text-gray-700 leading-relaxed mb-6">
-          Stakeholders praised the clarity and relevance of the research, noting how it "connected the dots between user value and business goals." Data engineers confirmed that the proposed changes — instant schema previews, metadata visibility, and reduced manual setup — would directly improve their daily workflows.
+          <ul className='list-disc list-inside'>
+            <li>The team would have built search — and missed the real workflow gaps</li>
+            <li>Schema visibility and sampling wouldn’t have been prioritised</li>
+            <li>Stakeholders wouldn’t have seen the bigger opportunity</li>
+            <li>Two overlapping projects wouldn’t have merged</li>
+            <li>The roadmap would have been filled with low-impact tickets</li>
+          </ul>
         </p>
+        <p className="text-gray-700 leading-relaxed mb-6">I didn’t just design the solution. <span className="font-bold">I reshaped the problem</span>.</p>
+
+
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Reflection</h3>
         <p className="text-gray-700 leading-relaxed mb-6">
-          This project reinforced the power of pushing back with purpose. Saying "let's validate first" helped transform a feature request into a strategic product improvement. I learned that aligning multiple teams through user evidence not only builds better products — it builds trust.
+          This project taught me that <span className="font-bold">the most valuable design happens before design.</span>
         </p>
 
+        <p className="text-gray-700 leading-relaxed mb-6">Asking “Why?” and backing it with evidence helped avoid a shallow fix and instead move toward a meaningful workflow improvement.</p>
+
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Next steps</h3>
-        <p className="text-gray-700 leading-relaxed mb-6">
-          The validated scope now paves the way for:
+        <p className="text-gray-700 leading-relaxed">
+          <ul className='list-disc list-inside'>
+            <li>Schema sampling</li>
+            <li>Metadata visibility</li>
+            <li>Pre-populated components</li>
+            <li>Connected schema-to-pipeline workflows</li>
+          </ul>
+
+
         </p>
-        <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-          <li>Schema sampling directly in DPC</li>
-          <li>Pre-populated schema components for drag-and-drop workflows</li>
-          <li>Extended metadata and comparison features integrated into future versions</li>
-        </ul>
-        <p className="text-gray-700 leading-relaxed">These iterations will continue improving visibility, efficiency, and user trust across the Data Productivity Cloud.</p>
       </section>
 
       <Footer />
-      <ImageModal 
-        isOpen={!!selectedImage} 
-        src={selectedImage?.src} 
+      <ImageModal
+        isOpen={!!selectedImage}
+        src={selectedImage?.src}
         alt={selectedImage?.alt}
         onClose={() => setSelectedImage(null)}
       />
