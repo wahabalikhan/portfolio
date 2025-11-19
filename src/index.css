@@ -442,7 +442,17 @@ html.dark .border-yellow-500 {
 }
 
 html.dark .bg-yellow-50 p,
-html.dark .bg-yellow-50 span {
+html.dark .bg-yellow-50 span,
+html.dark .bg-yellow-50 ul,
+html.dark .bg-yellow-50 li {
+  color: #fbbf24 !important;
+}
+
+html.dark .bg-yellow-50 .text-gray-900 {
+  color: #fbbf24 !important;
+}
+
+html.dark .bg-yellow-50 .text-gray-700 {
   color: #fbbf24 !important;
 }
 
@@ -460,7 +470,17 @@ html.dark .border-emerald-500 {
 }
 
 html.dark .bg-emerald-50 p,
-html.dark .bg-emerald-50 span {
+html.dark .bg-emerald-50 span,
+html.dark .bg-emerald-50 ul,
+html.dark .bg-emerald-50 li {
+  color: #86efac !important;
+}
+
+html.dark .bg-emerald-50 .text-gray-900 {
+  color: #86efac !important;
+}
+
+html.dark .bg-emerald-50 .text-gray-700 {
   color: #86efac !important;
 }
 
@@ -478,7 +498,17 @@ html.dark .border-blue-500 {
 }
 
 html.dark .bg-blue-50 p,
-html.dark .bg-blue-50 span {
+html.dark .bg-blue-50 span,
+html.dark .bg-blue-50 ul,
+html.dark .bg-blue-50 li {
+  color: #93c5fd !important;
+}
+
+html.dark .bg-blue-50 .text-gray-900 {
+  color: #93c5fd !important;
+}
+
+html.dark .bg-blue-50 .text-gray-700 {
   color: #93c5fd !important;
 }
 

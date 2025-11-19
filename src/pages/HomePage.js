@@ -205,7 +205,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                       {repo.tech.map((tech, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded-full"
+                          className="tech-pill"
                         >
                           {tech}
                         </span>
