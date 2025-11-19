@@ -15,7 +15,7 @@ export default function GitDiffPage() {
                 How user-centric design improved visibility of user changes
             </h1>
 
-            <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 — March 2025 • ~3 months</p>
+            <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 — March 2025 ~ 3 months</p>
             <p className="text-gray-600"><span className="font-semibold">Team:</span> DataOps (PO, Engineers), 1 additional Product Designer</p>
             <p className="text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer (research, strategy, design, testing, metrics)</p>
 
@@ -29,30 +29,44 @@ export default function GitDiffPage() {
             <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Challenge</h3>
-                    <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
-                        <p className="text-gray-700 bg-yellow-50">
-                            ⚠️ Data engineers struggled to see what changed before committing, creating <span className='font-semibold text-gray-900 bg-yellow-50'>uncertainty</span> and frequent Git resets. The challenge was to <span className='font-semibold text-gray-900 bg-yellow-50'>build trust and visibility</span> into version control workflows without disrupting established habits
+                    <div className="border-l-4 border-yellow-500 p-6 mb-6 bg-yellow-50">
+                        <p className="mb-6" style={{ color: '#374151' }}>
+                            ⚠️ <span className='font-bold' style={{ color: '#374151' }}>Data engineers couldn't see what they were committing leading to resets, rework, and hesitation to adopt Git inside Matillion.</span>
                         </p>
+                        <p style={{ color: '#374151' }}>
+                            The challenge was to <span className='font-bold' style={{ color: '#374151' }}>give users confidence and visibility</span>, without disrupting existing mental models and workflows built around traditional IDEs like VS Code.
+                        </p>
+
                     </div>
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Approach</h3>
-                    <p className="text-gray-700">
-                        I owned the end-to-end process of discovery, design & testing strategy and metric tracking to ensure the success of the feature, and suggest changes for future phases
+                    <p className="text-gray-700 leading-relaxed mb-2">I led the full design process end-to-end:</p>
+                    <p className="text-gray-700 mb-6">
+                        <ul className='list-disc list-inside'>
+                            <li>Discovery planning & user research</li>
+                            <li>Competitive analysis of IDE diff tools</li>
+                            <li>Co-design workshop facilitation</li>
+                            <li>Prototyping and testing</li>
+                            <li>UX delivery, design QA, and analytics setup</li>
+                            <li>Post-launch tracking and iteration planning</li>
+                        </ul>
                     </p>
+                    <p className="text-gray-700 leading-relaxed mb-2">This project touched research, product, engineering alignment, interaction design, and behavioural change.</p>
+
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Impact</h3>
                     <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ 34% increase</span> in Git Committing
+                            <span className=" text-2xl font-bold bg-emerald-50">✅ 34% increase</span> in Git Commits
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ 15% decrease</span> in Git Resets
+                            <span className="text-2xl font-bold bg-emerald-50">✅ 15% decrease</span> in Git Resets
                         </p>
-                        <p className="text-gray-700 bg-emerald-50">as a result of Git Diff and seeing changes before committing
+                        <p className="text-gray-700 bg-emerald-50 mb-0">
+                            <span className=" text-2xl font-bold bg-emerald-50">✅ 100% success rate</span> in usability testing
                         </p>
-
                     </div>
                 </div>
             </div>
@@ -60,22 +74,23 @@ export default function GitDiffPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Overview</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    Matillion is a cloud-native data transformation platform that enables businesses to extract, load, and transform data in modern cloud data warehouses. As a Product Designer on the DataOps team, I worked on improving the Git integration experience within our product, the Data Productivity Cloud.
+                    Matillion’s Data Productivity Cloud helps data engineers build and manage cloud-native data pipelines. Git was already part of the workflow, but users had no way to see what changed before committing. That lack of visibility created uncertainty, mistakes, and frequent Git resets — making version control feel risky.
                 </p>
-
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    I led the design of Git Diff, a new visibility feature within Matillion’s Data Producutivity Cloud that gave data engineers confidence when managing version control. Working within the DataOps team, I shaped the end-to-end experience from discovery and user research through to design, testing, and metric tracking. Git Diff enabled users to see exactly what changed before committing, reducing uncertainty and streamlining collaboration.
+                    Data engineers needed clarity before they could trust the commit process.
                 </p>
             </section>
 
             <section className="mb-12">
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Design Goals</h3>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                    <li>Add real-time capability for changed pipelines</li>
-                    <li>Maintain familiarity for data engineers already comfortable with Git workflows</li>
-                    <li>Increase confidence through better visibility</li>
-                </ul>
+                <p className="text-gray-700 mb-6">
+                    <ul className='list-disc list-inside'>
+                        <li>Add real-time capability for changed pipelines</li>
+                        <li>Maintain familiarity for data engineers already comfortable with Git workflows</li>
+                        <li>Increase confidence through better visibility</li>
+                    </ul>
+                </p>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
                     <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 Value to business and user</p>
                     <p className="text-gray-700 bg-blue-50">
@@ -86,17 +101,16 @@ export default function GitDiffPage() {
 
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Approach</h2>
-                <p className="text-gray-700 leading-relaxed mb-8">I led discovery, design, and testing across the full lifecycle — from competitor analysis and user interviews to prototyping and rollout. I defined the research plan, facilitated ideation workshops, and set up ongoing metrics to track adoption and confidence post-launch.</p>
-
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Research & Discovery</h3>
-                <p className="text-gray-700 leading-relaxed mb-4">
-                    I ran competitive analysis on leading IDEs, user interviews on workflow pain points, and a cross-functional workshop to co-create solutions. This revealed that:
+                <p className="text-gray-700 leading-relaxed mb-2">I conducted:</p>
+                <p className="text-gray-700 mb-6">
+                    <ul className='list-disc list-inside'>
+                        <li>Competitive analysis of Git diff patterns in VS Code, GitHub Desktop, JetBrains</li>
+                        <li>5 internal data engineer interviews (representing the full DataOps user spectrum)</li>
+                        <li>A cross-functional workshop to expand possible diff formats and visualisation approaches</li>
+                        <li>Workflow mapping to understand when diffs are needed and why</li>
+                    </ul>
                 </p>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                    <li>users needed side-by-side comparisons</li>
-                    <li>clearer change indicators</li>
-                    <li>familiar Git experience tailored to data workflows</li>
-                </ul>
 
                 <img
                     src="/images/diff_research_1.png"
@@ -115,43 +129,70 @@ export default function GitDiffPage() {
                 />
                 <p className='mb-8 text-xs'>A collaborative workshop that moved from discovery and scoping through How Might We framing, two rounds of ideation, and group voting to select iterations to progress into design.</p>
 
+                <img
+                    src="/images/diff_flow.png"
+                    alt="Git Diff flow"
+                    className="w-full rounded-lg mt-4 mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/diff_flow.png', alt: 'Git Diff flow' })}
+                />
+                <p className='mb-8 text-xs'>The flow illustrates how Git Diff activates within a branch showing the relationship between local (uncommitted) and remote (committed) changes. It defines when users can trigger a diff, view comparisons, or see an empty state, ensuring clarity and control throughout the workflow.</p>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Key findings</h3>
+
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">Key User Needs (framed as problems)</h3>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-                    <ul className="list-disc list-inside text-gray-700 bg-blue-50 space-y-2">
-                        <li className='bg-blue-50'>Highlighting differences (added, changed, deleted) clearly through text format</li>
-                        <li className='bg-blue-50'>Previous vs current commit comparison</li>
-                        <li className='bg-blue-50'>Accept/reject differences when merging files</li>
+                    
+                <p className="text-gray-700 mb-6">
+                    <ul className='list-disc list-inside font-bold'>
+                        <li>“I need to easily understand what changed between local and committed versions.”</li>
+                        <li>“I need a scannable, side-by-side view because inline diffing hides too much context.”</li>
+                        <li>“I need clear indicators of additions and deletions.”</li>
+                        <li>“I need control — show me all files, or only the ones that matter.”</li>
                     </ul>
+                    
+                </p>
+                <p className="text-gray-700 leading-relaxed mb-2">This reframing turned features into actionable problems to solve.</p>
                 </div>
             </section>
 
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Ideation & Design</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    We explored two concepts: inline visibility and side-by-side comparison.
-                    <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 mt-4">
-                        <li>Inline visibility</li>
-                        <li>side-by-side comparison</li>
+                <p className="text-gray-700 leading-relaxed mb-6">Using insights from the workshop, I explored two directions:</p>
+                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept A — Inline Diff</p>
+                <p className="text-gray-700 mb-6">
+                    <ul className='list-disc list-inside'>
+                        <li>Lightweight</li>
+                        <li>Familiar to users who used to Git CLI tools</li>
+                        <li>Less visual clarity</li>
                     </ul>
-                    Testing showed users preferred the latter for clarity and familiarity, so I refined the design into an interactive diff view with colour-coded indicators and contextual filters. The result was a transparent, scannable experience that built user confidence.</p>
-
-                <p className="text-gray-700 leading-relaxed mb-6">From early flows to high-fidelity prototypes, I focused on making diffs scannable and trustworthy by introducing visual indicators to help users understand what changed and why.
                 </p>
-
-                <img
-                    src="/images/diff_flow.png"
-                    alt="Git Diff flow"
-                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setSelectedImage({ src: '/images/diff_flow.png', alt: 'Git Diff flow' })}
-                />
-                <p className='mb-8 text-xs'>The flow illustrates how Git Diff activates within a branch showing the relationship between local (uncommitted) and remote (committed) changes. It defines when users can trigger a diff, view comparisons, or see an empty state, ensuring clarity and control throughout the workflow.</p>
+                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept B — Side-by-Side Diff (IDE-inspired)</p>
+                <p className="text-gray-700 mb-6">
+                    <ul className='list-disc list-inside'>
+                        <li>Mirrors IDE mental model</li>
+                        <li>Clearer structure, better scannability</li>
+                        <li>Stronger visual separation</li>
+                    </ul>
+                </p>
+                <p className="text-gray-700 leading-relaxed mb-2">A/B testing with internal data engineers confirmed <span className="font-bold">Concept B</span> was more intuitive and trustworthy, so we developed it further through:</p>
+                <p className="text-gray-700 mb-6">
+                    <ul className='list-disc list-inside'>
+                        <li>An interactive diff view with contextual filters</li>
+                        <li>A transparent, scannable experience that built user confidence</li>
+                        <li>Introducing visual indicators to help users understand what changed and why</li>
+                    </ul>
+                </p>
             </section>
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Execution</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    I partnered with engineering to design and deliver Git Diff as a scalable, technically feasible feature. Through iterative builds and design QA, we balanced performance with clarity, ensuring the final implementation matched the intended UX. Regular check-ins with Product helped prioritise and sequence improvements for rollout.
+                <p className="text-gray-700 leading-relaxed mb-2">I partnered closely with engineering to:</p>
+                <p className="text-gray-700 mb-6">
+                    <ul className='list-disc list-inside'>
+                        <li>Deliver Git Diff as a scalable, technically feasible feature</li>
+                        <li>Balanced performance with clarity</li>
+                        <li>Ensure the final implementation matched the intended UX through regular QA checks</li>
+                    </ul>
                 </p>
+                <p className="text-gray-700 leading-relaxed mb-6">Regular check-ins with Product helped prioritise and sequence improvements for rollout.</p>
 
                 <img
                     src="/images/diff_screen.png"
@@ -165,7 +206,22 @@ export default function GitDiffPage() {
 
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Validation & Testing</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">In usability testing with five data engineers, <span className='font-semibold text-gray-900'>100% completed the task successfully</span> and rated the experience <span className='font-semibold text-gray-900'>“easy” or “very easy.” </span> Feedback confirmed that the feature was clear, discoverable, and aligned with their mental model of Git workflows.
+                <p className="text-gray-700 leading-relaxed mb-2">Usability testing with five data engineers:</p>
+                <p className="text-gray-700 mb-6">
+                    <ul className='list-disc list-inside'>
+                        <li><span className='font-bold'>100% task success</span></li>
+                        <li>All participants rated the flow <span className='font-bold'>“easy” or “very easy”</span></li>
+                        <li>Zero misclicks or “what am I looking at?” moments”</li>
+                    </ul>
+                </p>
+
+                <p className="text-gray-700 leading-relaxed mb-2">Participants described the experience as:</p>
+                <p className="text-gray-700">
+                    <ul className='list-disc list-inside mb-6'>
+                        <li>“Clear”</li>
+                        <li>“Intuitive”</li>
+                        <li>“Exactly what we needed”</li>
+                    </ul>
                 </p>
                 <img
                     src="/images/testing1.png"
@@ -191,16 +247,31 @@ export default function GitDiffPage() {
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Outcomes & Impact</h2>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Results</h3>
 
-                <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-6">
-                    <ul className="list-inside text-gray-700 bg-emerald-50 space-y-2">
-                        <li className='bg-emerald-50'>📈 +34% commits</li>
-                        <li className='bg-emerald-50'>🧩 −15% Git resets</li>
-                        <li className='bg-emerald-50'>✅ 100% success rate in usability testing</li>
-                    </ul>
+                <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-3">
+                    <p className="text-gray-700 bg-emerald-50 mb-2">
+                        <span className=" text-2xl font-bold bg-emerald-50">✅ 34% increase</span> in Git Commits
+                    </p>
+                    <p className="text-gray-700 bg-emerald-50 mb-2">
+                        <span className="text-2xl font-bold bg-emerald-50">✅ 15% decrease</span> in Git Resets
+                    </p>
+                    <p className="text-gray-700 bg-emerald-50 mb-0">
+                        <span className=" text-2xl font-bold bg-emerald-50">✅ 100% success rate</span> in usability testing
+                    </p>
                 </div>
                 <p className="text-gray-700 leading-relaxed mb-6">
                     Git Diff improved confidence, reduced errors, and strengthened collaboration across engineering teams.
                 </p>
+
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">Business outcome</h3>
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
+                    <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 Improved Git workflows increased overall platform trust, a key driver of:</p>
+                    <p className="text-gray-700 bg-blue-50">
+                        <ul className='list-disc list-inside'>
+                            <li>Lowered cognitive load on engineering teams</li>
+                            <li>Fewer support tickets related to version control</li>
+                        </ul>
+                    </p>
+                </div>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">But here’s the real so what?</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
@@ -211,6 +282,8 @@ export default function GitDiffPage() {
                         <li>Product’s perception improved: Matillion felt more like an IDE they could rely on, not just a data tool</li>
                     </ul>
                 </p>
+                <p className="text-gray-700 leading-relaxed mb-6">My involvement ensured the feature was <span className="font-bold">researched, validated, testable, and measurable</span>.</p>
+
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Reflection</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
                     This project reinforced a core principle for me: <span className="font-semibold">Clarity creates confidence. And confidence drives adoption.</span>
@@ -229,11 +302,11 @@ export default function GitDiffPage() {
                 </p>
             </section>
             <Footer />
-            <ImageModal 
-              isOpen={!!selectedImage} 
-              src={selectedImage?.src} 
-              alt={selectedImage?.alt}
-              onClose={() => setSelectedImage(null)}
+            <ImageModal
+                isOpen={!!selectedImage}
+                src={selectedImage?.src}
+                alt={selectedImage?.alt}
+                onClose={() => setSelectedImage(null)}
             />
         </div>
     );

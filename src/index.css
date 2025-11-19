@@ -618,3 +618,31 @@ html.dark .image-modal-close:hover {
     transform: scale(1);
   }
 }
+
+.bg-yellow-50 p {
+  color: #374151 !important;
+}
+
+.bg-yellow-50 span {
+  color: #111827 !important;
+}
+
+.bg-emerald-50 p,
+.bg-emerald-50 ul,
+.bg-emerald-50 li {
+  color: #374151 !important;
+}
+
+.bg-emerald-50 span {
+  color: #374151 !important;
+}
+
+.bg-blue-50 p,
+.bg-blue-50 ul,
+.bg-blue-50 li {
+  color: #374151 !important;
+}
+
+.bg-blue-50 span {
+  color: #374151 !important;
+}

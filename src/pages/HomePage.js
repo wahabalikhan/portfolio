@@ -25,16 +25,16 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
 
       <div className="text-md text-gray-700 space-y-2 mb-6">
         <p className="font-bold">Other things about me:</p>
-        <ul className="space-y-1">
-          <li>• Nielsen Norman Group (NN/g) UX Certified (ID: 1081116)<img 
+        <ul className="space-y-1 list-disc list-inside">
+          <li>Nielsen Norman Group (NN/g) UX Certified (ID: 1081116)<img 
         src="/images/nng2.png" 
         alt="Ceritification"
         className="w-10 h-4 inline-block pl-2"
       /></li>
-      <li>• Design @ Matillion <span className="inline-flex items-center gap-2 align-middle">
+      <li>Design @ Matillion <span className="inline-flex items-center gap-2 align-middle">
           <img src="/images/matillion-logo.svg" alt="Matillion" className="w-6 h-6 rounded inline-block" />
         </span></li>
-          <li>• Metrics-driven 📊</li>
+          <li>Metrics-driven 📊</li>
         </ul>
       </div>
 
