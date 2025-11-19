@@ -15,7 +15,9 @@ export default function SchemasPage() {
         Turning an anecdotal feature request into a validated, user-driven strategy
       </h1>
 
-      <p className="text-gray-600 mb-4">August 2024 — September 2024 • ~1 month</p>
+      <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> August 2024 — September 2024 • ~1 month</p>
+            <p className="text-gray-600"><span className="font-semibold">Team:</span> Designer (PM, PO), 1 additional Product Designer</p>
+            <p className="text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer (research, strategy, metrics/playback)</p>
 
       <img
         src="/images/schema_bg.png"
