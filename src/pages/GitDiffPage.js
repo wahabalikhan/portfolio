@@ -15,7 +15,7 @@ export default function GitDiffPage() {
                 How user-centric design improved visibility of user changes
             </h1>
 
-            <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 — March 2025 ~ 3 months</p>
+            <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 - March 2025 ~ 3 months</p>
             <p className="text-gray-600 mb-4"><span className="font-semibold">Team:</span> DataOps (PO, Engineers), 1 additional Product Designer</p>
 
             <img
@@ -73,7 +73,7 @@ export default function GitDiffPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Context</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    Matillion’s Data Productivity Cloud helps data engineers build and manage cloud-native data pipelines. Git was already part of the workflow, but users had no way to see what changed before committing. That lack of visibility created uncertainty, mistakes, and frequent Git resets — making version control feel risky.
+                    Matillion’s Data Productivity Cloud helps data engineers build and manage cloud-native data pipelines. Git was already part of the workflow, but users had no way to see what changed before committing. That lack of visibility created uncertainty, mistakes, and frequent Git resets, making version control feel risky.
                 </p>
                 <p className="text-gray-700 leading-relaxed mb-6">
                     Data engineers needed clarity before they could trust the commit process.
@@ -105,7 +105,8 @@ export default function GitDiffPage() {
                 <p className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Competitive analysis of Git diff patterns in VS Code, GitHub Desktop, JetBrains</li>
-                        <li>5 internal data engineer interviews (representing the full DataOps user spectrum)</li>
+                        <li><span className='font-bold'>
+                            5 internal data engineer interviews</span> (representing the full DataOps user spectrum)</li>
                         <li>A cross-functional workshop to expand possible diff formats and visualisation approaches</li>
                         <li>Workflow mapping to understand when diffs are needed and why</li>
                     </ul>
@@ -145,7 +146,7 @@ export default function GitDiffPage() {
                         <li>“I need to easily understand what changed between local and committed versions.”</li>
                         <li>“I need a scannable, side-by-side view because inline diffing hides too much context.”</li>
                         <li>“I need clear indicators of additions and deletions.”</li>
-                        <li>“I need control — show me all files, or only the ones that matter.”</li>
+                        <li>“I need control. Show me all files, or only the ones that matter.”</li>
                     </ul>
                     
                 </p>
@@ -156,7 +157,7 @@ export default function GitDiffPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Ideation & Design</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">Using insights from the workshop, I explored two directions:</p>
-                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept A — Inline Diff</p>
+                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept A - Inline Diff</p>
                 <p className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Lightweight</li>
@@ -164,7 +165,7 @@ export default function GitDiffPage() {
                         <li>Less visual clarity</li>
                     </ul>
                 </p>
-                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept B — Side-by-Side Diff (IDE-inspired)</p>
+                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept B - Side-by-Side Diff (IDE-inspired)</p>
                 <p className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Mirrors IDE mental model</li>
@@ -285,7 +286,7 @@ export default function GitDiffPage() {
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">What would have happened without me</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
                     <ul className='list-disc list-inside'>
-                        <li>The team would have shipped a “basic diff” — not a user-trusted diff aligned to IDE mental models</li>
+                        <li>The team would have shipped a “basic diff”, not a user-trusted diff aligned to IDE mental models</li>
                         <li>No discovery = no understanding of scannability vs inline patterns</li>
                         <li>No testing = uncertainty about user expectations</li>
                         <li>No UX flow mapping = edge cases missed</li>
@@ -300,7 +301,7 @@ export default function GitDiffPage() {
                     This project reinforced a core principle for me: <span className="font-semibold">Clarity creates confidence. And confidence drives adoption.</span>
                 </p>
 
-                <p className="text-gray-700 leading-relaxed mb-6">I also learned the value of shaping not just UI, but behaviour — supporting engineers in shifting to integrated version control workflows with less friction.</p>
+                <p className="text-gray-700 leading-relaxed mb-6">I also learned the value of shaping not just UI, but behaviour supporting engineers in shifting to integrated version control workflows with less friction.</p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Next steps</h3>
                 <p className="text-gray-700 leading-relaxed">
