@@ -15,7 +15,7 @@ export default function SchemasPage() {
         Turning an anecdotal feature request into a validated, user-driven strategy
       </h1>
 
-      <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> August 2024 — September 2024 ~ 1 month</p>
+      <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> August 2024 - September 2024 ~ 1 month</p>
       <p className="text-gray-600 mb-4"><span className="font-semibold">Team:</span> Designer (PM, PO), 1 additional Product Designer</p>
 
 
@@ -76,7 +76,7 @@ export default function SchemasPage() {
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Context</h2>
         <p className="text-gray-700 leading-relaxed mb-6">
-          Schemas power nearly every pipeline in Matillion DPC. But in the early versions of the product, schema management lacked parity with the previous Matillion ETL tool — slowing engineers down.
+          Schemas power nearly every pipeline in Matillion DPC. But in the early versions of the product, schema management lacked parity with the previous Matillion ETL tool, slowing engineers down.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
@@ -94,7 +94,7 @@ export default function SchemasPage() {
         <p className="text-gray-700 leading-relaxed mb-8">Without knowing that, we risked shipping the wrong improvement.</p>
 
         <h3 className="text-xl font-semibold mb-4 text-gray-900">Research & Insights</h3>
-        <p className="text-gray-700 leading-relaxed mb-2">Started with desk research and competitor analyis to revealing best practices around metadata visibility, search, and table previews.. I analysed:</p>
+        <p className="text-gray-700 leading-relaxed mb-2">Started with desk research and competitor analyis to revealing best practices around metadata visibility, search, and table previews. I analysed:</p>
         <p className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li>Snowflake</li>
@@ -127,7 +127,7 @@ export default function SchemasPage() {
             <li>“Previewing tables takes too many clicks.”</li>
             <li>“Building pipelines is slower because nothing is pre-populated.”</li>
             <li>“ETL used to give me context instantly.”</li>
-            <li>“Search isn’t the main issue — I need visibility.”</li>
+            <li>“Search isn’t the main issue. I need visibility.”</li>
           </ul>
         </p>
 
@@ -243,7 +243,7 @@ export default function SchemasPage() {
         <h3 className="text-xl font-semibold mb-3 text-gray-900">What would have happened without me</h3>
         <p className="text-gray-700 leading-relaxed mb-6">
           <ul className='list-disc list-inside'>
-            <li>The team would have built search — and missed the real workflow gaps</li>
+            <li>The team would have built search, and missed the real workflow gaps</li>
             <li>Schema visibility and sampling wouldn’t have been prioritised</li>
             <li>Stakeholders wouldn’t have seen the bigger opportunity</li>
             <li>Two overlapping projects wouldn’t have merged</li>
