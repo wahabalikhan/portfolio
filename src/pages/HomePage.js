@@ -20,7 +20,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
 
         <div>
           <h1 className="text-3xl font-bold mb-2 text-gray-900">
-            I design products. Then I ship them.
+            I design products. Then I help ship them.
           </h1>
 
           <p className="text-md text-gray-700 leading-relaxed mb-3">
