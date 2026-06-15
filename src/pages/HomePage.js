@@ -9,50 +9,43 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
-      <img 
-        src="/images/profile.png" 
-        alt="Wahab"
-        className="w-24 h-24 rounded-full mb-6 object-cover"
-      />
-      
-      <h1 className="text-4xl font-bold mb-4 text-gray-900">
-        Hey! I'm Wahab 👋 (portfolio WIP as we speak!)
-      </h1>
-      
-      <p className="text-md text-gray-700 mb-6 leading-relaxed">
-        <span class="font-bold">Product Designer</span> & <span class="font-bold">Vibe Coder</span> with a background in <span class="font-bold">BSc Computer Science</span>.
-      </p>
+      <div className="flex items-start gap-4 mb-6">
+        <img
+          src="/images/profile.png"
+          alt="Wahab"
+          className="w-24 h-24 rounded-full object-cover flex-shrink-0"
+        />
 
-      <div className="text-md text-gray-700 space-y-2 mb-6">
-        <p className="font-bold">Other things about me:</p>
-        <ul className="space-y-1 list-disc list-inside">
-          <li>Nielsen Norman Group (NN/g) UX Certified (ID: 1081116)<img 
-        src="/images/nng2.png" 
-        alt="Ceritification"
-        className="w-10 h-4 inline-block pl-2"
-      /></li>
-      <li>Design @ Matillion <span className="inline-flex items-center gap-2 align-middle">
-          <img src="/images/matillion-logo.svg" alt="Matillion" className="w-6 h-6 rounded inline-block" />
-        </span></li>
-          <li>Metrics-driven 📊</li>
-        </ul>
-      </div>
+        <div>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900">
+            Hey! I'm Wahab 👋
+          </h1>
 
-      <div className="flex gap-4 items-center">
-        <a 
-          href="https://www.linkedin.com/in/wahabalikhan/" 
-          target="_blank"
-          rel="noopener noreferrer"
-          className="link-text text-blue-600 dark:text-blue-400 inline-flex items-center gap-1"
-        >
-          <b>LinkedIn ↗</b>
-        </a>
-        <a 
-          href="mailto:wahab-ali-khan@hotmail.com"
-          className="link-text text-blue-600 dark:text-blue-400 inline-flex items-center gap-1"
-        >
-          <b>Contact ↗</b>
-        </a>
+          <p className="text-md text-gray-700 leading-relaxed">
+            <span className="font-bold">Product Designer</span> • <span className="font-bold">Vibe Coder</span> • <span className="font-bold">BSc Computer Science</span> • Nielsen Norman Group (NN/g) UX Certified (ID: 1081116)<img
+              src="/images/nng2.png"
+              alt="Certification"
+              className="w-10 h-4 inline-block pl-1"
+            /> • Metrics-driven 📊
+          </p>
+
+          <div className="flex gap-4 items-center mt-3">
+            <a
+              href="https://www.linkedin.com/in/wahabalikhan/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-text text-blue-600 dark:text-blue-400 inline-flex items-center gap-1"
+            >
+              <b>LinkedIn ↗</b>
+            </a>
+            <a
+              href="mailto:wahab-ali-khan@hotmail.com"
+              className="link-text text-blue-600 dark:text-blue-400 inline-flex items-center gap-1"
+            >
+              <b>Contact ↗</b>
+            </a>
+          </div>
+        </div>
       </div>
 
       <div className="mt-10 mb-10">
@@ -102,10 +95,10 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
             {[
               {
                 id: 'ai-workflow',
-                title: 'The Designer Who Ships: Building a Closer-to-Code Workflow with AI',
+                title: 'The Designer Who Ships Code',
                 description: <>A detailed look at how I rebuilt my day-to-day design workflow around AI tools, turning live product pages into editable Figma files, building live prototypes for faster feedback, and working closer to the codebase than ever before.</>,
-                logo_src: '/images/profile.png',
-                company: 'Personal Project',
+                logo_src: '/images/adverity.jpg',
+                company: 'Adverity',
                 bg_src: '/images/ai-workflow-hero.png',
                 link: '/ai-workflow',
               },
@@ -120,6 +113,15 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                 link: '/git-diff',
               },
               {
+                id: 'design-system',
+                title: 'From Framework to Design System',
+                description: <><span className="font-bold">36.1% reduction in design task completion time</span>, achieved by building Matillion's ETL design system from scratch - components, patterns, and documentation - while embedding UX practice into how the engineering team worked.</>,
+                logo_src: '/images/matillion-logo.svg',
+                company: 'Matillion',
+                bg_src: '/images/ds.png',
+                link: '/design-system',
+              },
+              {
                 id: 'schemas',
                 title: 'Turning an anecdotal feature request into a validated, user-driven strategy',
                 description: <>Securing stakeholder buy-in to validate a time-sensitive 'quick-win' request for with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. <span className="font-bold">Increased stakeholder confidence by 12.3%</span></>,
@@ -127,16 +129,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                 company: 'Matillion',
                 bg_src: '/images/schema_bg.png',
                 link: '/schemas',
-              },
-              {
-                id: 'design-system',
-                title: 'Bridging gaps between UX x Eng through a Design System',
-                description: <><span className="font-bold">36.1% design task speed increase </span> through building and maintaining the 'ETL Design System' that bridged gaps and fostered a UX culture between teams</>,
-                logo_src: '/images/matillion-logo.svg',
-                company: 'Matillion',
-                bg_src: '/images/ds.png',
-                link: '/design-system',
-              },
+              }
             ].map((study) => (
               <Link
                 key={study.id}
