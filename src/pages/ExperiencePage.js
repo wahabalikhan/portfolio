@@ -38,6 +38,7 @@ const testimonials = [
     name: 'Craig Barron',
     role: 'Experience Design Leader (ex-Matillion, hired and managed Wahab)',
     link: 'https://linkedin.com/in/craigbarronux',
+    avatar: '/images/craig.jpeg',
   },
   {
     highlight: 'An exceptional product designer. His expertise in tackling complex design areas, such as variables and schemas, is invaluable.',
@@ -45,6 +46,7 @@ const testimonials = [
     name: 'Adam Males',
     role: 'Design Leader, building AI-native B2B products (ex-Matillion, managed Wahab directly)',
     link: 'https://linkedin.com/in/adam-males',
+    avatar: '/images/adam.jpeg',
   },
   {
     highlight: 'I was particularly impressed by his initiative in developing a design system for one of our products that lacked one — demonstrating strategic thinking and a great eye for process improvement.',
@@ -52,6 +54,7 @@ const testimonials = [
     name: 'José Viso',
     role: 'Staff Product Designer at Snowplow (senior colleague at Matillion)',
     link: 'https://linkedin.com/in/joseviso',
+    avatar: '/images/jose.jpeg',
   },
 ];
 
@@ -99,9 +102,16 @@ export default function ExperiencePage() {
           <div key={t.name}>
             <p className="text-gray-900 font-semibold italic mb-3">"{t.highlight}"</p>
             <p className="text-gray-700 leading-relaxed mb-3">{t.quote}</p>
-            <p className="text-gray-900 font-semibold">
-              {t.name} <span className="text-gray-500 font-normal">— {t.role}</span>
-            </p>
+            <div className="flex items-center gap-3 mb-2">
+              <img
+                src={t.avatar}
+                alt={t.name}
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+              />
+              <p className="text-gray-900 font-semibold">
+                {t.name} <span className="text-gray-500 font-normal">— {t.role}</span>
+              </p>
+            </div>
             <a
               href={t.link}
               target="_blank"
