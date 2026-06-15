@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <!-- Drop shadow via offset duplicate -->
+  <path d="M4 2 L24 13 L15.5 15.5 L12 24 Z"
+        fill="rgba(0,0,0,0.22)" transform="translate(1.5,1.5)"/>
+  <!-- White sticker border -->
+  <path d="M4 2 L24 13 L15.5 15.5 L12 24 Z"
+        fill="white" stroke="white" stroke-width="3.5"
+        stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Dark charcoal fill -->
+  <path d="M4 2 L24 13 L15.5 15.5 L12 24 Z"
+        fill="#1c1c1c"/>
+</svg>

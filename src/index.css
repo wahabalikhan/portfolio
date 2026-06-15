@@ -66,9 +66,9 @@ a:hover,
   pointer-events: auto !important;
 }
 
-/* Force cursor on body */
+/* Figma-style custom cursor for the user's own session */
 body {
-  cursor: auto !important;
+  cursor: url('/figma-cursor.svg') 4 2, default;
 }
 
 /* Dark mode text colors */
