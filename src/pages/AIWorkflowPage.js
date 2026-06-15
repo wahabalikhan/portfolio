@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function AIWorkflowPage() {
     const navigate = useNavigate();
     const [selectedImage, setSelectedImage] = useState(null);
+    usePageTitle('The Designer Who Ships Code');
     return (
         <div className="max-w-3xl mx-auto px-6 py-16">
             <BackButton onClick={() => navigate(-1)} />

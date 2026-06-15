@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import { blogPosts } from '../data/blogPosts';
 import Footer from '../components/Footer';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function BuildingPortfolioPage() {
   const navigate = useNavigate();
+  usePageTitle('Building my portfolio');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <BackButton onClick={() => navigate(-1)} />

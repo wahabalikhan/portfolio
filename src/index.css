@@ -198,6 +198,28 @@ html.dark .hover\:border-gray-400:hover {
   border-color: #4b5563 !important;
 }
 
+/* Nav Brand Styling */
+.nav-brand-container {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  height: 2.5rem;
+}
+
+/* Page Nav Styling */
+.page-nav-container {
+  position: fixed;
+  top: 1.5rem;
+  right: 5.5rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  height: 2.5rem;
+}
+
 /* Theme Toggle Styling */
 .theme-toggle-container {
   position: fixed;
