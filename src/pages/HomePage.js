@@ -2,15 +2,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
+import { devProjectMeta, defaultDevProjectMeta } from '../data/devProjects';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
+import CommentPins from '../components/CommentPins';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
     usePageTitle();
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 py-16 relative">
+      <CommentPins page="home" />
       <div className="flex items-stretch gap-4 mb-6">
         <img
           src="/images/profile.png"
@@ -183,52 +186,61 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               </div>
             )}
 
-            {!loading && !error && repos.map((repo) => (
-              <a
-                key={repo.id}
-                href={repo.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="dev-tile block group"
-              >
-                <div className="mb-4 overflow-hidden rounded-lg bg-gray-50 p-8 border border-gray-200 hover:border-gray-400 transition-all">
-                  <div className="flex items-start justify-between mb-3">
-                  </div>
+            {!loading && !error && repos.map((repo) => {
+              const meta = devProjectMeta[repo.name] || defaultDevProjectMeta;
+              const Icon = meta.icon;
+              const tech = meta.tech || repo.tech;
+              return (
+                <a
+                  key={repo.id}
+                  href={repo.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="dev-tile block group"
+                >
+                  <div className="mb-4 overflow-hidden rounded-lg bg-gray-50 p-6 border border-gray-200 hover:border-gray-400 transition-all">
+                    <div className="flex items-start gap-4">
+                      <div className={`icon-tile icon-tile-${meta.accent}`}>
+                        <Icon size={22} stroke={1.75} />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-blue-600 transition-colors">
+                          {meta.title || repo.title} ↗
+                        </h3>
 
-                  <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
-                    {repo.title} ↗
-                  </h3>
-                  
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    {repo.description}
-                  </p>
-                  
-                  {repo.tech.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {repo.tech.map((tech, index) => (
-                        <span
-                          key={index}
-                          className="tech-pill"
-                        >
-                          {tech}
-                        </span>
-                      ))}
+                        <p className="text-gray-700 leading-relaxed mb-3">
+                          {meta.description || repo.description}
+                        </p>
+
+                        {tech.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {tech.map((t, index) => (
+                              <span
+                                key={index}
+                                className={`tech-pill tech-pill-${meta.accent}`}
+                              >
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex gap-4 items-center">
+                          <span className="text-blue-600 inline-flex items-center gap-1 link-text">
+                            View on GitHub →
+                          </span>
+                          {repo.demo && (
+                            <span className="text-blue-600 inline-flex items-center gap-1 link-text">
+                              Live Demo →
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  )}
-
-                  <div className="flex gap-4 items-center">
-                    <span className="text-blue-600 inline-flex items-center gap-1 link-text">
-                      View on GitHub →
-                    </span>
-                    {repo.demo && (
-                      <span className="text-blue-600 inline-flex items-center gap-1 link-text">
-                        Live Demo →
-                      </span>
-                    )}
                   </div>
-                </div>
-              </a>
-            ))}
+                </a>
+              );
+            })}
           </div>
         )}
 
