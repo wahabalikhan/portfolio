@@ -56,10 +56,14 @@ export default function App() {
         }}
       >
         <ScrollToTop />
-        <NavBrand />
-        <PageNav />
-        <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-        
+        <div className="top-nav-bar">
+          <NavBrand />
+          <div className="flex items-center gap-6">
+            <PageNav />
+            <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+          </div>
+        </div>
+
         <Routes>
           <Route path="/" element={<HomePage activeTab={activeTab} setActiveTab={setActiveTab} />} />
           <Route path="/ai-workflow" element={<AIWorkflowPage />} />
