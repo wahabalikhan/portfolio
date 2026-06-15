@@ -101,27 +101,39 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
           <div className="space-y-12">
             {[
               {
+                id: 'ai-workflow',
+                title: 'The Designer Who Ships: Building a Closer-to-Code Workflow with AI',
+                description: <>A detailed look at how I rebuilt my day-to-day design workflow around AI tools, turning live product pages into editable Figma files, building live prototypes for faster feedback, and working closer to the codebase than ever before.</>,
+                logo_src: '/images/profile.png',
+                company: 'Personal Project',
+                bg_src: '/images/ai-workflow-hero.png',
+                link: '/ai-workflow',
+              },
+              {
                 id: 'git-diff',
                 title: 'How user-centric design improved visibility of user changes',
                 description: <>Introduced the Git Diff experience around real user needs, streamlining how data engineers review and commit changes to improve clarity, reduce errors, and build trust.
-The result: <span className="font-bold">34% more commits</span> and <span className="font-bold">15% fewer resets</span>.</>, 
+The result: <span className="font-bold">34% more commits</span> and <span className="font-bold">15% fewer resets</span>.</>,
                 logo_src: '/images/matillion-logo.svg',
+                company: 'Matillion',
                 bg_src: '/images/matillion-bg.png',
                 link: '/git-diff',
               },
               {
                 id: 'schemas',
                 title: 'Turning an anecdotal feature request into a validated, user-driven strategy',
-                description: <>Securing stakeholder buy-in to validate a time-sensitive 'quick-win' request for with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. <span className="font-bold">Increased stakeholder confidence by 12.3%</span></>, 
+                description: <>Securing stakeholder buy-in to validate a time-sensitive 'quick-win' request for with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. <span className="font-bold">Increased stakeholder confidence by 12.3%</span></>,
                 logo_src: '/images/matillion-logo.svg',
+                company: 'Matillion',
                 bg_src: '/images/schema_bg.png',
                 link: '/schemas',
               },
               {
                 id: 'design-system',
                 title: 'Bridging gaps between UX x Eng through a Design System',
-                description: <><span className="font-bold">36.1% design task speed increase </span> through building and maintaining the 'ETL Design System' that bridged gaps and fostered a UX culture between teams</>, 
+                description: <><span className="font-bold">36.1% design task speed increase </span> through building and maintaining the 'ETL Design System' that bridged gaps and fostered a UX culture between teams</>,
                 logo_src: '/images/matillion-logo.svg',
+                company: 'Matillion',
                 bg_src: '/images/ds.png',
                 link: '/design-system',
               },
@@ -132,13 +144,13 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                 className="case-study-link block group w-full text-left"
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <img 
+                  <img
                     src={study.logo_src}
-                    alt="Matillion"
+                    alt={study.company}
                     className="w-8 h-8 rounded"
                   />
                   <span className="font-semibold text-gray-900 pt-1">
-                    Matillion
+                    {study.company}
                   </span>
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
