@@ -15,7 +15,7 @@ const experience = [
     company: 'Matillion',
     logo: '/images/matillion-logo.svg',
     dates: '2020 – 2025',
-    description: 'Joined as a placement designer and progressed through to mid-level over five years, designing for a complex data pipeline product used by data engineers.',
+    description: 'Joined as a placement designer and progressed through to mid-level under five years, designing for a complex data pipeline product used by data engineers.',
     bullets: [
       'Built and maintained the ETL design system from scratch — components, patterns, and documentation — cutting design task time by 36.1%.',
       'Designed complex interaction-heavy features including pipeline variables, schemas, and editor components for technical users.',

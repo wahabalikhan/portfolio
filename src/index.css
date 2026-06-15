@@ -198,34 +198,41 @@ html.dark .hover\:border-gray-400:hover {
   border-color: #4b5563 !important;
 }
 
-/* Nav Brand Styling */
-.nav-brand-container {
+/* Top Nav Bar */
+.top-nav-bar {
   position: fixed;
-  top: 1.5rem;
-  left: 1.5rem;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5.5rem;
   z-index: 50;
   display: flex;
   align-items: center;
-  height: 2.5rem;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+}
+
+/* Push page content below the fixed top nav bar */
+.app-root {
+  padding-top: 5.5rem;
+}
+
+/* Nav Brand Styling */
+.nav-brand-container {
+  display: flex;
+  align-items: center;
 }
 
 /* Page Nav Styling */
 .page-nav-container {
-  position: fixed;
-  top: 1.5rem;
-  right: 5.5rem;
-  z-index: 50;
   display: flex;
   align-items: center;
-  height: 2.5rem;
 }
 
 /* Theme Toggle Styling */
 .theme-toggle-container {
-  position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 50;
+  display: flex;
+  align-items: center;
 }
 
 .theme-toggle-wrapper {
