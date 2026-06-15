@@ -428,6 +428,38 @@ html.dark .tech-pill {
   color: #e5e7eb;
 }
 
+/* Project icon tiles - dev cards */
+.icon-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+.icon-tile-violet { background-color: #ede9fe; color: #7c3aed; }
+.icon-tile-emerald { background-color: #d1fae5; color: #059669; }
+.icon-tile-amber { background-color: #fef3c7; color: #d97706; }
+.icon-tile-sky { background-color: #e0f2fe; color: #0284c7; }
+
+html.dark .icon-tile-violet { background-color: #2e1f47; color: #c4b5fd; }
+html.dark .icon-tile-emerald { background-color: #1c3a30; color: #6ee7b7; }
+html.dark .icon-tile-amber { background-color: #3a2f1a; color: #fcd34d; }
+html.dark .icon-tile-sky { background-color: #1c3344; color: #7dd3fc; }
+
+/* Accent-coloured tech pills - dev cards */
+.tech-pill-violet { background-color: #ede9fe; color: #6d28d9; }
+.tech-pill-emerald { background-color: #d1fae5; color: #047857; }
+.tech-pill-amber { background-color: #fef3c7; color: #b45309; }
+.tech-pill-sky { background-color: #e0f2fe; color: #0369a1; }
+
+html.dark .tech-pill-violet { background-color: #2e1f47; color: #c4b5fd; }
+html.dark .tech-pill-emerald { background-color: #1c3a30; color: #6ee7b7; }
+html.dark .tech-pill-amber { background-color: #3a2f1a; color: #fcd34d; }
+html.dark .tech-pill-sky { background-color: #1c3344; color: #7dd3fc; }
+
 /* Colored info tiles - Challenge, Impact, Info etc - using existing Tailwind color classes */
 /* Light mode - ensure good contrast */
 .bg-yellow-50 {
