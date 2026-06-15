@@ -9,8 +9,11 @@ import DesignSystemPage from './pages/DesignSystemPage';
 import DesignersCode from './pages/DesignersCode';
 import BuildingPortfolioPage from './pages/BuildingPortfolioPage';
 import DesignSystemsBlogPage from './pages/DesignSystemsBlogPage';
+import ExperiencePage from './pages/ExperiencePage';
 import ScrollToTop from './components/ScrollToTop';
 import ThemeToggle from './components/ThemeToggle';
+import PageNav from './components/PageNav';
+import NavBrand from './components/NavBrand';
 
 export default function App() {
   // For tab state on homepage only
@@ -53,6 +56,8 @@ export default function App() {
         }}
       >
         <ScrollToTop />
+        <NavBrand />
+        <PageNav />
         <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
         
         <Routes>
@@ -64,6 +69,7 @@ export default function App() {
           <Route path="/designers-code" element={<DesignersCode />} />
           <Route path="/building-portfolio" element={<BuildingPortfolioPage />} />
           <Route path="/design-systems" element={<DesignSystemsBlogPage />} />
+          <Route path="/experience" element={<ExperiencePage />} />
         </Routes>
       </div>
     </Router>

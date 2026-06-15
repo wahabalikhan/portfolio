@@ -4,32 +4,30 @@ import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
+    usePageTitle();
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
-      <div className="flex items-start gap-4 mb-6">
+      <div className="flex items-stretch gap-4 mb-6">
         <img
           src="/images/profile.png"
           alt="Wahab"
-          className="w-24 h-24 rounded-full object-cover flex-shrink-0"
+          className="h-[105px] w-[105px] aspect-square rounded-full object-cover flex-shrink-0"
         />
 
         <div>
           <h1 className="text-3xl font-bold mb-2 text-gray-900">
-            Hey! I'm Wahab 👋
+            I design products. Then I ship them.
           </h1>
 
-          <p className="text-md text-gray-700 leading-relaxed">
-            <span className="font-bold">Product Designer</span> • <span className="font-bold">Vibe Coder</span> • <span className="font-bold">BSc Computer Science</span> • Nielsen Norman Group (NN/g) UX Certified (ID: 1081116)<img
-              src="/images/nng2.png"
-              alt="Certification"
-              className="w-10 h-4 inline-block pl-1"
-            /> • Metrics-driven 📊
+          <p className="text-md text-gray-700 leading-relaxed mb-3">
+            Product Designer & Vibe Coder · BSc CS · NN/g Certified · Metrics-driven 📊
           </p>
 
-          <div className="flex gap-4 items-center mt-3">
+          <div className="flex gap-4 items-center">
             <a
               href="https://www.linkedin.com/in/wahabalikhan/"
               target="_blank"
@@ -50,7 +48,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
 
       <div className="mt-10 mb-10">
         <section className="border-t border-gray-200 pt-8 pb-0" />
-        <h2 className="text-3xl font-bold mb-8 text-gray-900">Case studies</h2>
+        <h2 className="text-2xl font-bold mb-8 text-gray-900">Case studies</h2>
         
         {/* Tabs */}
         <div className="flex gap-3 mb-10">
@@ -146,7 +144,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                     {study.company}
                   </span>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
                   {study.title}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
