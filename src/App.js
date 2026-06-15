@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import AIWorkflowPage from './pages/AIWorkflowPage';
 import GitDiffPage from './pages/GitDiffPage';
 import SchemasPage from './pages/SchemasPage';
 import DesignSystemPage from './pages/DesignSystemPage';
@@ -56,6 +57,7 @@ export default function App() {
         
         <Routes>
           <Route path="/" element={<HomePage activeTab={activeTab} setActiveTab={setActiveTab} />} />
+          <Route path="/ai-workflow" element={<AIWorkflowPage />} />
           <Route path="/git-diff" element={<GitDiffPage />} />
           <Route path="/schemas" element={<SchemasPage />} />
           <Route path="/design-system" element={<DesignSystemPage />} />
