@@ -24,7 +24,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
           </h1>
 
           <p className="text-md text-gray-700 leading-relaxed mb-3">
-            Product Designer & Vibe Coder · BSc CS · NN/g Certified · Metrics-driven 📊
+            Product Designer & Vibe Coder · BSc CS · NN/g Certified · Metrics-driven
           </p>
 
           <div className="flex gap-4 items-center">
