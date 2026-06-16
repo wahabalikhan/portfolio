@@ -68,6 +68,7 @@ const noteStyle = {
   left: '50%',
   transform: 'translateX(-50%)',
   width: '220px',
+  maxWidth: 'calc(100vw - 40px)',
   backgroundColor: '#ffffff',
   border: '1px solid #e5e7eb',
   borderRadius: '0.5rem',
@@ -77,6 +78,7 @@ const noteStyle = {
   lineHeight: 1.5,
   color: '#111827',
   zIndex: 32,
+  boxSizing: 'border-box',
 };
 
 const inputStyle = {
@@ -95,7 +97,7 @@ const inputStyle = {
 
 const toolbarStyle = {
   position: 'fixed',
-  bottom: '1.5rem',
+  bottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
   left: '50%',
   transform: 'translateX(-50%)',
   display: 'flex',
@@ -106,6 +108,7 @@ const toolbarStyle = {
   padding: '0.375rem',
   boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
   zIndex: 100,
+  maxWidth: 'calc(100vw - 2rem)',
 };
 
 const toolbarButtonStyle = (active) => ({
@@ -157,6 +160,51 @@ const cursorStyle = (xPct, yPct, color) => ({
   color,
 });
 
+const deleteButtonStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+  width: '1.25rem',
+  height: '1.25rem',
+  borderRadius: '0.25rem',
+  border: 'none',
+  backgroundColor: 'transparent',
+  color: '#9ca3af',
+  cursor: 'pointer',
+  padding: 0,
+};
+
+const loginFormStyle = {
+  position: 'fixed',
+  bottom: 'calc(4.5rem + env(safe-area-inset-bottom, 0px))',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  width: '220px',
+  maxWidth: 'calc(100vw - 40px)',
+  backgroundColor: '#ffffff',
+  border: '1px solid #e5e7eb',
+  borderRadius: '0.5rem',
+  padding: '0.75rem',
+  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+  fontSize: '0.8125rem',
+  zIndex: 101,
+  boxSizing: 'border-box',
+};
+
+const loginButtonStyle = {
+  display: 'block',
+  width: '100%',
+  fontSize: '0.8125rem',
+  fontWeight: 500,
+  padding: '0.375rem 0.75rem',
+  borderRadius: '0.375rem',
+  border: 'none',
+  backgroundColor: '#111827',
+  color: '#ffffff',
+  cursor: 'pointer',
+};
+
 export default function CommentPins({ page }) {
   const overlayRef = useRef(null);
   const channelRef = useRef(null);
@@ -174,6 +222,13 @@ export default function CommentPins({ page }) {
   const [sessionId] = useState(randomId);
   const [cursorColor] = useState(() => CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)]);
 
+  const [isOwner, setIsOwner] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loggingIn, setLoggingIn] = useState(false);
+
   // Measure the full document height so the overlay (portalled into <body>)
   // covers the entire page, including content outside the narrow content column
   useLayoutEffect(() => {
@@ -188,6 +243,41 @@ export default function CommentPins({ page }) {
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateHeight);
     };
+  }, []);
+
+  // Owner auth: check for an existing session and keep isOwner in sync
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setIsOwner(!!data.session);
+    }).catch(() => {});
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsOwner(!!session);
+      if (session) setShowLoginForm(false);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  // Escape closes open notes, the draft form, and the login panel.
+  // Ctrl+Shift+L toggles the owner login form.
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setOpenPinId(null);
+        setDraft(null);
+        setDraftAuthor('');
+        setDraftBody('');
+        setShowLoginForm(false);
+      }
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        setShowLoginForm((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   useEffect(() => {
@@ -235,6 +325,14 @@ export default function CommentPins({ page }) {
         { event: 'INSERT', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
         ({ new: row }) => {
           setComments((prev) => (prev.some((c) => c.id === row.id) ? prev : [...prev, row]));
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
+        ({ old: row }) => {
+          setComments((prev) => prev.filter((c) => c.id !== row.id));
+          setOpenPinId((prev) => (prev === row.id ? null : prev));
         }
       )
       .subscribe((status) => {
@@ -294,6 +392,27 @@ export default function CommentPins({ page }) {
     setDraftBody('');
   };
 
+  // Tap-to-drop on touch devices. Only handle taps that land on the overlay
+  // background itself (not on pins/notes/toolbar, which stop propagation on click)
+  const handleOverlayTouchEnd = (e) => {
+    if (mode !== 'comment' || draft) return;
+    if (e.target !== overlayRef.current) return;
+
+    const touch = e.changedTouches[0];
+    if (!touch) return;
+
+    e.preventDefault();
+
+    const rect = overlayRef.current.getBoundingClientRect();
+    const x_pct = ((touch.clientX - rect.left) / rect.width) * 100;
+    const y_pct = ((touch.clientY - rect.top) / rect.height) * 100;
+
+    setOpenPinId(null);
+    setDraft({ x_pct, y_pct });
+    setDraftAuthor('');
+    setDraftBody('');
+  };
+
   const handleCancelDraft = () => {
     setDraft(null);
     setDraftAuthor('');
@@ -328,18 +447,52 @@ export default function CommentPins({ page }) {
     setOpenPinId((prev) => (prev === id ? null : id));
   };
 
+  const handleDeleteComment = async (id) => {
+    setComments((prev) => prev.filter((c) => c.id !== id));
+    setOpenPinId((prev) => (prev === id ? null : prev));
+    await supabase.from('comments').delete().eq('id', id);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoggingIn(true);
+    setLoginError('');
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginEmail.trim(),
+      password: loginPassword,
+    });
+
+    setLoggingIn(false);
+
+    if (error) {
+      setLoginError(error.message);
+      return;
+    }
+
+    setShowLoginForm(false);
+    setLoginEmail('');
+    setLoginPassword('');
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   return createPortal(
     <>
       <div
         ref={overlayRef}
         style={overlayStyle(mode, overlayHeight)}
         onClick={handleOverlayClick}
+        onTouchEnd={handleOverlayTouchEnd}
       >
         {PRESET_PINS.map((pin) => (
           <div key={pin.id} style={pinWrapperStyle(pin.x_pct, pin.y_pct)}>
             <button
               type="button"
-              aria-label="Comment pin"
+              aria-label={`${openPinId === pin.id ? 'Close' : 'Open'} note by ${pin.author}`}
+              aria-expanded={openPinId === pin.id}
               style={markerStyle(PRESET_COLOR)}
               onClick={(e) => {
                 e.stopPropagation();
@@ -359,7 +512,8 @@ export default function CommentPins({ page }) {
           <div key={pin.id} style={pinWrapperStyle(pin.x_pct, pin.y_pct)}>
             <button
               type="button"
-              aria-label="Comment pin"
+              aria-label={`${openPinId === pin.id ? 'Close' : 'Open'} comment by ${pin.author || 'Anonymous'}`}
+              aria-expanded={openPinId === pin.id}
               style={markerStyle(VISITOR_COLOR)}
               onClick={(e) => {
                 e.stopPropagation();
@@ -368,18 +522,32 @@ export default function CommentPins({ page }) {
             />
             {openPinId === pin.id && (
               <div style={noteStyle} onClick={(e) => e.stopPropagation()}>
-                <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{pin.author || 'Anonymous'}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                  <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{pin.author || 'Anonymous'}</p>
+                  {isOwner && (
+                    <button
+                      type="button"
+                      aria-label="Delete comment"
+                      onClick={() => handleDeleteComment(pin.id)}
+                      style={deleteButtonStyle}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
                 <p>{pin.body}</p>
               </div>
             )}
           </div>
         ))}
 
-        {Object.entries(cursors).map(([id, cursor]) => (
-          <div key={id} style={cursorStyle(cursor.x_pct, cursor.y_pct, cursor.color)}>
-            <MousePointer2 size={20} fill={cursor.color} fillOpacity={0.25} />
-          </div>
-        ))}
+        {Object.entries(cursors).map(([id, cursor]) =>
+          cursor.x_pct != null && cursor.y_pct != null ? (
+            <div key={id} style={cursorStyle(cursor.x_pct, cursor.y_pct, cursor.color)}>
+              <MousePointer2 size={20} fill={cursor.color} fillOpacity={0.25} />
+            </div>
+          ) : null
+        )}
 
         {draft && (
           <div style={pinWrapperStyle(draft.x_pct, draft.y_pct)}>
@@ -448,6 +616,7 @@ export default function CommentPins({ page }) {
         <button
           type="button"
           aria-label="Cursor mode"
+          aria-pressed={mode === 'cursor'}
           style={toolbarButtonStyle(mode === 'cursor')}
           onClick={() => {
             setMode('cursor');
@@ -459,12 +628,57 @@ export default function CommentPins({ page }) {
         <button
           type="button"
           aria-label="Comment mode"
+          aria-pressed={mode === 'comment'}
           style={toolbarButtonStyle(mode === 'comment')}
           onClick={() => setMode('comment')}
         >
           <MessageCircle size={18} />
         </button>
+
+        {isOwner && (
+          <>
+            <div style={toolbarDividerStyle} />
+            <button
+              type="button"
+              aria-label="Sign out"
+              style={toolbarButtonStyle(false)}
+              onClick={handleSignOut}
+            >
+              <LogOut size={18} />
+            </button>
+          </>
+        )}
       </div>
+
+      {showLoginForm && !isOwner && (
+        <div style={loginFormStyle} onClick={(e) => e.stopPropagation()}>
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={loginEmail}
+              onChange={(e) => setLoginEmail(e.target.value)}
+              style={inputStyle}
+              autoFocus
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+              style={{ ...inputStyle, marginBottom: loginError ? '0.5rem' : '0.625rem' }}
+            />
+            {loginError && (
+              <p style={{ color: '#dc2626', fontSize: '0.75rem', marginBottom: '0.625rem' }}>
+                {loginError}
+              </p>
+            )}
+            <button type="submit" disabled={loggingIn} style={{ ...loginButtonStyle, opacity: loggingIn ? 0.6 : 1 }}>
+              {loggingIn ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
+        </div>
+      )}
     </>,
     document.body
   );
