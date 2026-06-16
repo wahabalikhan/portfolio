@@ -20,9 +20,14 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('Design');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [pastCaseStudies, setPastCaseStudies] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 10);
+      const el = document.getElementById('case-studies');
+      setPastCaseStudies(el ? el.getBoundingClientRect().top <= 100 : false);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -70,9 +75,9 @@ export default function App() {
             borderColor: scrolled ? (isDarkMode ? '#374151' : '#e5e7eb') : 'transparent',
           }}
         >
-          <NavBrand />
+          <NavBrand pastCaseStudies={pastCaseStudies} />
           <div className="flex items-center nav-right">
-            <PageNav isDarkMode={isDarkMode} />
+            <PageNav isDarkMode={isDarkMode} pastCaseStudies={pastCaseStudies} />
             <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
           </div>
         </div>

@@ -1,10 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { smoothScrollToElement } from '../utils/smoothScroll';
 
-export default function PageNav({ isDarkMode }) {
+export default function PageNav({ isDarkMode, pastCaseStudies }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const isExperience = pathname === '/experience';
+  // Work is active on case study detail pages, and on the homepage only once past the hero
+  const isWorkActive = !isExperience && (pathname !== '/' || pastCaseStudies);
+
+  const scrollToCaseStudies = () => smoothScrollToElement('case-studies');
+
+  const handleWorkClick = (e) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    if (pathname === '/') {
+      scrollToCaseStudies();
+    } else {
+      navigate('/');
+      // Double rAF waits for the route to render before scrolling
+      requestAnimationFrame(() => requestAnimationFrame(scrollToCaseStudies));
+    }
+  };
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -33,7 +51,7 @@ export default function PageNav({ isDarkMode }) {
     <>
       {/* Desktop nav — hidden below 768px */}
       <div className="page-nav-container gap-6 nav-desktop">
-        <Link to="/" className={linkClass(!isExperience)}>Case studies</Link>
+        <button onClick={handleWorkClick} className={linkClass(isWorkActive)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Work</button>
         <Link to="/experience" className={linkClass(isExperience)}>Experience</Link>
         <a
           href="mailto:wahab-ali-khan@hotmail.com"
@@ -42,8 +60,8 @@ export default function PageNav({ isDarkMode }) {
           Contact ↗
         </a>
         <a
-          href="/resume.pdf"
-          download="Wahab_Ali_Khan_Resume.pdf"
+          href="/cv_wahab_ali_khan.pdf"
+          download="CV_Wahab_Ali_Khan.pdf"
           className="nav-link text-gray-500 transition-colors hover:text-gray-900"
         >
           Resume ↓
@@ -90,30 +108,43 @@ export default function PageNav({ isDarkMode }) {
               gap: '0.125rem',
             }}
           >
-            {[
-              { to: '/', label: 'Case studies', active: !isExperience },
-              { to: '/experience', label: 'Experience', active: isExperience },
-            ].map(({ to, label, active }) => (
-              <Link
-                key={to}
-                to={to}
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  display: 'block',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '0.5rem',
-                  fontWeight: 400,
-                  fontSize: '0.9375rem',
-                  color: isDarkMode ? (active ? '#ffffff' : '#9ca3af') : (active ? '#111827' : '#6b7280'),
-                  textDecoration: active ? 'underline' : 'none',
-                  textDecorationThickness: '1.5px',
-                  textUnderlineOffset: '3px',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                {label}
-              </Link>
-            ))}
+            <button
+              onClick={handleWorkClick}
+              style={{
+                display: 'block', width: '100%', textAlign: 'left',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '0.5rem',
+                fontWeight: 400,
+                fontSize: '0.9375rem',
+                color: isDarkMode ? (isWorkActive ? '#ffffff' : '#9ca3af') : (isWorkActive ? '#111827' : '#6b7280'),
+                textDecoration: isWorkActive ? 'underline' : 'none',
+                textDecorationThickness: '1.5px',
+                textUnderlineOffset: '3px',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Work
+            </button>
+            <Link
+              to="/experience"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: 'block',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '0.5rem',
+                fontWeight: 400,
+                fontSize: '0.9375rem',
+                color: isDarkMode ? (isExperience ? '#ffffff' : '#9ca3af') : (isExperience ? '#111827' : '#6b7280'),
+                textDecoration: isExperience ? 'underline' : 'none',
+                textDecorationThickness: '1.5px',
+                textUnderlineOffset: '3px',
+                backgroundColor: 'transparent',
+              }}
+            >
+              Experience
+            </Link>
             <a
               href="mailto:wahab-ali-khan@hotmail.com"
               onClick={() => setMenuOpen(false)}
@@ -130,8 +161,8 @@ export default function PageNav({ isDarkMode }) {
               Contact
             </a>
             <a
-              href="/resume.pdf"
-              download="Wahab_Ali_Khan_Resume.pdf"
+              href="/cv_wahab_ali_khan.pdf"
+              download="CV_Wahab_Ali_Khan.pdf"
               onClick={() => setMenuOpen(false)}
               style={{
                 display: 'block',

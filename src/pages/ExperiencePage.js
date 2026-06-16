@@ -8,27 +8,40 @@ const experience = [
     title: 'AI Product Designer',
     company: 'Adverity',
     logo: '/images/adverity.jpg',
-    dates: '2025 – Present',
-    description: "Designing AI-powered features for a data and marketing intelligence platform used by analytics and BI teams. Working closer to the codebase than ever — moving between Figma and live code to validate design decisions against the real product.",
+    dates: 'Apr 2026 – Jun 2026',
+    location: 'Remote / Vienna, Austria',
+    context: 'Data & marketing intelligence platform',
+    bullets: [
+      'Designed AI-powered features for a data and marketing intelligence platform, working across discovery, interaction design, and delivery.',
+      'Built a closer-to-code design workflow using Claude Code, VS Code, and Git — moving between Figma and the live codebase to prototype and validate design decisions against the real product.',
+    ],
   },
   {
     title: 'Product Designer',
     company: 'Matillion',
     logo: '/images/matillion-logo.svg',
-    dates: '2020 – 2025',
-    description: 'Joined as a placement designer and progressed through to mid-level under five years, designing for a complex data pipeline product used by data engineers.',
+    dates: 'Jul 2021 – Mar 2026',
+    location: 'Manchester, UK',
+    context: 'Data pipeline & ETL platform for data engineers',
+    progression: 'Joined as a placement student, promoted four times to mid-level over five years',
     bullets: [
-      'Built and maintained the ETL design system from scratch — components, patterns, and documentation — cutting design task time by 36.1%.',
-      'Designed complex interaction-heavy features including pipeline variables, schemas, and editor components for technical users.',
-      'Bridged design and engineering, embedding UX practice into how the engineering team worked.',
+      'Designed a diff interface for high-risk pipeline actions — 34% increase in successful workflow completions and 15% reduction in error recovery actions.',
+      'Built the ETL design system from scratch as the sole designer — components, patterns, and documentation — reducing design task completion time by 36.1%, measured through structured task testing.',
+      'Partnered closely with front-end engineers on interaction behaviours, states, edge cases, and technical constraints — attending implementation reviews to close the design-to-code gap.',
+      'Mentored junior designers and placement students through design critiques, pairing sessions, and guidance on interaction design, accessibility, and systems thinking.',
     ],
   },
   {
     title: 'UI/UX Design Intern',
-    company: null,
+    company: 'The Lead Magnet Agency',
     logo: null,
-    dates: '2020 · 3 months',
-    description: 'First professional design role. Built a foundation in user-centred design, interface work, and working within a product team.',
+    dates: 'Oct 2020 – Jan 2021',
+    location: 'London, UK',
+    context: 'Digital agency · First professional design role',
+    bullets: [
+      'Supported UX research, prototyping, and iteration for client websites and digital campaigns.',
+      'Collaborated with senior designers to improve user journeys and task completion rates.',
+    ],
   },
 ];
 
@@ -66,31 +79,45 @@ export default function ExperiencePage() {
       <CommentPins page="experience" showPresets={false} />
       <h1 className="text-3xl font-bold mb-10 text-gray-900">Experience</h1>
 
-      <div className="space-y-10 mb-16">
+      <div className="space-y-12 mb-16">
         {experience.map((job) => (
           <div key={job.title} className="flex gap-4 items-start">
             {job.logo ? (
               <img
                 src={job.logo}
                 alt={job.company}
-                className="w-10 h-10 rounded object-cover flex-shrink-0"
+                className="w-10 h-10 rounded object-cover flex-shrink-0 mt-0.5"
               />
             ) : (
-              <div className="w-10 h-10 rounded bg-gray-100 flex-shrink-0" />
+              <div className="w-10 h-10 rounded bg-gray-100 flex-shrink-0 mt-0.5" />
             )}
-            <div>
-              <h3 className="font-bold text-gray-900 text-lg">
-                {job.title}{job.company && <> · {job.company}</>}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-gray-900 text-lg leading-snug">
+                {job.title}
+                {job.company && <span className="text-gray-500 font-normal"> · {job.company}</span>}
               </h3>
-              <p className="text-gray-500 text-sm mb-2">{job.dates}</p>
-              <p className="text-gray-700 leading-relaxed">{job.description}</p>
-              {job.bullets && (
-                <ul className="list-disc list-inside text-gray-700 leading-relaxed mt-2 space-y-1">
-                  {job.bullets.map((bullet, i) => (
-                    <li key={i}>{bullet}</li>
-                  ))}
-                </ul>
+
+              <p className="text-sm text-gray-400 mt-0.5 mb-1">
+                {job.dates}
+                {job.location && <span className="text-gray-400"> · {job.location}</span>}
+              </p>
+
+              <p className="text-sm text-gray-400 italic mb-3">{job.context}</p>
+
+              {job.progression && (
+                <p className="text-sm text-gray-500 italic mb-3">
+                  {job.progression}
+                </p>
               )}
+
+              <ul className="space-y-2">
+                {job.bullets.map((bullet, i) => (
+                  <li key={i} className="flex gap-2.5 text-gray-700 leading-relaxed">
+                    <span className="text-gray-300 flex-shrink-0 select-none" style={{ marginTop: '0.35em' }}>–</span>
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         ))}

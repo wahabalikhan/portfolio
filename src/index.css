@@ -168,10 +168,10 @@ html.dark .hero-subtitle { color: #aaa; }
 
 /* ─── Tab pills ─────────────────────────────────────────────────────────────── */
 .tab-pill {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 0.625rem;
   border: none;
   line-height: 1.6;
 }
