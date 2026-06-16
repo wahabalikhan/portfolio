@@ -8,11 +8,13 @@ const VISITOR_COLORS = ['#1D9E75', '#D85A30', '#D4537E', '#378ADD', '#BA7517'];
 const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#8B5CF6', '#EF4444', '#06B6D4'];
 
 const PRESET_PINS = [
+  // No tabs field — appear on every tab
   { id: 'preset-1', x_pct: 72, y_pct: 8,  author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
-  { id: 'preset-2', x_pct: 28, y_pct: 32, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true },
-  { id: 'preset-3', x_pct: 68, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true },
-  { id: 'preset-4', x_pct: 18, y_pct: 62, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
-  { id: 'preset-5', x_pct: 82, y_pct: 78, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true },
+  { id: 'preset-2', x_pct: 18, y_pct: 62, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
+  // Design tab only — tied to the case study content
+  { id: 'preset-3', x_pct: 28, y_pct: 32, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
+  { id: 'preset-4', x_pct: 68, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
+  { id: 'preset-5', x_pct: 82, y_pct: 78, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
 ];
 
 const randomId = () =>
@@ -113,10 +115,13 @@ const inputStyle = {
   color: '#111827', backgroundColor: '#ffffff', boxSizing: 'border-box',
 };
 
-export default function CommentPins({ page, showPresets = true }) {
+export default function CommentPins({ page, showPresets = true, activeTab }) {
   const channelRef     = useRef(null);
   const canvasRef      = useRef(null);
   const annotationCanvasRef = useRef(null);
+  const activeTabRef   = useRef(activeTab);
+  const prevTabRef     = useRef(activeTab);
+  const tabFadeTimer   = useRef(null);
 
   const [mode, setMode]           = useState('cursor');
   const [comments, setComments]   = useState([]);
@@ -126,19 +131,15 @@ export default function CommentPins({ page, showPresets = true }) {
   const [expandedId, setExpandedId] = useState(null);
   const [saving, setSaving]       = useState(false);
   const [hidden, setHidden]       = useState(false);
-  const [overlayHeight, setOverlayHeight] = useState(() => {
-    if (typeof window === 'undefined') return 0;
-    try {
-      const saved = localStorage.getItem(`cc-overlay-h-${page}`);
-      const savedH = saved ? parseInt(saved, 10) : 0;
-      return Math.max(savedH, document.documentElement.scrollHeight);
-    } catch {}
-    return document.documentElement.scrollHeight || 0;
-  });
+  const [overlayHeight, setOverlayHeight] = useState(() =>
+    typeof window !== 'undefined' ? document.documentElement.scrollHeight : 0
+  );
   const [cursors, setCursors]     = useState({});
   const [viewerCount, setViewerCount] = useState(0);
   const [isMobile, setIsMobile]   = useState(() => typeof window !== 'undefined' && window.innerWidth <= 767);
   const [pulseActive, setPulseActive] = useState(true);
+  const [fadingOutIds, setFadingOutIds] = useState(() => new Set());
+  const [fadingInIds,  setFadingInIds]  = useState(() => new Set());
 
   const [isOwner, setIsOwner]         = useState(false);
   const [showLogin, setShowLogin]     = useState(false);
@@ -150,16 +151,25 @@ export default function CommentPins({ page, showPresets = true }) {
   const [cursorColor]  = useState(() => CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)]);
 
   const [presetPositions, setPresetPositions] = useState(() => {
+    const VERSION = '4';
+    const defaults = Object.fromEntries(PRESET_PINS.map((p) => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }]));
     try {
-      const saved = localStorage.getItem('preset-pin-positions');
-      if (saved) return JSON.parse(saved);
+      if (localStorage.getItem('preset-positions-v') === VERSION) {
+        const saved = localStorage.getItem('preset-pin-positions');
+        if (saved) return JSON.parse(saved);
+      }
     } catch {}
-    return Object.fromEntries(PRESET_PINS.map((p) => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }]));
+    // Version mismatch — reset to defaults, overwrite stale storage so next load also gets clean data
+    try {
+      localStorage.setItem('preset-positions-v', VERSION);
+      localStorage.setItem('preset-pin-positions', JSON.stringify(defaults));
+    } catch {}
+    return defaults;
   });
 
   useEffect(() => {
-    try { localStorage.setItem('preset-pin-positions', JSON.stringify(presetPositions)); } catch {}
-  }, [presetPositions]);
+    try { localStorage.removeItem(`cc-overlay-h-${page}`); } catch {}
+  }, [page]);
 
   const [visitorPositions, setVisitorPositions] = useState(() => {
     try {
@@ -169,21 +179,23 @@ export default function CommentPins({ page, showPresets = true }) {
     return {};
   });
 
-  useEffect(() => {
-    try { localStorage.setItem('visitor-comment-positions', JSON.stringify(visitorPositions)); } catch {}
-  }, [visitorPositions]);
 
   const [annotationPos, setAnnotationPos] = useState(() => {
+    const VERSION = '2';
+    const DEFAULT = { x_pct: 68, y_pct: 15 };
     try {
-      const saved = localStorage.getItem('annotation-position');
-      if (saved) return JSON.parse(saved);
+      if (localStorage.getItem('annotation-pos-v') === VERSION) {
+        const saved = localStorage.getItem('annotation-position');
+        if (saved) return JSON.parse(saved);
+      }
     } catch {}
-    return { x_pct: 8, y_pct: 90 };
+    try {
+      localStorage.setItem('annotation-pos-v', VERSION);
+      localStorage.setItem('annotation-position', JSON.stringify(DEFAULT));
+    } catch {}
+    return DEFAULT;
   });
 
-  useEffect(() => {
-    try { localStorage.setItem('annotation-position', JSON.stringify(annotationPos)); } catch {}
-  }, [annotationPos]);
 
   const [draggingId, setDraggingId] = useState(null);
   const [dragPos, setDragPos]       = useState(null);
@@ -197,6 +209,33 @@ export default function CommentPins({ page, showPresets = true }) {
     const t = setTimeout(() => setPulseActive(false), 900);
     return () => clearTimeout(t);
   }, []);
+
+  // Fade preset pins in/out when the active tab changes
+  useEffect(() => {
+    const prevTab = prevTabRef.current;
+    prevTabRef.current = activeTab;
+    if (!activeTab || prevTab === activeTab) return;
+
+    const wasVisible = (p) => !p.tabs || p.tabs.includes(prevTab);
+    const isNowVisible = (p) => !p.tabs || p.tabs.includes(activeTab);
+
+    const leaving  = PRESET_PINS.filter(p => wasVisible(p) && !isNowVisible(p));
+    const entering = PRESET_PINS.filter(p => !wasVisible(p) && isNowVisible(p));
+
+    if (leaving.length > 0) {
+      clearTimeout(tabFadeTimer.current);
+      setFadingOutIds(new Set(leaving.map(p => p.id)));
+      tabFadeTimer.current = setTimeout(() => setFadingOutIds(new Set()), 150);
+    }
+
+    if (entering.length > 0) {
+      const ids = new Set(entering.map(p => p.id));
+      setFadingInIds(ids);
+      requestAnimationFrame(() => requestAnimationFrame(() => setFadingInIds(new Set())));
+    }
+
+    return () => clearTimeout(tabFadeTimer.current);
+  }, [activeTab]);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 767);
@@ -219,21 +258,31 @@ export default function CommentPins({ page, showPresets = true }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  activeTabRef.current = activeTab;
+
+  // Snapshot overlayHeight once at mount (Design tab is default so scrollHeight is correct).
+  // Do NOT use a ResizeObserver on body — content changes from tab switches or API loads
+  // fire it and inflate overlayHeight, shifting all pin positions.
   useLayoutEffect(() => {
-    const update = () => {
-      const h = document.documentElement.scrollHeight;
-      setOverlayHeight(prev => {
-        const next = h > prev ? h : prev;
-        try { localStorage.setItem(`cc-overlay-h-${page}`, String(next)); } catch {}
-        return next;
-      });
+    const h = document.documentElement.scrollHeight;
+    setOverlayHeight(prev => h > prev ? h : prev);
+
+    const onWindowResize = () => {
+      if (activeTabRef.current && activeTabRef.current !== 'Design') return;
+      setOverlayHeight(document.documentElement.scrollHeight);
     };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(document.body);
-    window.addEventListener('resize', update);
-    return () => { ro.disconnect(); window.removeEventListener('resize', update); };
-  }, [page]);
+    window.addEventListener('resize', onWindowResize);
+    return () => window.removeEventListener('resize', onWindowResize);
+  }, []);
+
+  // When switching back to the Design tab, re-snapshot in case content reflowed.
+  useEffect(() => {
+    if (activeTab !== 'Design') return;
+    const raf = requestAnimationFrame(() => {
+      setOverlayHeight(prev => Math.max(document.documentElement.scrollHeight, prev));
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [activeTab]);
 
   const applyScrollTransforms = () => {
     const sy = window.scrollY;
@@ -326,12 +375,28 @@ export default function CommentPins({ page, showPresets = true }) {
       const pos  = dragPosRef.current;
       if (meta && pos) {
         if (meta.isAnnotation) {
-          setAnnotationPos({ x_pct: pos.x_pct, y_pct: pos.y_pct });
+          const newPos = { x_pct: pos.x_pct, y_pct: pos.y_pct };
+          setAnnotationPos(newPos);
+          try {
+              localStorage.setItem('annotation-pos-v', '2');
+              localStorage.setItem('annotation-position', JSON.stringify(newPos));
+            } catch {}
         } else if (meta.isPreset) {
-          setPresetPositions(prev => ({ ...prev, [meta.id]: { x_pct: pos.x_pct, y_pct: pos.y_pct } }));
+          setPresetPositions(prev => {
+            const next = { ...prev, [meta.id]: { x_pct: pos.x_pct, y_pct: pos.y_pct } };
+            try {
+              localStorage.setItem('preset-positions-v', '4');
+              localStorage.setItem('preset-pin-positions', JSON.stringify(next));
+            } catch {}
+            return next;
+          });
         } else {
           setComments(prev => prev.map(c => c.id === meta.id ? { ...c, ...pos } : c));
-          setVisitorPositions(prev => ({ ...prev, [meta.id]: { x_pct: pos.x_pct, y_pct: pos.y_pct } }));
+          setVisitorPositions(prev => {
+            const next = { ...prev, [meta.id]: { x_pct: pos.x_pct, y_pct: pos.y_pct } };
+            try { localStorage.setItem('visitor-comment-positions', JSON.stringify(next)); } catch {}
+            return next;
+          });
           supabase.from('comments').update({ x_pct: pos.x_pct, y_pct: pos.y_pct }).eq('id', meta.id);
         }
         justDraggedRef.current = true;
@@ -432,7 +497,7 @@ export default function CommentPins({ page, showPresets = true }) {
     if (isTouchDevice()) setExpandedId(prev => prev === id ? null : id);
   };
 
-  const renderCard = (id, author, body, color, x_pct, y_pct, isPreset, pulseIndex, isDragging) => {
+  const renderCard = (id, author, body, color, x_pct, y_pct, isPreset, pulseIndex, isDragging, extraWrapperStyle) => {
     const pos        = isDragging && dragPos ? dragPos : { x_pct, y_pct };
     const isExpanded = expandedId === id;
     const deg        = getDeg(id);
@@ -443,7 +508,7 @@ export default function CommentPins({ page, showPresets = true }) {
     return (
       <div
         key={id}
-        style={{ ...cardWrapperStyle(pos.x_pct, pos.y_pct, deg), cursor: isDragging ? 'grabbing' : 'grab' }}
+        style={{ ...cardWrapperStyle(pos.x_pct, pos.y_pct, deg), cursor: isDragging ? 'grabbing' : 'grab', ...extraWrapperStyle }}
         onMouseDown={(e) => startDrag(e, id, pos.x_pct, pos.y_pct, isPreset)}
         onClick={(e) => onCardClick(e, id)}
         onMouseEnter={() => onCardEnter(id)}
@@ -480,9 +545,16 @@ export default function CommentPins({ page, showPresets = true }) {
 
         {!hidden && (
           <>
-            {showPresets && PRESET_PINS.map((pin, i) => {
+            {showPresets && PRESET_PINS.filter(pin =>
+              !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
+            ).map((pin, i) => {
               const pos = presetPositions[pin.id];
-              return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId);
+              if (!pos) return null;
+              const isFadingOut = fadingOutIds.has(pin.id);
+              const isFadingIn  = fadingInIds.has(pin.id);
+              const opacity = isFadingOut || isFadingIn ? 0 : 1;
+              return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId,
+                { opacity, transition: 'opacity 150ms ease' });
             })}
             {comments.map((pin, i) => {
               const override = visitorPositions[pin.id];

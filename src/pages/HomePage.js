@@ -2,11 +2,33 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
-import { devProjectMeta, defaultDevProjectMeta } from '../data/devProjects';
 import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
 import CommentPins from '../components/CommentPins';
+import LinkedInPostCard from '../components/LinkedInPostCard';
+import GitHubRepoCard from '../components/GitHubRepoCard';
 import { usePageTitle } from '../hooks/usePageTitle';
+
+// HARDCODED PREVIEW — remove this card once GitHub API is confirmed working in production
+const PREVIEW_CARD = {
+  id: '__preview__',
+  name: 'portfolio',
+  description: 'Coding my portfolio live! Built with Vite + React, Supabase for real-time comments, and deployed via GitHub.',
+  language: 'JavaScript',
+  topics: ['react', 'vite', 'supabase'],
+  updated: new Date(Date.now() - 5 * 3600 * 1000).toISOString(),
+  fork: false,
+  parent: null,
+  github: 'https://github.com/wahabalikhan/portfolio',
+};
+
+function GitHubMark() {
+  return (
+    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-label="GitHub">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+    </svg>
+  );
+}
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
@@ -25,7 +47,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     };
   return (
     <div className="max-w-3xl mx-auto px-6 py-16 relative home-page">
-      <CommentPins page="home" />
+      <CommentPins page="home" activeTab={activeTab} />
       <div className="flex items-stretch gap-4 mb-6">
         <img
           src="/images/profile.png"
@@ -49,7 +71,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
           </h1>
 
           <p className="text-base text-gray-700 leading-relaxed mb-3">
-            Product Designer & Vibe Coder · BSc CS · NN/g Certified · Metrics-driven
+            Product Designer & Vibe Coder <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> Metrics-driven
           </p>
 
         </div>
@@ -163,107 +185,72 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
 
         {/* Development Tab Content */}
         {activeTab === 'Development' && (
-          <div className="space-y-12">
+          <div>
+            <div className="gh-from">
+              <GitHubMark />
+              <span>from GitHub</span>
+            </div>
+
             {loading && (
-              <div className="text-center py-12">
-                <p className="text-gray-600">Loading repositories...</p>
-              </div>
+              <p className="text-sm text-gray-500 py-8 text-center">Loading repositories…</p>
             )}
-
             {error && (
-              <div className="text-center py-12">
-                <p className="text-red-600">Error loading repos: {error}</p>
-              </div>
+              <p className="text-sm text-red-500 py-8 text-center">Couldn't load repos: {error}</p>
             )}
 
-            {!loading && !error && repos.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-600">No repositories found.</p>
-              </div>
-            )}
-
-            {!loading && !error && repos.map((repo) => {
-              const meta = devProjectMeta[repo.name] || defaultDevProjectMeta;
-              const Icon = meta.icon;
-              const tech = meta.tech || repo.tech;
-              return (
-                <a
+            <div className="gh-grid">
+              <GitHubRepoCard
+                key={PREVIEW_CARD.id}
+                name={PREVIEW_CARD.name}
+                description={PREVIEW_CARD.description}
+                language={PREVIEW_CARD.language}
+                topics={PREVIEW_CARD.topics}
+                updated={PREVIEW_CARD.updated}
+                fork={PREVIEW_CARD.fork}
+                parent={PREVIEW_CARD.parent}
+                url={PREVIEW_CARD.github}
+              />
+              {!loading && repos.map((repo) => (
+                <GitHubRepoCard
                   key={repo.id}
-                  href={repo.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="dev-tile block group"
-                >
-                  <div className="mb-4 overflow-hidden rounded-lg bg-gray-50 p-6 border border-gray-200 hover:border-gray-400 transition-all">
-                    <div className="flex items-start gap-4">
-                      <div className={`icon-tile icon-tile-${meta.accent}`}>
-                        <Icon size={22} stroke={1.75} />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-blue-600 transition-colors">
-                          {meta.title || repo.title} ↗
-                        </h3>
-
-                        <p className="text-gray-700 leading-relaxed mb-3">
-                          {meta.description || repo.description}
-                        </p>
-
-                        {tech.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {tech.map((t, index) => (
-                              <span
-                                key={index}
-                                className={`tech-pill tech-pill-${meta.accent}`}
-                              >
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="flex gap-4 items-center">
-                          <span className="text-blue-600 inline-flex items-center gap-1 link-text">
-                            View on GitHub →
-                          </span>
-                          {repo.demo && (
-                            <span className="text-blue-600 inline-flex items-center gap-1 link-text">
-                              Live Demo →
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
+                  name={repo.name}
+                  description={repo.description}
+                  language={repo.language}
+                  topics={repo.tech}
+                  updated={repo.updated}
+                  fork={repo.fork}
+                  parent={repo.parent}
+                  url={repo.github}
+                />
+              ))}
+            </div>
           </div>
         )}
 
         {/* Extras Tab Content */}
         {activeTab === 'Extras' && (
-          <div>
-            <p className="text-gray-600 text-lg">Thinking about things to build at the moment, will update soon!</p>
+          <div className="flex flex-col gap-8 items-center">
+            <LinkedInPostCard />
           </div>
         )}
       </div>
 
       <div className="mb-10">
-        <section className="border-t border-gray-200 pt-10 pb-0" />
-        <h2 className="text-3xl font-bold mb-10 text-gray-900">What's in my head!</h2>
-        
-        <div className="space-y-6">
+        <section className="border-t border-gray-200 pt-8 pb-0" />
+        <h2 className="text-2xl font-bold mb-8 text-gray-900">What's in my head!</h2>
+
+        <div className="space-y-12">
           {blogPosts.map((post) => (
             <Link
               key={post.id}
               to={`/${post.id}`}
               className="blog-post-link block text-left w-full group"
             >
-              <h3 className="text-blue-600 dark:text-blue-400 text-xl mb-1">
+              <p className="text-sm text-gray-500 mb-2">{post.date}</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
                 {post.title}
               </h3>
-              <p className="text-gray-500 text-sm mb-2">{post.date}</p>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-700 leading-relaxed">
                 {post.preview}
               </p>
             </Link>

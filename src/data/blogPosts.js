@@ -1,14 +1,14 @@
 export const blogPosts = [
   {
     id: 'designers-code',
-    title: 'Should designers learn how to code?',
+    title: 'Do designers need to code? Wrong question.',
     date: 'October 20, 2025',
-    preview: 'This question pops up every few months, sometimes as a debate and sometimes as a humble brag. The truth is, there\'s no single answer. But after a few years of designing..."'
+    preview: "Every few months this debate resurfaces, usually as a LinkedIn hot take or a quiet anxiety in a design team Slack. After a few years designing with one hand in Figma and the other occasionally in VS Code, I've stopped trying to answer it directly. Because the question isn't really about code. It's about curiosity.",
   },
   {
     id: 'building-portfolio',
-    title: 'Coding my portfolio',
+    title: 'Building this portfolio, or: what happens when a designer gets too deep into a codebase at 2am',
     date: 'October 19, 2025',
-    preview: 'Designing my own portfolio has always felt like an identity crisis in code form. You want it to look polished enough to reflect your craft but still feel alive, personal, and a little bit you...'
+    preview: "I've always found portfolio sites uncomfortable to build. Too polished and they feel like a brochure. Too casual and they undersell the work. So I took the only logical approach: spent several weeks building mine from scratch while simultaneously questioning every decision I've ever made.",
   },
 ];

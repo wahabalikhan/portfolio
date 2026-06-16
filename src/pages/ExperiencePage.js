@@ -97,9 +97,9 @@ export default function ExperiencePage() {
                 {job.company && <span className="text-gray-500 font-normal"> · {job.company}</span>}
               </h3>
 
-              <p className="text-sm text-gray-400 mt-0.5 mb-1">
+              <p className="text-sm text-gray-500 mt-0.5 mb-1">
                 {job.dates}
-                {job.location && <span className="text-gray-400"> · {job.location}</span>}
+                {job.location && <span className="text-gray-500"> · {job.location}</span>}
               </p>
 
               <p className="text-sm text-gray-400 italic mb-3">{job.context}</p>
@@ -112,8 +112,8 @@ export default function ExperiencePage() {
 
               <ul className="space-y-2">
                 {job.bullets.map((bullet, i) => (
-                  <li key={i} className="flex gap-2.5 text-gray-700 leading-relaxed">
-                    <span className="text-gray-300 flex-shrink-0 select-none" style={{ marginTop: '0.35em' }}>–</span>
+                  <li key={i} className="flex items-start gap-2.5 text-gray-700 leading-relaxed">
+                    <span className="text-gray-900 flex-shrink-0 select-none">•</span>
                     <span>{bullet}</span>
                   </li>
                 ))}
