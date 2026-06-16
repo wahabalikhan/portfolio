@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
-import CommentPins from '../components/CommentPins';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function SchemasPage() {
@@ -276,7 +275,6 @@ export default function SchemasPage() {
         </p>
       </section>
 
-      <CommentPins page="schemas" />
       <Footer />
       <ImageModal
         isOpen={!!selectedImage}
