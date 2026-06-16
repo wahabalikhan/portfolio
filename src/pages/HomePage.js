@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import { devProjectMeta, defaultDevProjectMeta } from '../data/devProjects';
@@ -11,8 +11,20 @@ import { usePageTitle } from '../hooks/usePageTitle';
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
     const { repos, loading, error } = useGithubRepos('wahabalikhan');
     usePageTitle();
+
+    const [activeTooltip, setActiveTooltip] = useState(null);
+    const tooltipTimerRef = useRef(null);
+
+    const showTooltip = (word) => {
+      if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current);
+      setActiveTooltip(word);
+      tooltipTimerRef.current = setTimeout(() => {
+        setActiveTooltip(null);
+        tooltipTimerRef.current = null;
+      }, 1500);
+    };
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 relative">
+    <div className="max-w-3xl mx-auto px-6 py-16 relative home-page">
       <CommentPins page="home" />
       <div className="flex items-stretch gap-4 mb-6">
         <img
@@ -22,11 +34,21 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         />
 
         <div>
-          <h1 className="text-3xl font-bold mb-2 text-gray-900">
-            I design products. Then I help ship them.
+          <h1 className="font-bold mb-2 text-gray-900" style={{ fontSize: '2.75rem', lineHeight: '1.12' }}>
+            I{' '}
+            <span className="hero-accent-word hero-accent-design" onClick={() => showTooltip('design')}>
+              {activeTooltip === 'design' && <span className="hero-word-tooltip">Figma, mostly 👀</span>}
+              design
+            </span>
+            {' '}products. Then I help{' '}
+            <span className="hero-accent-word hero-accent-ship" onClick={() => showTooltip('ship')}>
+              {activeTooltip === 'ship' && <span className="hero-word-tooltip">Claude Code helped 🤝</span>}
+              ship
+</span>
+            {' '}them.
           </h1>
 
-          <p className="text-md text-gray-700 leading-relaxed mb-3">
+          <p className="text-base text-gray-700 leading-relaxed mb-3">
             Product Designer & Vibe Coder · BSc CS · NN/g Certified · Metrics-driven
           </p>
 
@@ -38,37 +60,25 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         <h2 className="text-2xl font-bold mb-8 text-gray-900">Case studies</h2>
         
         {/* Tabs */}
-        <div className="flex gap-3 mb-10">
+        <div className="flex gap-2 mb-10">
           <button
             onClick={() => setActiveTab('Design')}
             style={{ cursor: 'pointer' }}
-            className={`px-6 py-2.5 rounded-full text-base font-medium transition-all ${
-              activeTab === 'Design'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`tab-pill transition-all ${activeTab === 'Design' ? 'tab-pill-active' : 'tab-pill-inactive'}`}
           >
             🎨 Design
           </button>
           <button
             onClick={() => setActiveTab('Development')}
             style={{ cursor: 'pointer' }}
-            className={`px-6 py-2.5 rounded-full text-base font-medium transition-all ${
-              activeTab === 'Development'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`tab-pill transition-all ${activeTab === 'Development' ? 'tab-pill-active' : 'tab-pill-inactive'}`}
           >
             💻 Development
           </button>
           <button
             onClick={() => setActiveTab('Extras')}
             style={{ cursor: 'pointer' }}
-            className={`px-6 py-2.5 rounded-full text-base font-medium transition-all ${
-              activeTab === 'Extras'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`tab-pill transition-all ${activeTab === 'Extras' ? 'tab-pill-active' : 'tab-pill-inactive'}`}
           >
             ✨ Extras
           </button>
@@ -137,12 +147,14 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
                 <p className="text-gray-700 leading-relaxed">
                   {study.description}
                 </p>
-                <div className="mb-4 mt-4 rounded-lg">
-                  <img 
-                    src={study.bg_src}
-                    alt={study.title}
-                    className="w-full h-auto rounded-lg border border-gray-200"
-                  />
+                <div className="cs-thumb">
+                  {study.bg_src ? (
+                    <img src={study.bg_src} alt={study.title} />
+                  ) : (
+                    <div className="cs-thumb-placeholder">
+                      <span>{study.title}</span>
+                    </div>
+                  )}
                 </div>
               </Link>
             ))}

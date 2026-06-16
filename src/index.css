@@ -47,6 +47,201 @@ select {
   pointer-events: auto !important;
 }
 
+/* ─── Nav links ───────────────────────────────────────────────────────────── */
+.nav-link {
+  font-size: 15px;
+  font-weight: 400;
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+  display: block;
+}
+
+.nav-link:hover {
+  color: #2563eb;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link-active {
+  color: #2563eb;
+}
+
+.nav-link-active::after {
+  width: 100%;
+  transition: none;
+}
+
+html.dark .nav-link { color: #9ca3af; }
+html.dark .nav-link:hover { color: #60a5fa; }
+html.dark .nav-link-active { color: #60a5fa; }
+
+/* ─── Hero subtitle ─────────────────────────────────────────────────────────── */
+.hero-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: #888;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+html.dark .hero-subtitle { color: #aaa; }
+
+/* ─── Hero accent words ("design" and "ship") ──────────────────────────────── */
+.hero-accent-word {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  top: 0;
+  transition: top 120ms ease; /* return to baseline */
+}
+
+.hero-accent-word:hover {
+  top: -4px;
+  transition: top 150ms ease; /* lift up */
+  z-index: 51; /* paint above fixed nav when scrolled near it */
+}
+
+/* "design" — colour only, no italic */
+.hero-accent-design {
+  color: #2563eb;
+  font-style: normal;
+}
+
+/* "ship" — italic only, inherits headline colour */
+/* padding-right expands the span box so the italic 'p' ink overhang renders inside it, not clipped at the tile edge */
+.hero-accent-ship {
+  font-style: italic;
+  color: inherit;
+  padding-right: 0.15em;
+}
+
+.hero-word-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111827;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  font-style: normal;
+  font-family: 'Inter', sans-serif;
+  padding: 5px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: hero-tooltip-fade 1.5s ease forwards;
+  z-index: 200;
+}
+
+.hero-word-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #111827;
+}
+
+@keyframes hero-tooltip-fade {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  12%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  75%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-2px); }
+}
+
+/* ─── Tab pills ─────────────────────────────────────────────────────────────── */
+.tab-pill {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  line-height: 1.6;
+}
+
+.tab-pill-active {
+  background: #111827;
+  color: #ffffff;
+}
+
+.tab-pill-inactive {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.tab-pill-inactive:hover {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+html.dark .tab-pill-active { background: #e5e7eb; color: #111827; }
+html.dark .tab-pill-inactive { background: rgba(255,255,255,0.06); color: #6b7280; }
+html.dark .tab-pill-inactive:hover { background: rgba(255,255,255,0.1); color: #9ca3af; }
+
+/* ─── Hero page glow — sized ellipse so glow ends at hero section, fades in all directions ── */
+.app-root {
+  background-image: radial-gradient(ellipse 50% 340px at 18% 100px, rgba(37, 99, 235, 0.07) 0%, transparent 100%);
+}
+
+html.dark .app-root {
+  background-image: radial-gradient(ellipse 50% 340px at 18% 100px, rgba(37, 99, 235, 0.11) 0%, transparent 100%);
+}
+
+/* ─── Case study thumbnail (16:9) ────────────────────────────────────────────── */
+.cs-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cs-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cs-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.cs-thumb-placeholder span {
+  color: #4a4a6a;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.5;
+}
+
+html.dark .cs-thumb { border-color: #374151; }
+
 /* ─── Handwritten Annotation (floating/draggable) ─────────────────────────── */
 .floating-annotation {
   font-family: 'Caveat', cursive;
@@ -464,25 +659,84 @@ html.dark .theme-toggle-button:hover {
   color: #f0f0f0;
 }
 
-.theme-toggle-tooltip {
-  position: absolute;
-  bottom: -2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #111827;
-  color: #f0f0f0;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  white-space: nowrap;
-  pointer-events: none;
-  animation: fadeIn 0.2s ease;
+/* ─── Figma-style tooltips ──────────────────────────────────────────────────── */
+.ftip-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-html.dark .theme-toggle-tooltip {
-  background-color: #f0f0f0;
-  color: #111827;
+/* Default: appears above (for bottom toolbar) */
+.ftip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  padding: 5px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 200;
+}
+
+/* Caret pointing down */
+.ftip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #111827;
+}
+
+.ftip-wrap:hover .ftip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Variant: appears below (for top nav / theme toggle) */
+.ftip-below {
+  bottom: auto;
+  top: calc(100% + 10px);
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.ftip-below::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: #111827;
+}
+
+.ftip-wrap:hover .ftip-below {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Keyboard key badge */
+.ftip-key {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Legacy — keep existing class name working */
+.theme-toggle-tooltip {
+  display: none;
 }
 
 @keyframes fadeIn {
