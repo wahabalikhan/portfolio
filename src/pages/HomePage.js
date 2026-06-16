@@ -30,22 +30,6 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
             Product Designer & Vibe Coder · BSc CS · NN/g Certified · Metrics-driven
           </p>
 
-          <div className="flex gap-4 items-center">
-            <a
-              href="https://www.linkedin.com/in/wahabalikhan/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-text text-blue-600 dark:text-blue-400 inline-flex items-center gap-1"
-            >
-              <b>LinkedIn ↗</b>
-            </a>
-            <a
-              href="mailto:wahab-ali-khan@hotmail.com"
-              className="link-text text-blue-600 dark:text-blue-400 inline-flex items-center gap-1"
-            >
-              <b>Contact ↗</b>
-            </a>
-          </div>
         </div>
       </div>
 
