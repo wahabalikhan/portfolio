@@ -32,16 +32,18 @@ export function useGithubRepos(username = import.meta.env.VITE_GITHUB_USERNAME) 
           .map(repo => ({
             id: repo.id,
             name: repo.name,
-            title: repo.name.split('-').map(word => 
+            title: repo.name.split('-').map(word =>
               word.charAt(0).toUpperCase() + word.slice(1)
             ).join(' '),
-            description: repo.description || 'No description available',
-            tech: repo.topics || [], // GitHub topics as tech tags
+            description: repo.description || '',
+            tech: repo.topics || [],
             language: repo.language,
             stars: repo.stargazers_count,
             github: repo.html_url,
             demo: repo.homepage || null,
-            updated: repo.updated_at
+            updated: repo.pushed_at || repo.updated_at,
+            fork: repo.fork,
+            parent: repo.parent ? { full_name: repo.parent.full_name, html_url: repo.parent.html_url } : null,
           }))
           .sort((a, b) => new Date(b.updated) - new Date(a.updated)); // Sort by most recent
         
