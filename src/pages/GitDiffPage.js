@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
+import CommentPins from '../components/CommentPins';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function GitDiffPage() {
@@ -315,6 +316,7 @@ export default function GitDiffPage() {
 
                 </p>
             </section>
+            <CommentPins page="git-diff" />
             <Footer />
             <ImageModal
                 isOpen={!!selectedImage}

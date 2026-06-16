@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import { blogPosts } from '../data/blogPosts';
 import Footer from '../components/Footer';
+import CommentPins from '../components/CommentPins';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function DesignSystemsBlogPage() {
@@ -84,6 +85,7 @@ export default function DesignSystemsBlogPage() {
           </div>
         </div>
       </div>
+      <CommentPins page="design-systems" />
       <Footer />
     </div>
   );
