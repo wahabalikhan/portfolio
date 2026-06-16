@@ -37,12 +37,23 @@ const truncate = (text, words = 7) => {
   return parts.slice(0, words).join(' ') + '…';
 };
 
-const overlayStyle = (mode) => ({
-  position: 'absolute',
+// Fixed viewport container — no scroll contribution, clips overflow so it never extends the page
+const fixedOverlayStyle = (mode) => ({
+  position: 'fixed',
   top: 0, left: 0, right: 0, bottom: 0,
   zIndex: 30,
   pointerEvents: mode === 'comment' ? 'auto' : 'none',
   cursor: mode === 'comment' ? 'crosshair' : 'default',
+  overflow: 'hidden',
+});
+
+const scrollCanvasStyle = (height) => ({
+  position: 'absolute',
+  top: 0, left: 0, right: 0,
+  height: height > 0 ? `${height}px` : '100vh',
+  transform: 'translateY(0)',
+  pointerEvents: 'none',
+  willChange: 'transform',
 });
 
 const cardWrapperStyle = (xPct, yPct, deg) => ({
@@ -103,8 +114,9 @@ const inputStyle = {
 };
 
 export default function CommentPins({ page, showPresets = true }) {
-  const overlayRef = useRef(null);
-  const channelRef = useRef(null);
+  const channelRef     = useRef(null);
+  const canvasRef      = useRef(null);
+  const annotationCanvasRef = useRef(null);
 
   const [mode, setMode]           = useState('cursor');
   const [comments, setComments]   = useState([]);
@@ -200,12 +212,30 @@ export default function CommentPins({ page, showPresets = true }) {
   }, []);
 
   useLayoutEffect(() => {
-    const update = () => { if (overlayRef.current) setOverlayHeight(overlayRef.current.offsetHeight); };
+    const update = () => {
+      const h = document.documentElement.scrollHeight;
+      setOverlayHeight(prev => h > prev ? h : prev);
+    };
     update();
     const ro = new ResizeObserver(update);
-    if (overlayRef.current) ro.observe(overlayRef.current);
+    ro.observe(document.body);
     window.addEventListener('resize', update);
     return () => { ro.disconnect(); window.removeEventListener('resize', update); };
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const sy = window.scrollY;
+      if (canvasRef.current) {
+        canvasRef.current.style.transform = `translateY(-${sy * 0.97}px)`;
+      }
+      if (annotationCanvasRef.current) {
+        annotationCanvasRef.current.style.transform = `translateY(-${sy * 0.90}px)`;
+      }
+    };
+    onScroll(); // sync immediately if page starts scrolled
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
@@ -340,10 +370,9 @@ export default function CommentPins({ page, showPresets = true }) {
     if (justDraggedRef.current) { justDraggedRef.current = false; return; }
     setExpandedId(null);
     if (mode !== 'comment' || draft) return;
-    const rect = overlayRef.current.getBoundingClientRect();
     setDraft({
-      x_pct: ((e.clientX - rect.left) / rect.width)  * 100,
-      y_pct: ((e.clientY - rect.top)  / rect.height) * 100,
+      x_pct: (e.clientX / window.innerWidth) * 100,
+      y_pct: overlayHeight > 0 ? ((e.clientY + window.scrollY) / overlayHeight) * 100 : 0,
     });
     setDraftAuthor(''); setDraftBody('');
   };
@@ -432,7 +461,10 @@ export default function CommentPins({ page, showPresets = true }) {
 
   return createPortal(
     <>
-      <div ref={overlayRef} style={overlayStyle(mode)} onClick={handleOverlayClick}>
+      {/* Fixed viewport container clips the canvas so it never adds scroll height */}
+      <div style={fixedOverlayStyle(mode)} onClick={handleOverlayClick}>
+        {/* Canvas locked to Design-tab height; shifts with scroll so pins stay at their page positions */}
+        <div ref={canvasRef} style={scrollCanvasStyle(overlayHeight)}>
 
         {!hidden && (
           <>
@@ -448,36 +480,6 @@ export default function CommentPins({ page, showPresets = true }) {
             })}
           </>
         )}
-
-        {page === 'home' && (() => {
-          const isDragging = draggingId === '__annotation__';
-          const pos = isDragging && dragPos ? dragPos : annotationPos;
-          return (
-            <div
-              style={{
-                position: 'absolute',
-                left: `${pos.x_pct}%`,
-                top: `${pos.y_pct}%`,
-                transform: `translate(-50%, -50%) rotate(-2deg)`,
-                pointerEvents: 'auto',
-                cursor: isDragging ? 'grabbing' : 'grab',
-                zIndex: 31,
-                userSelect: 'none',
-              }}
-              onMouseDown={startAnnotationDrag}
-            >
-              <div className="floating-annotation">
-                <div>got thoughts?</div>
-                <div>drop a comment</div>
-                <div>anywhere on the page ↓</div>
-                <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 6, marginLeft: 12 }}>
-                  <path d="M6 3 C2 14 28 18 24 34" strokeWidth="1.5" strokeLinecap="round" />
-                  <path d="M19 30 L24 34 L28 29" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </div>
-          );
-        })()}
 
         {Object.entries(cursors).map(([id, c]) => (
           <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color)}>
@@ -518,7 +520,41 @@ export default function CommentPins({ page, showPresets = true }) {
             </div>
           </div>
         )}
-      </div>
+        </div>{/* /scrollCanvas */}
+
+        {/* Annotation canvas — separate parallax rate (0.90x) so it floats more freely */}
+        {page === 'home' && (() => {
+          const isDragging = draggingId === '__annotation__';
+          const pos = isDragging && dragPos ? dragPos : annotationPos;
+          return (
+            <div ref={annotationCanvasRef} style={scrollCanvasStyle(overlayHeight)}>
+              <div
+                style={{
+                  position: 'absolute',
+                  left: `${pos.x_pct}%`,
+                  top: `${pos.y_pct}%`,
+                  transform: 'translate(-50%, -50%) rotate(-2deg)',
+                  pointerEvents: 'auto',
+                  cursor: isDragging ? 'grabbing' : 'grab',
+                  zIndex: 31,
+                  userSelect: 'none',
+                }}
+                onMouseDown={startAnnotationDrag}
+              >
+                <div className="floating-annotation">
+                  <div>got thoughts?</div>
+                  <div>drop a comment</div>
+                  <div>anywhere on the page ↓</div>
+                  <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 6, marginLeft: 12 }}>
+                    <path d="M6 3 C2 14 28 18 24 34" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M19 30 L24 34 L28 29" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+      </div>{/* /fixedOverlay */}
 
       {/* Toolbar */}
       <div style={toolbarStyle}>
@@ -527,25 +563,37 @@ export default function CommentPins({ page, showPresets = true }) {
           {viewerCount} viewing
         </div>
         <div style={toolbarDivider} />
-        <button type="button" aria-label="Cursor mode" style={toolbarBtnStyle(mode === 'cursor')}
-          onClick={() => { setMode('cursor'); cancelDraft(); }}>
-          <MousePointer2 size={18} />
-        </button>
-        <button type="button" aria-label="Comment mode" style={toolbarBtnStyle(mode === 'comment')}
-          onClick={() => setMode('comment')}>
-          <MessageCircle size={18} />
-        </button>
-        <button type="button" aria-label={hidden ? 'Show comments' : 'Hide comments'} style={toolbarBtnStyle(hidden)}
-          onClick={() => setHidden(h => !h)}>
-          {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
-        </button>
+        <div className="ftip-wrap">
+          <button type="button" aria-label="Cursor mode" style={toolbarBtnStyle(mode === 'cursor')}
+            onClick={() => { setMode('cursor'); cancelDraft(); }}>
+            <MousePointer2 size={18} />
+          </button>
+          <div className="ftip">Cursor</div>
+        </div>
+        <div className="ftip-wrap">
+          <button type="button" aria-label="Comment mode" style={toolbarBtnStyle(mode === 'comment')}
+            onClick={() => setMode('comment')}>
+            <MessageCircle size={18} />
+          </button>
+          <div className="ftip">Comment</div>
+        </div>
+        <div className="ftip-wrap">
+          <button type="button" aria-label={hidden ? 'Show comments' : 'Hide comments'} style={toolbarBtnStyle(hidden)}
+            onClick={() => setHidden(h => !h)}>
+            {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+          <div className="ftip">{hidden ? 'Show' : 'Hide'} comments</div>
+        </div>
         {isOwner && (
           <>
             <div style={toolbarDivider} />
-            <button type="button" aria-label="Log out" style={toolbarBtnStyle(false)}
-              onClick={() => supabase.auth.signOut()}>
-              <LogOut size={18} />
-            </button>
+            <div className="ftip-wrap">
+              <button type="button" aria-label="Log out" style={toolbarBtnStyle(false)}
+                onClick={() => supabase.auth.signOut()}>
+                <LogOut size={18} />
+              </button>
+              <div className="ftip">Log out</div>
+            </div>
           </>
         )}
       </div>
