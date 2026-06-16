@@ -36,6 +36,12 @@ export default function PageNav({ isDarkMode }) {
         <Link to="/" className={linkClass(!isExperience)}>Case studies</Link>
         <Link to="/experience" className={linkClass(isExperience)}>Experience</Link>
         <a
+          href="mailto:wahab-ali-khan@hotmail.com"
+          className="link-text font-medium text-gray-700 transition-colors hover:text-blue-600"
+        >
+          Contact ↗
+        </a>
+        <a
           href="/resume.pdf"
           download="Wahab_Ali_Khan_Resume.pdf"
           className="link-text font-medium text-gray-700 transition-colors hover:text-blue-600"
@@ -108,6 +114,21 @@ export default function PageNav({ isDarkMode }) {
                 {label}
               </Link>
             ))}
+            <a
+              href="mailto:wahab-ali-khan@hotmail.com"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: 'block',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '0.5rem',
+                fontWeight: 500,
+                fontSize: '0.9375rem',
+                color: isDarkMode ? '#d1d5db' : '#374151',
+                textDecoration: 'none',
+              }}
+            >
+              Contact
+            </a>
             <a
               href="/resume.pdf"
               download="Wahab_Ali_Khan_Resume.pdf"
