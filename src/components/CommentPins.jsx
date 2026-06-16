@@ -19,16 +19,15 @@ const isTouchDevice = () =>
 const PRESET_PINS = [
 ];
 
-// Rendered via a portal directly into <body>, so this has no positioned
-// ancestors - top/left/width are relative to the whole document, and
-// height is set explicitly to the full document height so the overlay
-// covers the entire page, not just the narrow content column.
-const overlayStyle = (mode, height) => ({
+// Rendered via a portal into <body> (which has position:relative), so the
+// overlay stretches to fill the full document via top/bottom/left/right: 0.
+// No explicit height needed — avoids a Safari scrollHeight feedback loop.
+const overlayStyle = (mode) => ({
   position: 'absolute',
   top: 0,
   left: 0,
-  width: '100%',
-  height: `${height}px`,
+  right: 0,
+  bottom: 0,
   zIndex: 30,
   pointerEvents: mode === 'comment' ? 'auto' : 'none',
   cursor: mode === 'comment' ? 'crosshair' : 'default',
@@ -174,14 +173,16 @@ export default function CommentPins({ page }) {
   const dragStartRef = useRef(null);  // { x, y } at mousedown, for click-vs-drag
   const justDraggedRef = useRef(false);
 
-  // Measure the full document height so the overlay (portalled into <body>)
-  // covers the entire page, including content outside the narrow content column
+  // Measure the overlay's own rendered height (body is the containing block).
+  // Observing the overlay avoids the Safari scrollHeight feedback loop.
   useLayoutEffect(() => {
-    const updateHeight = () => setOverlayHeight(document.documentElement.scrollHeight);
+    const updateHeight = () => {
+      if (overlayRef.current) setOverlayHeight(overlayRef.current.offsetHeight);
+    };
     updateHeight();
 
     const resizeObserver = new ResizeObserver(updateHeight);
-    resizeObserver.observe(document.body);
+    if (overlayRef.current) resizeObserver.observe(overlayRef.current);
     window.addEventListener('resize', updateHeight);
 
     return () => {
@@ -268,7 +269,7 @@ export default function CommentPins({ page }) {
       if (!channel) return;
 
       const x_pct = (e.clientX / window.innerWidth) * 100;
-      const y_pct = (e.pageY / document.documentElement.scrollHeight) * 100;
+      const y_pct = overlayHeight > 0 ? (e.pageY / overlayHeight) * 100 : 0;
 
       channel.send({
         type: 'broadcast',
@@ -279,7 +280,15 @@ export default function CommentPins({ page }) {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [sessionId, cursorColor]);
+  }, [sessionId, cursorColor, overlayHeight]);
+
+  // Close the open pin note when clicking anywhere outside the pin or note
+  useEffect(() => {
+    if (!openPinId) return;
+    const close = () => setOpenPinId(null);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [openPinId]);
 
   // Pin dragging — active only while draggingId is set
   useEffect(() => {
@@ -338,6 +347,7 @@ export default function CommentPins({ page }) {
 
   const handleOverlayClick = (e) => {
     if (justDraggedRef.current) { justDraggedRef.current = false; return; }
+    setOpenPinId(null);
     if (mode !== 'comment' || draft) return;
 
     const rect = overlayRef.current.getBoundingClientRect();
@@ -388,7 +398,7 @@ export default function CommentPins({ page }) {
     <>
       <div
         ref={overlayRef}
-        style={overlayStyle(mode, overlayHeight)}
+        style={overlayStyle(mode)}
         onClick={handleOverlayClick}
       >
         {PRESET_PINS.map((pin) => (

@@ -19,7 +19,14 @@ export default function App() {
   // For tab state on homepage only
   const [activeTab, setActiveTab] = useState('Design');
   const [isDarkMode, setIsDarkMode] = useState(false);
-  
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   // Load theme preference from localStorage
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -49,17 +56,23 @@ export default function App() {
   return (
     <Router>
       <div 
-        className="min-h-screen transition-colors app-root"
+        className="transition-colors app-root"
         style={{
           backgroundColor: isDarkMode ? '#050f1b' : '#F8FAFD',
           color: isDarkMode ? '#f0f0f0' : '#111827',
         }}
       >
         <ScrollToTop />
-        <div className="top-nav-bar">
+        <div
+          className="top-nav-bar"
+          style={{
+            backgroundColor: scrolled ? (isDarkMode ? '#050f1b' : '#F8FAFD') : 'transparent',
+            borderColor: scrolled ? (isDarkMode ? '#374151' : '#e5e7eb') : 'transparent',
+          }}
+        >
           <NavBrand />
-          <div className="flex items-center gap-6">
-            <PageNav />
+          <div className="flex items-center nav-right">
+            <PageNav isDarkMode={isDarkMode} />
             <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
           </div>
         </div>
