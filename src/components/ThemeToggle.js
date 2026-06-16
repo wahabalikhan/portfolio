@@ -15,9 +15,9 @@ export default function ThemeToggle({ isDarkMode, toggleTheme }) {
           onMouseLeave={() => setShowTooltip(false)}
         >
           {isDarkMode ? (
-            <Sun className="w-5 h-5" />
+            <Sun size={18} />
           ) : (
-            <Moon className="w-5 h-5" />
+            <Moon size={18} />
           )}
         </button>
         {showTooltip && (

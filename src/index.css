@@ -237,34 +237,36 @@ html.dark .hover\:border-gray-400:hover {
 
 .theme-toggle-wrapper {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
 }
 
 .theme-toggle-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: #f3f4f6;
-  color: #111827;
-  border: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: transparent;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   cursor: pointer;
 }
 
 .theme-toggle-button:hover {
-  background-color: #e5e7eb;
+  background-color: rgba(0, 0, 0, 0.06);
+  color: #111827;
 }
 
 html.dark .theme-toggle-button {
-  background-color: #1f2937;
-  color: #f0f0f0;
+  color: #9ca3af;
+  border-color: #374151;
 }
 
 html.dark .theme-toggle-button:hover {
-  background-color: #374151;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #f0f0f0;
 }
 
 .theme-toggle-tooltip {
