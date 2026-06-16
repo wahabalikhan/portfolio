@@ -51,9 +51,9 @@ const scrollCanvasStyle = (height) => ({
   position: 'absolute',
   top: 0, left: 0, right: 0,
   height: height > 0 ? `${height}px` : '100vh',
-  transform: 'translateY(0)',
   pointerEvents: 'none',
   willChange: 'transform',
+  // transform intentionally absent — set imperatively via ref so React never overwrites it
 });
 
 const cardWrapperStyle = (xPct, yPct, deg) => ({
@@ -223,19 +223,19 @@ export default function CommentPins({ page, showPresets = true }) {
     return () => { ro.disconnect(); window.removeEventListener('resize', update); };
   }, []);
 
+  const applyScrollTransforms = () => {
+    const sy = window.scrollY;
+    if (canvasRef.current)           canvasRef.current.style.transform           = `translateY(-${sy * 0.97}px)`;
+    if (annotationCanvasRef.current) annotationCanvasRef.current.style.transform = `translateY(-${sy * 0.90}px)`;
+  };
+
+  // After every React commit, correct any stale transform before the browser paints
+  useLayoutEffect(() => { applyScrollTransforms(); });
+
+  // During scroll, update transforms directly — no React re-render
   useEffect(() => {
-    const onScroll = () => {
-      const sy = window.scrollY;
-      if (canvasRef.current) {
-        canvasRef.current.style.transform = `translateY(-${sy * 0.97}px)`;
-      }
-      if (annotationCanvasRef.current) {
-        annotationCanvasRef.current.style.transform = `translateY(-${sy * 0.90}px)`;
-      }
-    };
-    onScroll(); // sync immediately if page starts scrolled
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener('scroll', applyScrollTransforms, { passive: true });
+    return () => window.removeEventListener('scroll', applyScrollTransforms);
   }, []);
 
   useEffect(() => {

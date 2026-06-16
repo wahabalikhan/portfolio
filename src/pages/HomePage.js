@@ -55,7 +55,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
         </div>
       </div>
 
-      <div className="mt-10 mb-10">
+      <div id="case-studies" className="mt-10 mb-10">
         <section className="border-t border-gray-200 pt-8 pb-0" />
         <h2 className="text-2xl font-bold mb-8 text-gray-900">Case studies</h2>
         
