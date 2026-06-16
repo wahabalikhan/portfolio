@@ -126,7 +126,15 @@ export default function CommentPins({ page, showPresets = true }) {
   const [expandedId, setExpandedId] = useState(null);
   const [saving, setSaving]       = useState(false);
   const [hidden, setHidden]       = useState(false);
-  const [overlayHeight, setOverlayHeight] = useState(0);
+  const [overlayHeight, setOverlayHeight] = useState(() => {
+    if (typeof window === 'undefined') return 0;
+    try {
+      const saved = localStorage.getItem(`cc-overlay-h-${page}`);
+      const savedH = saved ? parseInt(saved, 10) : 0;
+      return Math.max(savedH, document.documentElement.scrollHeight);
+    } catch {}
+    return document.documentElement.scrollHeight || 0;
+  });
   const [cursors, setCursors]     = useState({});
   const [viewerCount, setViewerCount] = useState(0);
   const [isMobile, setIsMobile]   = useState(() => typeof window !== 'undefined' && window.innerWidth <= 767);
@@ -214,14 +222,18 @@ export default function CommentPins({ page, showPresets = true }) {
   useLayoutEffect(() => {
     const update = () => {
       const h = document.documentElement.scrollHeight;
-      setOverlayHeight(prev => h > prev ? h : prev);
+      setOverlayHeight(prev => {
+        const next = h > prev ? h : prev;
+        try { localStorage.setItem(`cc-overlay-h-${page}`, String(next)); } catch {}
+        return next;
+      });
     };
     update();
     const ro = new ResizeObserver(update);
     ro.observe(document.body);
     window.addEventListener('resize', update);
     return () => { ro.disconnect(); window.removeEventListener('resize', update); };
-  }, []);
+  }, [page]);
 
   const applyScrollTransforms = () => {
     const sy = window.scrollY;
