@@ -27,7 +27,7 @@ export default function PageNav({ isDarkMode }) {
   }, [menuOpen]);
 
   const linkClass = (active) =>
-    `link-text transition-colors hover:text-blue-600 ${active ? 'font-bold text-gray-900' : 'font-medium text-gray-700'}`;
+    `nav-link transition-colors ${active ? 'nav-link-active' : 'text-gray-500'}`;
 
   return (
     <>
@@ -37,14 +37,14 @@ export default function PageNav({ isDarkMode }) {
         <Link to="/experience" className={linkClass(isExperience)}>Experience</Link>
         <a
           href="mailto:wahab-ali-khan@hotmail.com"
-          className="link-text font-medium text-gray-700 transition-colors hover:text-blue-600"
+          className="nav-link text-gray-500 transition-colors hover:text-gray-900"
         >
           Contact ↗
         </a>
         <a
           href="/resume.pdf"
           download="Wahab_Ali_Khan_Resume.pdf"
-          className="link-text font-medium text-gray-700 transition-colors hover:text-blue-600"
+          className="nav-link text-gray-500 transition-colors hover:text-gray-900"
         >
           Resume ↓
         </a>
@@ -102,13 +102,13 @@ export default function PageNav({ isDarkMode }) {
                   display: 'block',
                   padding: '0.5rem 0.75rem',
                   borderRadius: '0.5rem',
-                  fontWeight: active ? 600 : 500,
+                  fontWeight: 400,
                   fontSize: '0.9375rem',
-                  color: isDarkMode ? (active ? '#ffffff' : '#d1d5db') : (active ? '#111827' : '#374151'),
-                  textDecoration: 'none',
-                  backgroundColor: active
-                    ? (isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)')
-                    : 'transparent',
+                  color: isDarkMode ? (active ? '#ffffff' : '#9ca3af') : (active ? '#111827' : '#6b7280'),
+                  textDecoration: active ? 'underline' : 'none',
+                  textDecorationThickness: '1.5px',
+                  textUnderlineOffset: '3px',
+                  backgroundColor: 'transparent',
                 }}
               >
                 {label}
@@ -121,9 +121,9 @@ export default function PageNav({ isDarkMode }) {
                 display: 'block',
                 padding: '0.5rem 0.75rem',
                 borderRadius: '0.5rem',
-                fontWeight: 500,
-                fontSize: '0.9375rem',
-                color: isDarkMode ? '#d1d5db' : '#374151',
+                fontWeight: 400,
+                fontSize: '0.875rem',
+                color: isDarkMode ? '#9ca3af' : '#6b7280',
                 textDecoration: 'none',
               }}
             >
@@ -137,9 +137,9 @@ export default function PageNav({ isDarkMode }) {
                 display: 'block',
                 padding: '0.5rem 0.75rem',
                 borderRadius: '0.5rem',
-                fontWeight: 500,
-                fontSize: '0.9375rem',
-                color: isDarkMode ? '#d1d5db' : '#374151',
+                fontWeight: 400,
+                fontSize: '0.875rem',
+                color: isDarkMode ? '#9ca3af' : '#6b7280',
                 textDecoration: 'none',
               }}
             >
