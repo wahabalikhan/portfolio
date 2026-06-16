@@ -28,7 +28,7 @@ export default function PageNav() {
         download="Wahab_Ali_Khan_Resume.pdf"
         className="link-text font-medium text-gray-700 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
       >
-        Resume
+        Resume ↓
       </a>
     </div>
   );

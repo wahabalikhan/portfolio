@@ -17,13 +17,6 @@ const isTouchDevice = () =>
 
 // Hardcoded "director's commentary" pins - always shown, regardless of the database
 const PRESET_PINS = [
-  {
-    id: 'preset-1',
-    x_pct: 50,
-    y_pct: 22,
-    author: 'Wahab',
-    body: "this is the 36.1% one 👀 timed it myself with the design team",
-  },
 ];
 
 // Rendered via a portal directly into <body>, so this has no positioned
@@ -174,6 +167,13 @@ export default function CommentPins({ page }) {
   const [sessionId] = useState(randomId);
   const [cursorColor] = useState(() => CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)]);
 
+  const [draggingId, setDraggingId] = useState(null);
+  const [dragPos, setDragPos] = useState(null);
+  const dragMetaRef = useRef(null);   // { id, offsetX_px, offsetY_px }
+  const dragPosRef = useRef(null);    // latest { x_pct, y_pct } during drag
+  const dragStartRef = useRef(null);  // { x, y } at mousedown, for click-vs-drag
+  const justDraggedRef = useRef(false);
+
   // Measure the full document height so the overlay (portalled into <body>)
   // covers the entire page, including content outside the narrow content column
   useLayoutEffect(() => {
@@ -281,7 +281,63 @@ export default function CommentPins({ page }) {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [sessionId, cursorColor]);
 
+  // Pin dragging — active only while draggingId is set
+  useEffect(() => {
+    if (!draggingId) return;
+
+    document.body.style.userSelect = 'none';
+
+    const onMove = (e) => {
+      const meta = dragMetaRef.current;
+      if (!meta) return;
+      const x_pct = Math.max(0, Math.min(100, ((e.clientX - meta.offsetX_px) / window.innerWidth) * 100));
+      const y_pct = Math.max(0, Math.min(100, ((e.pageY - meta.offsetY_px) / overlayHeight) * 100));
+      const pos = { x_pct, y_pct };
+      dragPosRef.current = pos;
+      setDragPos({ ...pos });
+    };
+
+    const onUp = () => {
+      const meta = dragMetaRef.current;
+      const pos = dragPosRef.current;
+      if (meta && pos) {
+        setComments((prev) =>
+          prev.map((c) => c.id === meta.id ? { ...c, x_pct: pos.x_pct, y_pct: pos.y_pct } : c)
+        );
+        supabase.from('comments').update({ x_pct: pos.x_pct, y_pct: pos.y_pct }).eq('id', meta.id);
+        justDraggedRef.current = true;
+      }
+      document.body.style.userSelect = '';
+      setDraggingId(null);
+      setDragPos(null);
+      dragMetaRef.current = null;
+      dragPosRef.current = null;
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      document.body.style.userSelect = '';
+    };
+  }, [draggingId, overlayHeight]);
+
+  const handlePinMouseDown = (e, pinId, x_pct, y_pct) => {
+    e.stopPropagation();
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    dragMetaRef.current = {
+      id: pinId,
+      offsetX_px: e.clientX - (x_pct / 100) * window.innerWidth,
+      offsetY_px: e.pageY - (y_pct / 100) * overlayHeight,
+    };
+    dragPosRef.current = { x_pct, y_pct };
+    setOpenPinId(null);
+    setDraggingId(pinId);
+  };
+
   const handleOverlayClick = (e) => {
+    if (justDraggedRef.current) { justDraggedRef.current = false; return; }
     if (mode !== 'comment' || draft) return;
 
     const rect = overlayRef.current.getBoundingClientRect();
@@ -355,25 +411,35 @@ export default function CommentPins({ page }) {
           </div>
         ))}
 
-        {comments.map((pin) => (
-          <div key={pin.id} style={pinWrapperStyle(pin.x_pct, pin.y_pct)}>
-            <button
-              type="button"
-              aria-label="Comment pin"
-              style={markerStyle(VISITOR_COLOR)}
-              onClick={(e) => {
-                e.stopPropagation();
-                togglePin(pin.id);
-              }}
-            />
-            {openPinId === pin.id && (
-              <div style={noteStyle} onClick={(e) => e.stopPropagation()}>
-                <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{pin.author || 'Anonymous'}</p>
-                <p>{pin.body}</p>
-              </div>
-            )}
-          </div>
-        ))}
+        {comments.map((pin) => {
+          const isDragging = pin.id === draggingId;
+          const pos = isDragging && dragPos ? dragPos : { x_pct: pin.x_pct, y_pct: pin.y_pct };
+          return (
+            <div
+              key={pin.id}
+              style={{ ...pinWrapperStyle(pos.x_pct, pos.y_pct), cursor: isDragging ? 'grabbing' : 'grab' }}
+            >
+              <button
+                type="button"
+                aria-label="Comment pin"
+                style={{ ...markerStyle(VISITOR_COLOR), cursor: isDragging ? 'grabbing' : 'grab' }}
+                onMouseDown={(e) => handlePinMouseDown(e, pin.id, pin.x_pct, pin.y_pct)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const start = dragStartRef.current;
+                  const moved = start && (Math.abs(e.clientX - start.x) > 5 || Math.abs(e.clientY - start.y) > 5);
+                  if (!moved) togglePin(pin.id);
+                }}
+              />
+              {openPinId === pin.id && !isDragging && (
+                <div style={noteStyle} onClick={(e) => e.stopPropagation()}>
+                  <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{pin.author || 'Anonymous'}</p>
+                  <p>{pin.body}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {Object.entries(cursors).map(([id, cursor]) => (
           <div key={id} style={cursorStyle(cursor.x_pct, cursor.y_pct, cursor.color)}>
