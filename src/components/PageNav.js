@@ -94,7 +94,7 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
           <div
             style={{
               position: 'fixed',
-              top: '5.5rem',
+              top: '4.25rem',
               right: '2.5rem',
               minWidth: '160px',
               backgroundColor: isDarkMode ? '#1c1c1c' : '#ffffff',
