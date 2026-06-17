@@ -794,6 +794,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   }, [isOwner, draggingId]);
 
   const startAnnotationDrag = (e) => {
+    if (!isOwner) return;
     e.stopPropagation();
     const m = contentMetricsRef.current;
     dragStartRef.current = { x: e.clientX, y: e.clientY };
@@ -844,7 +845,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       x_pct,
       y_pct: overlayHeight > 0 ? ((e.pageY - m.absTop) / overlayHeight) * 100 : 0,
     });
-    setDraftAuthor(displayNameRef.current); setDraftBody('');
+    const savedRealName = isOwner ? 'Wahab' : (() => { try { return localStorage.getItem('wahab_visitor_name') || ''; } catch { return ''; } })();
+    setDraftAuthor(savedRealName); setDraftBody('');
   };
 
   const cancelDraft = () => { setDraft(null); setDraftAuthor(''); setDraftBody(''); };
@@ -869,12 +871,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
         return n;
       });
-      // If they typed a name that differs from their anon identity, upgrade to real name
-      if (enteredName && enteredName !== getOrCreateAnonName()) {
-        try {
-          localStorage.setItem('wahab_visitor_name', enteredName);
-          sessionStorage.setItem('wahab_anon_name', enteredName);
-        } catch {}
+      if (enteredName && enteredName !== 'Anonymous') {
+        try { localStorage.setItem('wahab_visitor_name', enteredName); } catch {}
       }
     }
     cancelDraft();
@@ -1057,11 +1055,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
                   top: `${cAbsTop + (pos.y_pct / 100) * overlayHeight}px`,
                   transform: 'translate(-50%, -50%) rotate(-2deg)',
                   pointerEvents: 'auto',
-                  cursor: isDragging ? 'grabbing' : 'grab',
+                  cursor: !isOwner ? 'default' : (isDragging ? 'grabbing' : 'grab'),
                   zIndex: 31,
                   userSelect: 'none',
                 }}
-                onMouseDown={startAnnotationDrag}
+                onMouseDown={isOwner ? startAnnotationDrag : undefined}
               >
                 <div className="floating-annotation">
                   <div>got thoughts?</div>
@@ -1112,7 +1110,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
           <div className="cc-card cc-draft" onClick={(e) => e.stopPropagation()}>
             <input
               type="text"
-              placeholder="Your name (optional)"
+              placeholder="Your name (or leave anonymous)"
               value={draftAuthor}
               onChange={(e) => setDraftAuthor(e.target.value)}
               style={inputStyle}
