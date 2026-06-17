@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff } from 'lucide-react';
+import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
 const PRESET_COLOR = '#7F77DD';
@@ -248,6 +248,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const [draggingId, setDraggingId] = useState(null);
   const [dragPos, setDragPos]       = useState(null);
 
+  const [mobileToastVisible, setMobileToastVisible] = useState(false);
+  const [mobileToastFading,  setMobileToastFading]  = useState(false);
+
   const displayNameRef = useRef(''); // synced to getDisplayName(isOwner) on every render
 
   const [presetPositions, setPresetPositions] = useState(() => {
@@ -390,6 +393,21 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   }, []);
 
   useEffect(() => {
+    if (!isMobile) return;
+    try { if (sessionStorage.getItem('wahab_desktop_toast_shown')) return; } catch {}
+    let dismissTimer;
+    const showTimer = setTimeout(() => {
+      try { sessionStorage.setItem('wahab_desktop_toast_shown', 'true'); } catch {}
+      setMobileToastVisible(true);
+      dismissTimer = setTimeout(() => {
+        setMobileToastFading(true);
+        setTimeout(() => { setMobileToastFading(false); setMobileToastVisible(false); }, 200);
+      }, 4000);
+    }, 4000);
+    return () => { clearTimeout(showTimer); clearTimeout(dismissTimer); };
+  }, [isMobile]);
+
+  useEffect(() => {
     const onKey = (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'L') setShowLogin(s => !s);
     };
@@ -429,6 +447,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   }, [activeTab]);
 
   useEffect(() => {
+    if (isMobile) return;
     supabase.from('comments').select('*').eq('page', page).then(({ data, error }) => {
       if (!error && data) {
         setComments(data);
@@ -449,9 +468,10 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         });
       }
     });
-  }, [page]);
+  }, [page, isMobile]);
 
   useEffect(() => {
+    if (isMobile) return;
     const channel = supabase.channel(`room:${page}`, { config: { presence: { key: sessionId } } });
     channel
       .on('broadcast', { event: 'cursor' }, ({ payload }) => {
@@ -533,12 +553,13 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       Object.values(remoteMoveTimers.current).forEach(clearTimeout);
       remoteMoveTimers.current = {};
     };
-  }, [page, sessionId, cursorColor]);
+  }, [page, sessionId, cursorColor, isMobile]);
 
   // Cursor broadcast — x_pct/y_pct are content-relative so remote cursors appear at the
   // same content position regardless of each viewer's screen width.
   useEffect(() => {
     if (isTouchDevice()) return;
+    if (isMobile) return;
     let lastSent = 0;
     const onMove = (e) => {
       const now = performance.now();
@@ -558,7 +579,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     };
     window.addEventListener('mousemove', onMove);
     return () => window.removeEventListener('mousemove', onMove);
-  }, [sessionId, cursorColor, overlayHeight]);
+  }, [sessionId, cursorColor, overlayHeight, isMobile]);
 
   // Cursor style: copy (can place) vs not-allowed (outside play area).
   // Runs unthrottled on mousemove and writes directly to the overlay's DOM style
@@ -1121,6 +1142,22 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       )}
     </div>
   );
+
+  const dismissToast = () => {
+    setMobileToastFading(true);
+    setTimeout(() => { setMobileToastFading(false); setMobileToastVisible(false); }, 200);
+  };
+
+  if (isMobile) {
+    return mobileToastVisible ? (
+      <div className={`mobile-toast${mobileToastFading ? ' mobile-toast-out' : ''}`}>
+        <span>✨ More fun on desktop — drop comments, see who else is here.</span>
+        <button className="mobile-toast-close" onClick={dismissToast} aria-label="Dismiss">
+          <X size={14} />
+        </button>
+      </div>
+    ) : null;
+  }
 
   return (
     <>
