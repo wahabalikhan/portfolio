@@ -7,6 +7,24 @@ const PRESET_COLOR = '#7F77DD';
 const VISITOR_COLORS = ['#1D9E75', '#D85A30', '#D4537E', '#378ADD', '#BA7517'];
 const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#8B5CF6', '#EF4444', '#06B6D4'];
 
+// Maximum play area width: 14-inch MacBook Pro logical CSS pixels (1512px).
+// Comments cannot be placed or dragged outside this centered boundary.
+const PLAY_AREA_WIDTH = 1450;
+
+// Returns the min/max x_pct values (content-relative) that correspond to the PLAY_AREA_WIDTH
+// boundary centered on the current viewport. Allows pins to reach the edge of a 14" MBP screen
+// but no further, regardless of how wide the actual viewport is.
+const getPlayAreaXBounds = (contentLeft, contentWidth) => {
+  const halfPlay   = PLAY_AREA_WIDTH / 2;
+  const pageCenter = window.innerWidth / 2;
+  const playLeft   = pageCenter - halfPlay;
+  const playRight  = pageCenter + halfPlay;
+  return {
+    minX: (playLeft  - contentLeft) / contentWidth * 100,
+    maxX: (playRight - contentLeft) / contentWidth * 100,
+  };
+};
+
 // Coordinate system:
 //   x_pct = (clientX - contentLeft) / contentWidth * 100
 //     → content-container-relative; 0 = left edge, 100 = right edge,
@@ -63,6 +81,8 @@ const getOrCreateSessionToken = () => {
 };
 
 // Full-page overlay portaled to document.body so pins can exist anywhere on the page.
+// cursor is managed imperatively via overlayRef (see cursor-style effect) so it updates
+// instantly on mousemove without triggering React re-renders.
 const overlayStyle = (mode, height) => ({
   position: 'absolute',
   top: 0, left: 0,
@@ -70,7 +90,6 @@ const overlayStyle = (mode, height) => ({
   height: height > 0 ? `${height}px` : '100%',
   zIndex: 30,
   pointerEvents: mode === 'comment' ? 'auto' : 'none',
-  cursor: mode === 'comment' ? 'crosshair' : 'default',
 });
 
 // Converts content-relative x_pct and page-relative y_pct to absolute pixel positions
@@ -140,6 +159,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const contentAnchorRef = useRef(null);
   const overlayRef       = useRef(null);
   const channelRef       = useRef(null);
+  const modeRef          = useRef('cursor'); // kept in sync for use in event handler closures
   const activeTabRef     = useRef(activeTab);
   const prevTabRef       = useRef(activeTab);
   const tabFadeTimer     = useRef(null);
@@ -255,16 +275,21 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   }, []);
 
   // Measure the content container's position and dimensions.
-  // Called on mount, layout changes, and viewport resize.
+  // Uses functional state update with equality check to avoid re-renders when nothing changed.
   const updateContentMetrics = () => {
     const rect = contentAnchorRef.current?.getBoundingClientRect();
     if (!rect || rect.width === 0) return;
-    const metrics = { left: rect.left, width: rect.width, absTop: rect.top + window.scrollY };
-    setContentMetrics(metrics);
-    contentMetricsRef.current = metrics;
+    const newLeft   = rect.left;
+    const newWidth  = rect.width;
+    const newAbsTop = rect.top + window.scrollY;
+    setContentMetrics(prev => {
+      if (prev.left === newLeft && prev.width === newWidth && prev.absTop === newAbsTop) return prev;
+      return { left: newLeft, width: newWidth, absTop: newAbsTop };
+    });
+    contentMetricsRef.current = { left: newLeft, width: newWidth, absTop: newAbsTop };
   };
 
-  useLayoutEffect(() => { updateContentMetrics(); });
+  useLayoutEffect(() => { updateContentMetrics(); }, []);
 
   useEffect(() => {
     const observer = new ResizeObserver(updateContentMetrics);
@@ -329,6 +354,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   }, []);
 
   activeTabRef.current = activeTab;
+  modeRef.current = mode;
 
   useLayoutEffect(() => {
     const h = document.documentElement.scrollHeight;
@@ -442,6 +468,30 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => window.removeEventListener('mousemove', onMove);
   }, [sessionId, cursorColor, overlayHeight]);
 
+  // Cursor style: copy (can place) vs not-allowed (outside play area).
+  // Runs unthrottled on mousemove and writes directly to the overlay's DOM style
+  // to avoid triggering React re-renders on every mouse movement.
+  useEffect(() => {
+    if (isTouchDevice()) return;
+    const onMove = (e) => {
+      if (!overlayRef.current) return;
+      if (modeRef.current !== 'comment') return;
+      const m = contentMetricsRef.current;
+      if (m.width === 0) return;
+      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
+      const x_pct = (e.clientX - m.left) / m.width * 100;
+      overlayRef.current.style.cursor = (x_pct >= minX && x_pct <= maxX) ? 'copy' : 'not-allowed';
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
+
+  // Reset overlay cursor whenever mode changes.
+  useEffect(() => {
+    if (!overlayRef.current) return;
+    overlayRef.current.style.cursor = mode === 'comment' ? 'not-allowed' : 'default';
+  }, [mode]);
+
   useEffect(() => {
     if (!expandedId) return;
     const close = () => setExpandedId(null);
@@ -473,8 +523,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
       const relX = clientX - m.left;
       const relY = pageY - m.absTop;
-      // No X clamp — allow pins outside the content column
-      const x_pct = (relX - meta.offsetX_px) / m.width * 100;
+      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
+      const x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
       const y_pct = Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / overlayHeight) * 100));
       dragPosRef.current = { x_pct, y_pct };
 
@@ -647,8 +697,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     if (mode !== 'comment' || draft) return;
     const m = contentMetricsRef.current;
     if (m.width === 0) return;
+    // Reject clicks outside the 1512px centered play area
+    const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
+    const x_pct = ((e.clientX - m.left) / m.width) * 100;
+    if (x_pct < minX || x_pct > maxX) return;
     setDraft({
-      x_pct: ((e.clientX - m.left) / m.width) * 100,
+      x_pct,
       y_pct: overlayHeight > 0 ? ((e.pageY - m.absTop) / overlayHeight) * 100 : 0,
     });
     setDraftAuthor(''); setDraftBody('');
