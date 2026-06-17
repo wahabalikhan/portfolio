@@ -115,7 +115,7 @@ export default function Footer() {
           className="link-text text-blue-600 inline-flex items-center gap-1.5"
         >
           <img src="/linkedin-icon.svg" alt="LinkedIn" width="16" height="16" />
-          <b>LinkedIn ↗</b>
+          <b><span className="linkedin-label">LinkedIn </span>↗</b>
         </a>
       </div>
     </footer>
