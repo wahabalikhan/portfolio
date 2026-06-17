@@ -455,7 +455,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
           } catch {}
           justDraggedRef.current = true;
         } else {
-          // Visitor comment — owner only
+          // Visitor comment card — owner drag
           const finalX = pos.x_pct;
           const finalY = pos.y_pct;
           const preDrag = preDragPosRef.current;
@@ -548,7 +548,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     };
   }, [draggingId, overlayHeight]);
 
-  // Cancel visitor card drag if the owner logs out mid-drag
+  // Cancel any card drag immediately if the owner logs out mid-drag
   useEffect(() => {
     if (isOwner || !draggingId || draggingId === '__annotation__') return;
     const preDrag = preDragPosRef.current;
@@ -575,7 +575,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     setDraggingId('__annotation__');
   };
 
-  // Owner-only: start dragging a visitor comment card. Handles both mouse and touch events.
+  // Owner only: drag a visitor comment card. Preset pins are never draggable.
   const startDrag = (e, id, x_pct, y_pct) => {
     if (!isOwner) return;
     if (e.stopPropagation) e.stopPropagation();
@@ -670,7 +670,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       ? { animation: `cc-pulse 600ms ease ${pulseIndex * 50}ms 1 both` }
       : {};
 
-    // Only owner can drag visitor cards. Preset pins are never draggable by anyone.
+    // Owner only. Preset pins are never draggable by anyone.
     const canDrag = isOwner && !isPreset;
 
     const wrapperStyle = {
