@@ -241,13 +241,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     try { localStorage.removeItem(`cc-overlay-h-${page}`); } catch {}
   }, [page]);
 
-  const [visitorPositions, setVisitorPositions] = useState(() => {
-    try {
-      const saved = localStorage.getItem('visitor-comment-positions');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return {};
-  });
+  // Clear any stale visitor-position overrides from localStorage — positions now live
+  // entirely in the DB and are loaded via the comments state on every mount.
+  try { localStorage.removeItem('visitor-comment-positions'); } catch {}
 
   const [annotationPos, setAnnotationPos] = useState(() => {
     const VERSION = '3';
@@ -423,10 +419,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         ({ new: row }) => {
           setComments(prev => prev.map(c => c.id === row.id
             ? { ...c, x_pct: row.x_pct, y_pct: row.y_pct } : c));
-          setVisitorPositions(prev => {
-            if (!prev[row.id]) return prev;
-            const n = { ...prev }; delete n[row.id]; return n;
-          });
           setRemoteCardMoves(prev => { const n = { ...prev }; delete n[row.id]; return n; });
           clearTimeout(remoteMoveTimers.current[row.id]);
           delete remoteMoveTimers.current[row.id];
@@ -577,7 +569,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             const capturedToken = meta.sessionToken;
             dbWriteTimerRef.current = setTimeout(async () => {
               const base = supabase.from('comments').update({ x_pct: finalX, y_pct: finalY }).eq('id', capturedId);
-              const { error } = await (capturedToken ? base.eq('session_token', capturedToken) : base);
+              const result = await (capturedToken ? base.eq('session_token', capturedToken) : base);
+              if (capturedToken) console.log('Visitor DB write result:', result);
+              const { error } = result;
               if (error && capturedPre) {
                 setComments(prev => prev.map(c => c.id === capturedId
                   ? { ...c, x_pct: capturedPre.x_pct, y_pct: capturedPre.y_pct } : c));
@@ -727,7 +721,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const handleDelete = async (id) => {
     setComments(prev => prev.filter(c => c.id !== id));
-    setVisitorPositions(prev => { const n = { ...prev }; delete n[id]; return n; });
     setExpandedId(null);
     await supabase.from('comments').delete().eq('id', id);
   };
@@ -736,7 +729,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     const card = comments.find(c => c.id === id);
     if (!card) return;
     setComments(prev => prev.filter(c => c.id !== id));
-    setVisitorPositions(prev => { const n = { ...prev }; delete n[id]; return n; });
     setExpandedId(null);
     const ch = channelRef.current;
     if (ch) ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
@@ -875,10 +867,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
           })}
 
           {comments.map((pin, i) => {
-            const override = visitorPositions[pin.id];
-            const x = override ? override.x_pct : pin.x_pct;
-            const y = override ? override.y_pct : pin.y_pct;
-            return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId, pin.session_token);
+            return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), pin.x_pct, pin.y_pct, false, i, pin.id === draggingId, pin.session_token);
           })}
 
           {page === 'home' && (() => {
