@@ -7,14 +7,45 @@ const PRESET_COLOR = '#7F77DD';
 const VISITOR_COLORS = ['#1D9E75', '#D85A30', '#D4537E', '#378ADD', '#BA7517'];
 const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#8B5CF6', '#EF4444', '#06B6D4'];
 
+// Maximum play area width: 14-inch MacBook Pro logical CSS pixels (1512px).
+// Comments cannot be placed or dragged outside this centered boundary.
+const PLAY_AREA_WIDTH = 1450;
+
+// Returns the min/max x_pct values (content-relative) that correspond to the PLAY_AREA_WIDTH
+// boundary centered on the current viewport. Allows pins to reach the edge of a 14" MBP screen
+// but no further, regardless of how wide the actual viewport is.
+const getPlayAreaXBounds = (contentLeft, contentWidth) => {
+  const halfPlay   = PLAY_AREA_WIDTH / 2;
+  const pageCenter = window.innerWidth / 2;
+  const playLeft   = pageCenter - halfPlay;
+  const playRight  = pageCenter + halfPlay;
+  return {
+    minX: (playLeft  - contentLeft) / contentWidth * 100,
+    maxX: (playRight - contentLeft) / contentWidth * 100,
+  };
+};
+
+// Coordinate system:
+//   x_pct = (clientX - contentLeft) / contentWidth * 100
+//     → content-container-relative; 0 = left edge, 100 = right edge,
+//       negative = left of content, >100 = right of content.
+//   y_pct = (pageY - contentAbsTop) / overlayHeight * 100
+//     → page-height-relative from the content container's absolute top.
+//
+// Rendering converts back to absolute page pixels:
+//   left = contentLeft + x_pct/100 * contentWidth
+//   top  = contentAbsTop + y_pct/100 * overlayHeight
+//
+// The overlay is a portal on document.body (position:absolute, top:0, left:0, full page).
+// Pins can be placed and dragged anywhere on the page, not just within the content column.
+//
+// VERSION 5 preset positions (x_pct already content-relative from previous commit).
 const PRESET_PINS = [
-  // No tabs field — appear on every tab
-  { id: 'preset-1', x_pct: 72, y_pct: 8,  author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
-  { id: 'preset-2', x_pct: 18, y_pct: 62, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
-  // Design tab only — tied to the case study content
-  { id: 'preset-3', x_pct: 28, y_pct: 32, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
-  { id: 'preset-4', x_pct: 68, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
-  { id: 'preset-5', x_pct: 82, y_pct: 78, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
+  { id: 'preset-1', x_pct: 75, y_pct: 8,  author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
+  { id: 'preset-2', x_pct: 12, y_pct: 62, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
+  { id: 'preset-3', x_pct: 22, y_pct: 32, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
+  { id: 'preset-4', x_pct: 72, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
+  { id: 'preset-5', x_pct: 83, y_pct: 75, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
 ];
 
 const randomId = () =>
@@ -30,7 +61,7 @@ const visitorColor = (id) => {
 
 const cardRotation = (id) => {
   const hash = String(id).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  return (hash % 7) - 3; // -3 to +3
+  return (hash % 7) - 3;
 };
 
 const truncate = (text, words = 7) => {
@@ -49,38 +80,34 @@ const getOrCreateSessionToken = () => {
   } catch { return null; }
 };
 
-// Fixed viewport container — no scroll contribution, clips overflow so it never extends the page
-const fixedOverlayStyle = (mode) => ({
-  position: 'fixed',
-  top: 0, left: 0, right: 0, bottom: 0,
+// Full-page overlay portaled to document.body so pins can exist anywhere on the page.
+// cursor is managed imperatively via overlayRef (see cursor-style effect) so it updates
+// instantly on mousemove without triggering React re-renders.
+const overlayStyle = (mode, height) => ({
+  position: 'absolute',
+  top: 0, left: 0,
+  width: '100%',
+  height: height > 0 ? `${height}px` : '100%',
   zIndex: 30,
   pointerEvents: mode === 'comment' ? 'auto' : 'none',
-  cursor: mode === 'comment' ? 'crosshair' : 'default',
-  overflow: 'hidden',
 });
 
-const scrollCanvasStyle = (height) => ({
+// Converts content-relative x_pct and page-relative y_pct to absolute pixel positions
+// within the full-page overlay. contentLeft/contentWidth/contentAbsTop come from
+// measuring the contentAnchorRef div inside the content container.
+const cardWrapperStyle = (xPct, yPct, deg, contentLeft, contentWidth, contentAbsTop, overlayHeight) => ({
   position: 'absolute',
-  top: 0, left: 0, right: 0,
-  height: height > 0 ? `${height}px` : '100vh',
-  pointerEvents: 'none',
-  willChange: 'transform',
-  // transform intentionally absent — set imperatively via ref so React never overwrites it
-});
-
-const cardWrapperStyle = (xPct, yPct, deg) => ({
-  position: 'absolute',
-  left: `${xPct}%`,
-  top: `${yPct}%`,
+  left: `${contentLeft + (xPct / 100) * contentWidth}px`,
+  top: `${contentAbsTop + (yPct / 100) * overlayHeight}px`,
   transform: `translate(-50%, -50%) rotate(${deg}deg)`,
   pointerEvents: 'auto',
   zIndex: 31,
 });
 
-const cursorStyle = (xPct, yPct, color) => ({
+const cursorStyle = (xPct, yPct, color, contentLeft, contentWidth, contentAbsTop, overlayHeight) => ({
   position: 'absolute',
-  left: `${xPct}%`,
-  top: `${yPct}%`,
+  left: `${contentLeft + (xPct / 100) * contentWidth}px`,
+  top: `${contentAbsTop + (yPct / 100) * overlayHeight}px`,
   pointerEvents: 'none',
   zIndex: 29,
   transition: 'left 0.08s linear, top 0.08s linear',
@@ -126,27 +153,40 @@ const inputStyle = {
 };
 
 export default function CommentPins({ page, showPresets = true, activeTab }) {
-  const channelRef          = useRef(null);
-  const canvasRef           = useRef(null);
-  const annotationCanvasRef = useRef(null);
-  const activeTabRef        = useRef(activeTab);
-  const prevTabRef          = useRef(activeTab);
-  const tabFadeTimer        = useRef(null);
+  // contentAnchorRef — zero-height div inside the content container.
+  // Its getBoundingClientRect() tells us the content column's left, width,
+  // and absolute top position, used for all coordinate conversions.
+  const contentAnchorRef = useRef(null);
+  const overlayRef       = useRef(null);
+  const channelRef       = useRef(null);
+  const modeRef          = useRef('cursor'); // kept in sync for use in event handler closures
+  const activeTabRef     = useRef(activeTab);
+  const prevTabRef       = useRef(activeTab);
+  const tabFadeTimer     = useRef(null);
 
   // Drag refs
-  const dragMetaRef    = useRef(null);
-  const dragPosRef     = useRef(null);
-  const dragStartRef   = useRef(null);
-  const justDraggedRef = useRef(false);
-  const preDragPosRef  = useRef(null);   // pre-drag position for revert-on-escape
-  const dbWriteTimerRef = useRef(null);  // debounce DB write on drop
-  // Session token for visitor self-service — read once on mount, updated after first comment drop
+  const dragMetaRef     = useRef(null);
+  const dragPosRef      = useRef(null);
+  const dragStartRef    = useRef(null);
+  const justDraggedRef  = useRef(false);
+  const preDragPosRef   = useRef(null);
+  const dbWriteTimerRef = useRef(null);
+
+  // Remote move auto-clear timers
+  const remoteMoveTimers = useRef({});
+
+  // Session token for visitor self-service
   const localSessionToken = useRef(
     typeof window !== 'undefined' ? localStorage.getItem('wahab_session_token') : null
   );
 
-  // Remote move auto-clear timers
-  const remoteMoveTimers = useRef({});
+  // contentMetrics: measured from contentAnchorRef, kept in sync via ResizeObserver + resize event.
+  // contentMetricsRef mirrors the state value for use in event handlers (avoids stale closures).
+  const [contentMetrics, setContentMetrics] = useState({ left: 0, width: 768, absTop: 0 });
+  const contentMetricsRef = useRef({ left: 0, width: 768, absTop: 0 });
+
+  // Portal root: a div appended to document.body that hosts the full-page overlay.
+  const [portalRoot, setPortalRoot] = useState(null);
 
   const [mode, setMode]           = useState('cursor');
   const [comments, setComments]   = useState([]);
@@ -172,19 +212,17 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const [loginPw, setLoginPw]         = useState('');
   const [loginError, setLoginError]   = useState('');
 
-  const [sessionId]    = useState(randomId);
-  const [cursorColor]  = useState(() => CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)]);
+  const [sessionId]   = useState(randomId);
+  const [cursorColor] = useState(() => CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)]);
 
-  // Real-time card movement from other users: { cardId: { x_pct, y_pct } }
   const [remoteCardMoves, setRemoteCardMoves] = useState({});
-  // DB write failure indicators: { cardId: true }
   const [cardErrors, setCardErrors]           = useState({});
 
   const [draggingId, setDraggingId] = useState(null);
   const [dragPos, setDragPos]       = useState(null);
 
   const [presetPositions, setPresetPositions] = useState(() => {
-    const VERSION = '4';
+    const VERSION = '5';
     const defaults = Object.fromEntries(PRESET_PINS.map((p) => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }]));
     try {
       if (localStorage.getItem('preset-positions-v') === VERSION) {
@@ -212,7 +250,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   });
 
   const [annotationPos, setAnnotationPos] = useState(() => {
-    const VERSION = '2';
+    const VERSION = '3';
     const DEFAULT = { x_pct: 68, y_pct: 15 };
     try {
       if (localStorage.getItem('annotation-pos-v') === VERSION) {
@@ -227,19 +265,55 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return DEFAULT;
   });
 
-  // Pulse fires once; allow stagger offset of 4 cards × 50ms + 600ms anim = ~800ms
+  // Create the portal root div and append it to body.
+  useEffect(() => {
+    const div = document.createElement('div');
+    div.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:0;overflow:visible;pointer-events:none;';
+    document.body.appendChild(div);
+    setPortalRoot(div);
+    return () => { document.body.removeChild(div); };
+  }, []);
+
+  // Measure the content container's position and dimensions.
+  // Uses functional state update with equality check to avoid re-renders when nothing changed.
+  const updateContentMetrics = () => {
+    const rect = contentAnchorRef.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0) return;
+    const newLeft   = rect.left;
+    const newWidth  = rect.width;
+    const newAbsTop = rect.top + window.scrollY;
+    setContentMetrics(prev => {
+      if (prev.left === newLeft && prev.width === newWidth && prev.absTop === newAbsTop) return prev;
+      return { left: newLeft, width: newWidth, absTop: newAbsTop };
+    });
+    contentMetricsRef.current = { left: newLeft, width: newWidth, absTop: newAbsTop };
+  };
+
+  useLayoutEffect(() => { updateContentMetrics(); }, []);
+
+  useEffect(() => {
+    const observer = new ResizeObserver(updateContentMetrics);
+    if (contentAnchorRef.current?.parentElement) {
+      observer.observe(contentAnchorRef.current.parentElement);
+    }
+    window.addEventListener('resize', updateContentMetrics);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateContentMetrics);
+    };
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => setPulseActive(false), 900);
     return () => clearTimeout(t);
   }, []);
 
-  // Fade preset pins in/out when the active tab changes
   useEffect(() => {
     const prevTab = prevTabRef.current;
     prevTabRef.current = activeTab;
     if (!activeTab || prevTab === activeTab) return;
 
-    const wasVisible = (p) => !p.tabs || p.tabs.includes(prevTab);
+    const wasVisible   = (p) => !p.tabs || p.tabs.includes(prevTab);
     const isNowVisible = (p) => !p.tabs || p.tabs.includes(activeTab);
 
     const leaving  = PRESET_PINS.filter(p => wasVisible(p) && !isNowVisible(p));
@@ -250,7 +324,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       setFadingOutIds(new Set(leaving.map(p => p.id)));
       tabFadeTimer.current = setTimeout(() => setFadingOutIds(new Set()), 150);
     }
-
     if (entering.length > 0) {
       const ids = new Set(entering.map(p => p.id));
       setFadingInIds(ids);
@@ -266,7 +339,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Secret shortcut: Ctrl+Shift+L toggles the owner login form
   useEffect(() => {
     const onKey = (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'L') setShowLogin(s => !s);
@@ -282,10 +354,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   }, []);
 
   activeTabRef.current = activeTab;
+  modeRef.current = mode;
 
-  // Snapshot overlayHeight once at mount (Design tab is default so scrollHeight is correct).
-  // Do NOT use a ResizeObserver on body — content changes from tab switches or API loads
-  // fire it and inflate overlayHeight, shifting all pin positions.
   useLayoutEffect(() => {
     const h = document.documentElement.scrollHeight;
     setOverlayHeight(prev => h > prev ? h : prev);
@@ -298,7 +368,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => window.removeEventListener('resize', onWindowResize);
   }, []);
 
-  // When switching back to the Design tab, re-snapshot in case content reflowed.
   useEffect(() => {
     if (activeTab !== 'Design') return;
     const raf = requestAnimationFrame(() => {
@@ -306,21 +375,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     });
     return () => cancelAnimationFrame(raf);
   }, [activeTab]);
-
-  const applyScrollTransforms = () => {
-    const sy = window.scrollY;
-    if (canvasRef.current)           canvasRef.current.style.transform           = `translateY(-${sy * 0.97}px)`;
-    if (annotationCanvasRef.current) annotationCanvasRef.current.style.transform = `translateY(-${sy * 0.90}px)`;
-  };
-
-  // After every React commit, correct any stale transform before the browser paints
-  useLayoutEffect(() => { applyScrollTransforms(); });
-
-  // During scroll, update transforms directly — no React re-render
-  useEffect(() => {
-    window.addEventListener('scroll', applyScrollTransforms, { passive: true });
-    return () => window.removeEventListener('scroll', applyScrollTransforms);
-  }, []);
 
   useEffect(() => {
     supabase.from('comments').select('*').eq('page', page).then(({ data, error }) => {
@@ -335,15 +389,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         if (payload.id === sessionId) return;
         setCursors(prev => ({ ...prev, [payload.id]: payload }));
       })
-      // Visitor self-service deletion — remove card immediately for all connected users
       .on('broadcast', { event: 'card_delete' }, ({ payload }) => {
         setComments(prev => prev.filter(c => c.id !== payload.id));
       })
-      // Real-time card position updates from whoever is dragging on another browser
       .on('broadcast', { event: 'card_move' }, ({ payload }) => {
         if (payload.dragging) {
           setRemoteCardMoves(prev => ({ ...prev, [payload.id]: { x_pct: payload.x_pct, y_pct: payload.y_pct } }));
-          // Auto-clear if broadcasts stop (e.g. owner navigates away mid-drag)
           clearTimeout(remoteMoveTimers.current[payload.id]);
           remoteMoveTimers.current[payload.id] = setTimeout(() => {
             setRemoteCardMoves(prev => { const n = { ...prev }; delete n[payload.id]; return n; });
@@ -368,7 +419,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
         ({ old: row }) => setComments(prev => prev.filter(c => c.id !== row.id))
       )
-      // Final position sync after owner drop — clears stale local overrides
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
         ({ new: row }) => {
           setComments(prev => prev.map(c => c.id === row.id
@@ -394,6 +444,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     };
   }, [page, sessionId, cursorColor]);
 
+  // Cursor broadcast — x_pct/y_pct are content-relative so remote cursors appear at the
+  // same content position regardless of each viewer's screen width.
   useEffect(() => {
     if (isTouchDevice()) return;
     let lastSent = 0;
@@ -403,16 +455,42 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       lastSent = now;
       const ch = channelRef.current;
       if (!ch) return;
+      const m = contentMetricsRef.current;
+      if (m.width === 0) return;
       ch.send({ type: 'broadcast', event: 'cursor', payload: {
         id: sessionId,
-        x_pct: (e.clientX / window.innerWidth) * 100,
-        y_pct: overlayHeight > 0 ? (e.pageY / overlayHeight) * 100 : 0,
+        x_pct: ((e.clientX - m.left) / m.width) * 100,
+        y_pct: overlayHeight > 0 ? ((e.pageY - m.absTop) / overlayHeight) * 100 : 0,
         color: cursorColor,
       }});
     };
     window.addEventListener('mousemove', onMove);
     return () => window.removeEventListener('mousemove', onMove);
   }, [sessionId, cursorColor, overlayHeight]);
+
+  // Cursor style: copy (can place) vs not-allowed (outside play area).
+  // Runs unthrottled on mousemove and writes directly to the overlay's DOM style
+  // to avoid triggering React re-renders on every mouse movement.
+  useEffect(() => {
+    if (isTouchDevice()) return;
+    const onMove = (e) => {
+      if (!overlayRef.current) return;
+      if (modeRef.current !== 'comment') return;
+      const m = contentMetricsRef.current;
+      if (m.width === 0) return;
+      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
+      const x_pct = (e.clientX - m.left) / m.width * 100;
+      overlayRef.current.style.cursor = (x_pct >= minX && x_pct <= maxX) ? 'copy' : 'not-allowed';
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
+
+  // Reset overlay cursor whenever mode changes.
+  useEffect(() => {
+    if (!overlayRef.current) return;
+    overlayRef.current.style.cursor = mode === 'comment' ? 'not-allowed' : 'default';
+  }, [mode]);
 
   useEffect(() => {
     if (!expandedId) return;
@@ -421,7 +499,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => document.removeEventListener('click', close);
   }, [expandedId]);
 
-  // Main drag effect — handles both annotation and visitor card drags
+  // Main drag effect.
+  // Uses contentMetricsRef for fresh content position values without stale closures.
   useEffect(() => {
     if (!draggingId) return;
     document.body.style.userSelect = 'none';
@@ -439,17 +518,20 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       const meta = dragMetaRef.current;
       if (!meta) return;
       const { clientX, pageY } = getXY(e);
-      // Annotation can reach 100%; visitor cards clamped to 95% to prevent off-screen
-      const maxPct = meta.isAnnotation ? 100 : 95;
-      const x_pct = Math.max(0, Math.min(maxPct, ((clientX - meta.offsetX_px) / window.innerWidth) * 100));
-      const y_pct = Math.max(0, Math.min(maxPct, ((pageY  - meta.offsetY_px) / overlayHeight) * 100));
+      const m = contentMetricsRef.current;
+      if (m.width === 0) return;
+
+      const relX = clientX - m.left;
+      const relY = pageY - m.absTop;
+      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
+      const x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
+      const y_pct = Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / overlayHeight) * 100));
       dragPosRef.current = { x_pct, y_pct };
 
       const now = performance.now();
       if (now - lastUpdate >= 33) {
         lastUpdate = now;
         setDragPos({ x_pct, y_pct });
-        // Broadcast visitor card position to other connected users (never broadcast annotation)
         if (!meta.isAnnotation && channelRef.current) {
           channelRef.current.send({ type: 'broadcast', event: 'card_move', payload: {
             id: meta.id, x_pct, y_pct, dragging: true,
@@ -464,16 +546,14 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
       if (meta && pos) {
         if (meta.isAnnotation) {
-          // Annotation: save to localStorage (unchanged behaviour)
           const newPos = { x_pct: pos.x_pct, y_pct: pos.y_pct };
           setAnnotationPos(newPos);
           try {
-            localStorage.setItem('annotation-pos-v', '2');
+            localStorage.setItem('annotation-pos-v', '3');
             localStorage.setItem('annotation-position', JSON.stringify(newPos));
           } catch {}
           justDraggedRef.current = true;
         } else {
-          // Visitor comment card — owner drag
           const finalX = pos.x_pct;
           const finalY = pos.y_pct;
           const preDrag = preDragPosRef.current;
@@ -482,28 +562,23 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             || Math.abs(finalY - preDrag.y_pct) > 0.1;
 
           if (positionChanged) {
-            // Broadcast final position so other users snap to it
             const ch = channelRef.current;
             if (ch) {
               ch.send({ type: 'broadcast', event: 'card_move', payload: {
                 id: meta.id, x_pct: finalX, y_pct: finalY, dragging: false,
               }});
             }
-
-            // Optimistic update — owner sees the new position immediately
             setComments(prev => prev.map(c => c.id === meta.id
               ? { ...c, x_pct: finalX, y_pct: finalY } : c));
 
-            // Debounced single DB write — prevents double-write on rapid mouseup
             clearTimeout(dbWriteTimerRef.current);
             const capturedId    = meta.id;
             const capturedPre   = preDrag;
-            const capturedToken = meta.sessionToken; // null = owner write, string = visitor write
+            const capturedToken = meta.sessionToken;
             dbWriteTimerRef.current = setTimeout(async () => {
               const base = supabase.from('comments').update({ x_pct: finalX, y_pct: finalY }).eq('id', capturedId);
               const { error } = await (capturedToken ? base.eq('session_token', capturedToken) : base);
               if (error && capturedPre) {
-                // Revert to pre-drag position and show subtle error indicator
                 setComments(prev => prev.map(c => c.id === capturedId
                   ? { ...c, x_pct: capturedPre.x_pct, y_pct: capturedPre.y_pct } : c));
                 setCardErrors(prev => ({ ...prev, [capturedId]: true }));
@@ -523,14 +598,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       dragMetaRef.current = null; dragPosRef.current = null;
     };
 
-    // touchcancel: abort silently, no DB write, card reverts to comments state
     const onCancel = () => {
       document.body.style.userSelect = '';
       setDraggingId(null); setDragPos(null);
       dragMetaRef.current = null; dragPosRef.current = null;
     };
 
-    // Escape: revert visitor card to pre-drag position and broadcast revert
     const onEscape = (e) => {
       if (e.key !== 'Escape') return;
       const meta    = dragMetaRef.current;
@@ -567,12 +640,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     };
   }, [draggingId, overlayHeight]);
 
-  // Cancel drag if the owner logs out mid-drag — but only for owner-initiated drags.
-  // Visitor self-service drags (sessionToken !== null) are not tied to auth state.
+  // Cancel owner-initiated drag if they log out mid-drag.
   useEffect(() => {
     if (isOwner || !draggingId || draggingId === '__annotation__') return;
     const meta = dragMetaRef.current;
-    if (meta && meta.sessionToken !== null) return; // visitor drag — continue unaffected
+    if (meta && meta.sessionToken !== null) return;
     const preDrag = preDragPosRef.current;
     if (preDrag) {
       setComments(prev => prev.map(c => c.id === draggingId
@@ -585,34 +657,34 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const startAnnotationDrag = (e) => {
     e.stopPropagation();
+    const m = contentMetricsRef.current;
     dragStartRef.current = { x: e.clientX, y: e.clientY };
     dragMetaRef.current = {
       id: '__annotation__',
       isAnnotation: true,
-      offsetX_px: e.clientX - (annotationPos.x_pct / 100) * window.innerWidth,
-      offsetY_px: e.pageY  - (annotationPos.y_pct / 100) * overlayHeight,
+      offsetX_px: (e.clientX - m.left) - (annotationPos.x_pct / 100) * m.width,
+      offsetY_px: (e.pageY - m.absTop)  - (annotationPos.y_pct / 100) * overlayHeight,
     };
     dragPosRef.current = { ...annotationPos };
     setExpandedId(null);
     setDraggingId('__annotation__');
   };
 
-  // Owner or card owner: drag a visitor comment card. Preset pins are never draggable.
-  // canDrag in renderCard already gates this — startDrag is the safety net.
   const startDrag = (e, id, x_pct, y_pct) => {
     if (!isOwner && !localSessionToken.current) return;
     if (e.stopPropagation) e.stopPropagation();
-    const clientX = e.clientX ?? (e.touches ? e.touches[0]?.clientX : 0) ?? 0;
-    const pageY   = e.pageY   ?? (e.touches ? e.touches[0]?.pageY   : 0) ?? 0;
-    dragStartRef.current  = { x: clientX, y: pageY };
+    const m = contentMetricsRef.current;
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+    const pageY   = e.pageY   ?? e.touches?.[0]?.pageY   ?? (clientY + window.scrollY);
+    dragStartRef.current  = { x: clientX, y: clientY };
     preDragPosRef.current = { x_pct, y_pct };
-    dragMetaRef.current   = {
+    dragMetaRef.current = {
       id,
       isAnnotation: false,
-      // null for owner (no token check on write); token string for visitor self-service
       sessionToken: isOwner ? null : localSessionToken.current,
-      offsetX_px: clientX - (x_pct / 100) * window.innerWidth,
-      offsetY_px: pageY   - (y_pct / 100) * overlayHeight,
+      offsetX_px: (clientX - m.left)  - (x_pct / 100) * m.width,
+      offsetY_px: (pageY   - m.absTop) - (y_pct / 100) * overlayHeight,
     };
     dragPosRef.current = { x_pct, y_pct };
     setExpandedId(null);
@@ -623,9 +695,15 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     if (justDraggedRef.current) { justDraggedRef.current = false; return; }
     setExpandedId(null);
     if (mode !== 'comment' || draft) return;
+    const m = contentMetricsRef.current;
+    if (m.width === 0) return;
+    // Reject clicks outside the 1512px centered play area
+    const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
+    const x_pct = ((e.clientX - m.left) / m.width) * 100;
+    if (x_pct < minX || x_pct > maxX) return;
     setDraft({
-      x_pct: (e.clientX / window.innerWidth) * 100,
-      y_pct: overlayHeight > 0 ? ((e.clientY + window.scrollY) / overlayHeight) * 100 : 0,
+      x_pct,
+      y_pct: overlayHeight > 0 ? ((e.pageY - m.absTop) / overlayHeight) * 100 : 0,
     });
     setDraftAuthor(''); setDraftBody('');
   };
@@ -636,7 +714,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     if (!draftBody.trim() || !draft) return;
     setSaving(true);
     const token = getOrCreateSessionToken();
-    localSessionToken.current = token; // sync ref in case this is the first comment
+    localSessionToken.current = token;
     const { data, error } = await supabase.from('comments').insert({
       page, x_pct: draft.x_pct, y_pct: draft.y_pct,
       author: draftAuthor.trim() || 'Anonymous', body: draftBody.trim(),
@@ -657,17 +735,14 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const handleVisitorDelete = async (id) => {
     const card = comments.find(c => c.id === id);
     if (!card) return;
-    // Optimistic removal
     setComments(prev => prev.filter(c => c.id !== id));
     setVisitorPositions(prev => { const n = { ...prev }; delete n[id]; return n; });
     setExpandedId(null);
-    // Fast broadcast so other connected users see it disappear immediately
     const ch = channelRef.current;
     if (ch) ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
     const token = localSessionToken.current;
     const { error } = await supabase.from('comments').delete().eq('id', id).eq('session_token', token);
     if (error) {
-      // Restore card and show subtle error
       setComments(prev => prev.some(c => c.id === id) ? prev : [...prev, card]);
       setCardErrors(prev => ({ ...prev, [id]: true }));
       setTimeout(() => setCardErrors(prev => { const n = { ...prev }; delete n[id]; return n; }), 3000);
@@ -696,8 +771,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     if (isTouchDevice()) setExpandedId(prev => prev === id ? null : id);
   };
 
+  const { left: cLeft, width: cWidth, absTop: cAbsTop } = contentMetrics;
+
   const renderCard = (id, author, body, color, x_pct, y_pct, isPreset, pulseIndex, isDragging, sessionToken, extraWrapperStyle) => {
-    // Position priority: local drag > incoming remote broadcast > stored position
     const remoteMove = !isPreset && remoteCardMoves[id];
     let displayX = x_pct;
     let displayY = y_pct;
@@ -718,14 +794,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       ? { animation: `cc-pulse 600ms ease ${pulseIndex * 50}ms 1 both` }
       : {};
 
-    // Visitor owns this card if their localStorage token matches
     const isOwnCard = !isPreset && !!sessionToken && sessionToken === localSessionToken.current;
-    // Owner supersedes session token access. Preset pins are never draggable or deletable.
     const canDrag   = !isPreset && (isOwner || isOwnCard);
     const canDelete = !isPreset && (isOwner || isOwnCard);
 
     const wrapperStyle = {
-      ...cardWrapperStyle(displayX, displayY, deg),
+      ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, overlayHeight),
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
@@ -780,87 +854,42 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     );
   };
 
-  return createPortal(
-    <>
-      {/* Fixed viewport container clips the canvas so it never adds scroll height */}
-      <div style={fixedOverlayStyle(mode)} onClick={handleOverlayClick}>
-        {/* Canvas locked to Design-tab height; shifts with scroll so pins stay at their page positions */}
-        <div ref={canvasRef} style={scrollCanvasStyle(overlayHeight)}>
+  const overlay = (
+    <div
+      ref={overlayRef}
+      style={overlayStyle(mode, overlayHeight)}
+      onClick={handleOverlayClick}
+    >
+      {!hidden && (
+        <>
+          {showPresets && PRESET_PINS.filter(pin =>
+            !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
+          ).map((pin, i) => {
+            const pos = presetPositions[pin.id];
+            if (!pos) return null;
+            const isFadingOut = fadingOutIds.has(pin.id);
+            const isFadingIn  = fadingInIds.has(pin.id);
+            const opacity = isFadingOut || isFadingIn ? 0 : 1;
+            return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, false, null,
+              { opacity, transition: 'opacity 150ms ease' });
+          })}
 
-        {!hidden && (
-          <>
-            {showPresets && PRESET_PINS.filter(pin =>
-              !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
-            ).map((pin, i) => {
-              const pos = presetPositions[pin.id];
-              if (!pos) return null;
-              const isFadingOut = fadingOutIds.has(pin.id);
-              const isFadingIn  = fadingInIds.has(pin.id);
-              const opacity = isFadingOut || isFadingIn ? 0 : 1;
-              return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, false, null,
-                { opacity, transition: 'opacity 150ms ease' });
-            })}
-            {comments.map((pin, i) => {
-              const override = visitorPositions[pin.id];
-              const x = override ? override.x_pct : pin.x_pct;
-              const y = override ? override.y_pct : pin.y_pct;
-              return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId, pin.session_token);
-            })}
-          </>
-        )}
+          {comments.map((pin, i) => {
+            const override = visitorPositions[pin.id];
+            const x = override ? override.x_pct : pin.x_pct;
+            const y = override ? override.y_pct : pin.y_pct;
+            return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId, pin.session_token);
+          })}
 
-        {Object.entries(cursors).map(([id, c]) => (
-          <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color)}>
-            <MousePointer2 size={20} fill={c.color} fillOpacity={0.25} />
-          </div>
-        ))}
-
-        {draft && !hidden && (
-          <div style={{ ...cardWrapperStyle(draft.x_pct, draft.y_pct, 0), cursor: 'default', zIndex: 40 }}>
-            <div className="cc-card cc-draft" onClick={(e) => e.stopPropagation()}>
-              <input
-                type="text"
-                placeholder="Your name (optional)"
-                value={draftAuthor}
-                onChange={(e) => setDraftAuthor(e.target.value)}
-                style={inputStyle}
-              />
-              <textarea
-                placeholder="Leave a comment…"
-                value={draftBody}
-                onChange={(e) => setDraftBody(e.target.value)}
-                rows={3}
-                autoFocus
-                style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.625rem' }}
-              />
-              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                <button type="button" className="cc-btn-cancel" onClick={cancelDraft}>Cancel</button>
-                <button
-                  type="button"
-                  className="cc-btn-save"
-                  onClick={saveDraft}
-                  disabled={saving || !draftBody.trim()}
-                  style={{ opacity: saving || !draftBody.trim() ? 0.6 : 1 }}
-                >
-                  {saving ? 'Saving…' : 'Save'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        </div>{/* /scrollCanvas */}
-
-        {/* Annotation canvas — separate parallax rate (0.90x) so it floats more freely */}
-        {page === 'home' && (() => {
-          const isDragging = draggingId === '__annotation__';
-          const pos = isDragging && dragPos ? dragPos : annotationPos;
-          return (
-            <div ref={annotationCanvasRef} style={scrollCanvasStyle(overlayHeight)}>
+          {page === 'home' && (() => {
+            const isDragging = draggingId === '__annotation__';
+            const pos = isDragging && dragPos ? dragPos : annotationPos;
+            return (
               <div
                 style={{
                   position: 'absolute',
-                  left: `${pos.x_pct}%`,
-                  top: `${pos.y_pct}%`,
+                  left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
+                  top: `${cAbsTop + (pos.y_pct / 100) * overlayHeight}px`,
                   transform: 'translate(-50%, -50%) rotate(-2deg)',
                   pointerEvents: 'auto',
                   cursor: isDragging ? 'grabbing' : 'grab',
@@ -879,10 +908,66 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
                   </svg>
                 </div>
               </div>
+            );
+          })()}
+        </>
+      )}
+
+      {Object.entries(cursors).map(([id, c]) => (
+        <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, cAbsTop, overlayHeight)}>
+          <MousePointer2 size={20} fill={c.color} fillOpacity={0.25} />
+        </div>
+      ))}
+
+      {draft && !hidden && (
+        <div style={{
+          ...cardWrapperStyle(draft.x_pct, draft.y_pct, 0, cLeft, cWidth, cAbsTop, overlayHeight),
+          cursor: 'default', zIndex: 40,
+        }}>
+          <div className="cc-card cc-draft" onClick={(e) => e.stopPropagation()}>
+            <input
+              type="text"
+              placeholder="Your name (optional)"
+              value={draftAuthor}
+              onChange={(e) => setDraftAuthor(e.target.value)}
+              style={inputStyle}
+            />
+            <textarea
+              placeholder="Leave a comment…"
+              value={draftBody}
+              onChange={(e) => setDraftBody(e.target.value)}
+              rows={3}
+              autoFocus
+              style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.625rem' }}
+            />
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <button type="button" className="cc-btn-cancel" onClick={cancelDraft}>Cancel</button>
+              <button
+                type="button"
+                className="cc-btn-save"
+                onClick={saveDraft}
+                disabled={saving || !draftBody.trim()}
+                style={{ opacity: saving || !draftBody.trim() ? 0.6 : 1 }}
+              >
+                {saving ? 'Saving…' : 'Save'}
+              </button>
             </div>
-          );
-        })()}
-      </div>{/* /fixedOverlay */}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      {/* Zero-height anchor inside the content container — gives us contentLeft, contentWidth,
+          and contentAbsTop for converting between content-relative coords and page pixels. */}
+      <div
+        ref={contentAnchorRef}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 0, pointerEvents: 'none' }}
+      />
+
+      {portalRoot && createPortal(overlay, portalRoot)}
 
       {/* Toolbar */}
       <div style={toolbarStyle}>
@@ -946,7 +1031,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
           </form>
         </div>
       )}
-    </>,
-    document.body
+    </>
   );
 }
