@@ -10,25 +10,51 @@ const experience = [
     logo: '/images/adverity.jpg',
     dates: 'Apr 2026 – Jun 2026',
     location: 'Remote / Vienna, Austria',
-    context: 'Data & marketing intelligence platform',
+    context: 'Data and marketing intelligence platform',
     bullets: [
-      'Designed AI-powered features for a data and marketing intelligence platform, working across discovery, interaction design, and delivery.',
-      'Built a closer-to-code design workflow using Claude Code, VS Code, and Git — moving between Figma and the live codebase to prototype and validate design decisions against the real product.',
+      'Designed AI-powered features for a data and marketing intelligence platform used by analytics and BI teams, working across discovery, interaction design, and delivery.',
+      'Built a closer-to-code design workflow using Claude Code, VS Code, and version control (Git), moving between Figma and the live codebase to prototype and validate design decisions against the real product, with changes reviewed by engineers before shipping.',
+      'Collaborated with engineering to ensure design intent translated cleanly into production UI throughout.',
     ],
   },
   {
     title: 'Product Designer',
     company: 'Matillion',
     logo: '/images/matillion-logo.svg',
-    dates: 'Jul 2021 – Mar 2026',
+    dates: 'Jul 2021 – Apr 2026',
     location: 'Manchester, UK',
-    context: 'Data pipeline & ETL platform for data engineers',
-    progression: 'Joined as a placement student, promoted four times to mid-level over five years',
-    bullets: [
-      'Designed a diff interface for high-risk pipeline actions — 34% increase in successful workflow completions and 15% reduction in error recovery actions.',
-      'Built the ETL design system from scratch as the sole designer — components, patterns, and documentation — reducing design task completion time by 36.1%, measured through structured task testing.',
-      'Partnered closely with front-end engineers on interaction behaviours, states, edge cases, and technical constraints — attending implementation reviews to close the design-to-code gap.',
-      'Mentored junior designers and placement students through design critiques, pairing sessions, and guidance on interaction design, accessibility, and systems thinking.',
+    context: 'Data pipeline and ETL platform for data engineers',
+    progression: 'Joined at junior level and progressed to mid-level over just under five years',
+    subtiers: [
+      {
+        label: 'Mid-level Product Designer, May 2025 – Apr 2026',
+        bullets: [
+          'Led end-to-end design of complex, developer-facing features across the full lifecycle: discovery, problem framing, interaction design, prototyping, usability testing, and implementation support.',
+          'Designed a side-by-side comparison interface for high-risk pipeline actions, making changes transparent and reviewable before actioning. Achieved a 34% increase in successful commits and 15% reduction in error recoveries. Prototyped directly with engineers to validate feasibility and refine the interaction model under real technical constraints.',
+          'Led design for pipeline variables and schema features, complex multi-step workflows for technical users where clarity, error prevention, and system transparency were critical. Conducted user interviews that reframed scope from a surface feature to a broader service improvement, boosting stakeholder confidence by 12.3% and preventing misdirected development effort.',
+          'Partnered closely with front-end engineers on interaction behaviours, states, edge cases, and technical constraints, attending implementation reviews regularly to close the gap between design intent and shipped product.',
+          'Mentored junior designers and placement students through design critiques, pairing sessions, and guidance on interaction design, accessibility, and systems thinking.',
+          'Used usability testing, behavioural analytics, and support data to drive iterative improvements, grounding design decisions in evidence throughout.',
+        ],
+      },
+      {
+        label: 'Associate Product Designer, Sep 2023 – May 2025',
+        bullets: [
+          'Took end-to-end ownership of features from concept through release across multiple core workflows, balancing user needs, technical feasibility, and delivery speed in a fast-moving agile environment.',
+          'Translated user research findings into actionable design decisions, validated through structured usability testing and iterated based on observed behaviour and analytics data.',
+          'Worked in a multi-disciplinary team alongside product managers, engineers, and researchers, driving design decisions forward while staying closely aligned with engineering on implementation quality and handover.',
+          'Took ownership of evolving and maintaining the ETL design system at scale, expanding component coverage, improving accessibility (WCAG 2.1) compliance, and onboarding other designers and engineers onto the system as it matured.',
+        ],
+      },
+      {
+        label: 'Junior Product Designer, Jul 2021 – Sep 2023',
+        bullets: [
+          'Built Matillion\'s ETL design system from scratch as the sole designer: components, variants, auto layout, patterns, edge cases, and documentation. Reduced design task completion time by 36.1%, measured through structured before/after task testing with the design team. Mapped components to the Sencha GXT framework and introduced custom components where the framework fell short.',
+          'Embedded UX culture into the engineering team. Ran sessions on UX fundamentals, introduced the design system as a shared working resource, and established a rhythm where engineers engaged with design thinking earlier in the process.',
+          'Led interaction design for key developer-facing features, simplifying complex multi-step workflows for technical users.',
+          'Conducted usability testing and iterated designs based on observed user behaviour, helping embed an evidence-based approach to design decisions across the team.',
+        ],
+      },
     ],
   },
   {
@@ -37,7 +63,7 @@ const experience = [
     logo: null,
     dates: 'Oct 2020 – Jan 2021',
     location: 'London, UK',
-    context: 'Digital agency · First professional design role',
+    context: 'Digital agency, first professional design role',
     bullets: [
       'Supported UX research, prototyping, and iteration for client websites and digital campaigns.',
       'Collaborated with senior designers to improve user journeys and task completion rates.',
@@ -110,14 +136,32 @@ export default function ExperiencePage() {
                 </p>
               )}
 
-              <ul className="space-y-2">
-                {job.bullets.map((bullet, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-gray-700 leading-relaxed">
-                    <span className="text-gray-900 flex-shrink-0 select-none">•</span>
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
+              {job.subtiers ? (
+                <div className="space-y-5">
+                  {job.subtiers.map((tier, ti) => (
+                    <div key={ti}>
+                      <p className="text-sm font-semibold text-gray-700 mb-2">{tier.label}</p>
+                      <ul className="space-y-2">
+                        {tier.bullets.map((bullet, i) => (
+                          <li key={i} className="flex items-start gap-2.5 text-gray-700 leading-relaxed">
+                            <span className="text-gray-900 flex-shrink-0 select-none">•</span>
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {job.bullets && job.bullets.map((bullet, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-gray-700 leading-relaxed">
+                      <span className="text-gray-900 flex-shrink-0 select-none">•</span>
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         ))}
