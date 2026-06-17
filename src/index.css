@@ -195,6 +195,11 @@ html.dark .tab-pill-active { background: #e5e7eb; color: #111827; }
 html.dark .tab-pill-inactive { background: rgba(255,255,255,0.06); color: #6b7280; }
 html.dark .tab-pill-inactive:hover { background: rgba(255,255,255,0.1); color: #9ca3af; }
 
+.tab-panel {
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
 /* ─── Hero page glow — sized ellipse so glow ends at hero section, fades in all directions ── */
 .app-root {
   background-image: radial-gradient(ellipse 50% 340px at 18% 100px, rgba(37, 99, 235, 0.07) 0%, transparent 100%);
@@ -213,6 +218,8 @@ html.dark .app-root {
   overflow: hidden;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
 .cs-thumb img {
@@ -240,7 +247,7 @@ html.dark .app-root {
   line-height: 1.5;
 }
 
-html.dark .cs-thumb { border-color: #374151; }
+html.dark .cs-thumb { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
 
 /* ─── Handwritten Annotation (floating/draggable) ─────────────────────────── */
 .floating-annotation {

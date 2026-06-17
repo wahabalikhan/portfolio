@@ -108,7 +108,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
 
         {/* Designer Tab Content */}
         {activeTab === 'Design' && (
-          <div className="space-y-12">
+          <div className="tab-panel space-y-12">
             {[
               {
                 id: 'ai-workflow',
@@ -185,7 +185,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
 
         {/* Development Tab Content */}
         {activeTab === 'Development' && (
-          <div>
+          <div className="tab-panel">
             <div className="gh-from">
               <GitHubMark />
               <span>from GitHub</span>
@@ -195,7 +195,17 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               <p className="text-sm text-gray-500 py-8 text-center">Loading repositories…</p>
             )}
             {error && (
-              <p className="text-sm text-red-500 py-8 text-center">Couldn't load repos: {error}</p>
+              <p style={{ fontSize: '14px', color: '#b45309', padding: '1rem 0' }}>
+                Couldn't load repos right now — see them at{' '}
+                <a
+                  href="https://github.com/wahabalikhan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#b45309', textDecoration: 'underline' }}
+                >
+                  github.com/wahabalikhan
+                </a>
+              </p>
             )}
 
             <div className="gh-grid">
@@ -229,7 +239,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
 
         {/* Extras Tab Content */}
         {activeTab === 'Extras' && (
-          <div className="flex flex-col gap-8 items-center">
+          <div className="tab-panel flex flex-col gap-8 items-center">
             <LinkedInPostCard />
           </div>
         )}
