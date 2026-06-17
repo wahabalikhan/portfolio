@@ -1225,9 +1225,10 @@ html.dark .bg-blue-50 .text-gray-700 {
   opacity: 0;
 }
 
-/* Desktop: blog/case study pages have no toolbar — zero footer margin and match pb to pt-8 */
-.max-w-3xl.mx-auto:not(.home-page) footer { margin-bottom: 0; }
-.max-w-3xl.mx-auto:not(.home-page) { padding-bottom: 2rem; }
+/* Home page only: toolbar clearance below footer */
+.home-page footer { margin-bottom: 4.5rem; }
+/* Blog/case study pages: match footer bottom gap to pt-8 (2rem) */
+.max-w-3xl.mx-auto:not(.home-page) { padding-bottom: 3rem; }
 
 /* Mobile: hide cursive annotation (comment system disabled on mobile) */
 @media (max-width: 767px) {
