@@ -23,6 +23,19 @@ export default function BuildingPortfolioPage() {
           I've always found portfolio sites uncomfortable to build. Too polished and they feel like a brochure. Too casual and they undersell the work. So I took the only logical approach: spent several weeks building mine from scratch while simultaneously questioning every decision I've ever made.
         </p>
 
+        <div style={{
+          width: '100%', borderRadius: 8, overflow: 'hidden',
+          marginTop: '0.5rem', marginBottom: '1.5rem',
+          border: '1px solid rgba(0,0,0,0.09)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+        }}>
+          <img
+            src="/images/portfolio_screenshot.png"
+            alt="Portfolio screenshot"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </div>
+
         <p className="text-gray-700 leading-relaxed mb-6">
           This version is built with Vite and React. I chose it partly because it made sense technically, and partly because I wanted to understand what I was actually building rather than hiding behind a template. Version control lives in GitHub, partly for safety, and partly because pushing commits to a repo called "portfolio" at 2am feels right in a way that's hard to explain.
         </p>

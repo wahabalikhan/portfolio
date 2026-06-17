@@ -1244,13 +1244,7 @@ html.dark .bg-blue-50 .text-gray-700 {
 .case-study-link:hover,
 .dev-tile:hover {
   transform: translateY(-8px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 20px 12px -8px rgba(0, 0, 0, 0.15);
-}
-
-html.dark .case-study-link:hover,
-html.dark .dev-tile:hover {
-  box-shadow: 0 20px 12px -8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s ease;
 }
 
 /* Image Modal Styles */
