@@ -276,7 +276,6 @@ html.dark .floating-annotation svg path { stroke: #aaa; }
   max-width: 220px;
   min-width: 140px;
   transition: box-shadow 0.15s ease, max-width 0.15s ease;
-  cursor: grab;
 }
 
 .cc-card:hover {
@@ -402,6 +401,22 @@ html.dark .cc-dot     { box-shadow: 0 0 0 2px rgba(30,30,46,0.9); }
   0%   { transform: scale(1); }
   50%  { transform: scale(1.05); }
   100% { transform: scale(1); }
+}
+
+/* Pulsing ring shown on visitor cards while a remote user (the owner) is dragging them */
+.cc-card-remote-moving::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 14px;
+  border: 2px solid #7F77DD;
+  animation: cc-remote-ring 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes cc-remote-ring {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(1.04); }
 }
 
 /* Mobile */
