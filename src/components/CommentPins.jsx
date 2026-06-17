@@ -80,6 +80,30 @@ const getOrCreateSessionToken = () => {
   } catch { return null; }
 };
 
+const ADJECTIVES = ['Purple', 'Blue', 'Green', 'Orange', 'Pink', 'Teal', 'Amber', 'Coral', 'Slate', 'Indigo'];
+const NOUNS      = ['Designer', 'Visitor', 'Explorer', 'Thinker', 'Maker', 'Builder', 'Creator', 'Dreamer', 'Reader', 'Wanderer'];
+
+const getOrCreateAnonName = () => {
+  try {
+    const existing = sessionStorage.getItem('wahab_anon_name');
+    if (existing) return existing;
+    const adj  = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+    const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+    const name = `${adj} ${noun}`;
+    sessionStorage.setItem('wahab_anon_name', name);
+    return name;
+  } catch { return 'Anonymous'; }
+};
+
+const getDisplayName = (ownerFlag) => {
+  if (ownerFlag) return 'Wahab';
+  try {
+    const realName = localStorage.getItem('wahab_visitor_name');
+    if (realName) return realName;
+  } catch {}
+  return getOrCreateAnonName();
+};
+
 // Full-page overlay portaled to document.body so pins can exist anywhere on the page.
 // cursor is managed imperatively via overlayRef (see cursor-style effect) so it updates
 // instantly on mousemove without triggering React re-renders.
@@ -160,6 +184,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const overlayRef       = useRef(null);
   const channelRef       = useRef(null);
   const modeRef          = useRef('cursor'); // kept in sync for use in event handler closures
+  const isOwnerRef       = useRef(false);   // kept in sync for use in setTimeout callbacks
   const activeTabRef     = useRef(activeTab);
   const prevTabRef       = useRef(activeTab);
   const tabFadeTimer     = useRef(null);
@@ -220,6 +245,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const [draggingId, setDraggingId] = useState(null);
   const [dragPos, setDragPos]       = useState(null);
+
+  const displayNameRef = useRef(''); // synced to getDisplayName(isOwner) on every render
 
   const [presetPositions, setPresetPositions] = useState(() => {
     const VERSION = '5';
@@ -349,8 +376,10 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  activeTabRef.current = activeTab;
-  modeRef.current = mode;
+  activeTabRef.current   = activeTab;
+  modeRef.current        = mode;
+  isOwnerRef.current     = isOwner;
+  displayNameRef.current = getDisplayName(isOwner);
 
   useLayoutEffect(() => {
     const h = document.documentElement.scrollHeight;
@@ -454,6 +483,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         x_pct: ((e.clientX - m.left) / m.width) * 100,
         y_pct: overlayHeight > 0 ? ((e.pageY - m.absTop) / overlayHeight) * 100 : 0,
         color: cursorColor,
+        name: displayNameRef.current,
       }});
     };
     window.addEventListener('mousemove', onMove);
@@ -699,7 +729,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       x_pct,
       y_pct: overlayHeight > 0 ? ((e.pageY - m.absTop) / overlayHeight) * 100 : 0,
     });
-    setDraftAuthor(''); setDraftBody('');
+    setDraftAuthor(displayNameRef.current); setDraftBody('');
   };
 
   const cancelDraft = () => { setDraft(null); setDraftAuthor(''); setDraftBody(''); };
@@ -709,13 +739,23 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     setSaving(true);
     const token = getOrCreateSessionToken();
     localSessionToken.current = token;
+    const enteredName = draftAuthor.trim();
     const { data, error } = await supabase.from('comments').insert({
       page, x_pct: draft.x_pct, y_pct: draft.y_pct,
-      author: draftAuthor.trim() || 'Anonymous', body: draftBody.trim(),
+      author: enteredName || 'Anonymous', body: draftBody.trim(),
       session_token: token,
     }).select().single();
     setSaving(false);
-    if (!error && data) setComments(prev => prev.some(c => c.id === data.id) ? prev : [...prev, data]);
+    if (!error && data) {
+      setComments(prev => prev.some(c => c.id === data.id) ? prev : [...prev, data]);
+      // If they typed a name that differs from their anon identity, upgrade to real name
+      if (enteredName && enteredName !== getOrCreateAnonName()) {
+        try {
+          localStorage.setItem('wahab_visitor_name', enteredName);
+          sessionStorage.setItem('wahab_anon_name', enteredName);
+        } catch {}
+      }
+    }
     cancelDraft();
   };
 
@@ -905,6 +945,26 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       {Object.entries(cursors).map(([id, c]) => (
         <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, cAbsTop, overlayHeight)}>
           <MousePointer2 size={20} fill={c.color} fillOpacity={0.25} />
+          {c.name && (
+            <div style={{
+              position: 'absolute',
+              top: '18px',
+              left: '14px',
+              backgroundColor: c.color,
+              color: '#fff',
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              lineHeight: 1,
+              padding: '3px 6px',
+              borderRadius: '4px',
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              fontFamily: 'inherit',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+            }}>
+              {c.name}
+            </div>
+          )}
         </div>
       ))}
 
