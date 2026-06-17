@@ -116,12 +116,23 @@ const inputStyle = {
 };
 
 export default function CommentPins({ page, showPresets = true, activeTab }) {
-  const channelRef     = useRef(null);
-  const canvasRef      = useRef(null);
+  const channelRef          = useRef(null);
+  const canvasRef           = useRef(null);
   const annotationCanvasRef = useRef(null);
-  const activeTabRef   = useRef(activeTab);
-  const prevTabRef     = useRef(activeTab);
-  const tabFadeTimer   = useRef(null);
+  const activeTabRef        = useRef(activeTab);
+  const prevTabRef          = useRef(activeTab);
+  const tabFadeTimer        = useRef(null);
+
+  // Drag refs
+  const dragMetaRef    = useRef(null);
+  const dragPosRef     = useRef(null);
+  const dragStartRef   = useRef(null);
+  const justDraggedRef = useRef(false);
+  const preDragPosRef  = useRef(null);   // pre-drag position for revert-on-escape
+  const dbWriteTimerRef = useRef(null);  // debounce DB write on drop
+
+  // Remote move auto-clear timers
+  const remoteMoveTimers = useRef({});
 
   const [mode, setMode]           = useState('cursor');
   const [comments, setComments]   = useState([]);
@@ -150,6 +161,14 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const [sessionId]    = useState(randomId);
   const [cursorColor]  = useState(() => CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)]);
 
+  // Real-time card movement from other users: { cardId: { x_pct, y_pct } }
+  const [remoteCardMoves, setRemoteCardMoves] = useState({});
+  // DB write failure indicators: { cardId: true }
+  const [cardErrors, setCardErrors]           = useState({});
+
+  const [draggingId, setDraggingId] = useState(null);
+  const [dragPos, setDragPos]       = useState(null);
+
   const [presetPositions, setPresetPositions] = useState(() => {
     const VERSION = '4';
     const defaults = Object.fromEntries(PRESET_PINS.map((p) => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }]));
@@ -159,7 +178,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         if (saved) return JSON.parse(saved);
       }
     } catch {}
-    // Version mismatch — reset to defaults, overwrite stale storage so next load also gets clean data
     try {
       localStorage.setItem('preset-positions-v', VERSION);
       localStorage.setItem('preset-pin-positions', JSON.stringify(defaults));
@@ -179,7 +197,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return {};
   });
 
-
   const [annotationPos, setAnnotationPos] = useState(() => {
     const VERSION = '2';
     const DEFAULT = { x_pct: 68, y_pct: 15 };
@@ -195,14 +212,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     } catch {}
     return DEFAULT;
   });
-
-
-  const [draggingId, setDraggingId] = useState(null);
-  const [dragPos, setDragPos]       = useState(null);
-  const dragMetaRef  = useRef(null);
-  const dragPosRef   = useRef(null);
-  const dragStartRef = useRef(null);
-  const justDraggedRef = useRef(false);
 
   // Pulse fires once; allow stagger offset of 4 cards × 50ms + 600ms anim = ~800ms
   useEffect(() => {
@@ -243,7 +252,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Secret shortcut: Shift+Alt+L toggles the owner login form
+  // Secret shortcut: Ctrl+Shift+L toggles the owner login form
   useEffect(() => {
     const onKey = (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'L') setShowLogin(s => !s);
@@ -312,6 +321,23 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         if (payload.id === sessionId) return;
         setCursors(prev => ({ ...prev, [payload.id]: payload }));
       })
+      // Real-time card position updates from the owner dragging on another browser
+      .on('broadcast', { event: 'card_move' }, ({ payload }) => {
+        if (payload.dragging) {
+          setRemoteCardMoves(prev => ({ ...prev, [payload.id]: { x_pct: payload.x_pct, y_pct: payload.y_pct } }));
+          // Auto-clear if broadcasts stop (e.g. owner navigates away mid-drag)
+          clearTimeout(remoteMoveTimers.current[payload.id]);
+          remoteMoveTimers.current[payload.id] = setTimeout(() => {
+            setRemoteCardMoves(prev => { const n = { ...prev }; delete n[payload.id]; return n; });
+          }, 2000);
+        } else {
+          clearTimeout(remoteMoveTimers.current[payload.id]);
+          delete remoteMoveTimers.current[payload.id];
+          setRemoteCardMoves(prev => { const n = { ...prev }; delete n[payload.id]; return n; });
+          setComments(prev => prev.map(c => c.id === payload.id
+            ? { ...c, x_pct: payload.x_pct, y_pct: payload.y_pct } : c));
+        }
+      })
       .on('presence', { event: 'sync' }, () => {
         setViewerCount(Object.keys(channel.presenceState()).length);
       })
@@ -324,10 +350,30 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
         ({ old: row }) => setComments(prev => prev.filter(c => c.id !== row.id))
       )
+      // Final position sync after owner drop — clears stale local overrides
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
+        ({ new: row }) => {
+          setComments(prev => prev.map(c => c.id === row.id
+            ? { ...c, x_pct: row.x_pct, y_pct: row.y_pct } : c));
+          setVisitorPositions(prev => {
+            if (!prev[row.id]) return prev;
+            const n = { ...prev }; delete n[row.id]; return n;
+          });
+          setRemoteCardMoves(prev => { const n = { ...prev }; delete n[row.id]; return n; });
+          clearTimeout(remoteMoveTimers.current[row.id]);
+          delete remoteMoveTimers.current[row.id];
+        }
+      )
       .subscribe(status => { if (status === 'SUBSCRIBED') channel.track({ color: cursorColor }); });
 
     channelRef.current = channel;
-    return () => { supabase.removeChannel(channel); channelRef.current = null; setCursors({}); setViewerCount(0); };
+    return () => {
+      supabase.removeChannel(channel);
+      channelRef.current = null;
+      setCursors({}); setViewerCount(0);
+      Object.values(remoteMoveTimers.current).forEach(clearTimeout);
+      remoteMoveTimers.current = {};
+    };
   }, [page, sessionId, cursorColor]);
 
   useEffect(() => {
@@ -357,70 +403,169 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => document.removeEventListener('click', close);
   }, [expandedId]);
 
+  // Main drag effect — handles both annotation and visitor card drags
   useEffect(() => {
     if (!draggingId) return;
     document.body.style.userSelect = 'none';
 
+    let lastUpdate = 0;
+
+    const getXY = (e) => {
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        return { clientX: e.changedTouches[0].clientX, pageY: e.changedTouches[0].pageY };
+      }
+      return { clientX: e.clientX, pageY: e.pageY };
+    };
+
     const onMove = (e) => {
       const meta = dragMetaRef.current;
       if (!meta) return;
-      const x_pct = Math.max(0, Math.min(100, ((e.clientX - meta.offsetX_px) / window.innerWidth) * 100));
-      const y_pct = Math.max(0, Math.min(100, ((e.pageY  - meta.offsetY_px) / overlayHeight) * 100));
+      const { clientX, pageY } = getXY(e);
+      // Annotation can reach 100%; visitor cards clamped to 95% to prevent off-screen
+      const maxPct = meta.isAnnotation ? 100 : 95;
+      const x_pct = Math.max(0, Math.min(maxPct, ((clientX - meta.offsetX_px) / window.innerWidth) * 100));
+      const y_pct = Math.max(0, Math.min(maxPct, ((pageY  - meta.offsetY_px) / overlayHeight) * 100));
       dragPosRef.current = { x_pct, y_pct };
-      setDragPos({ x_pct, y_pct });
+
+      const now = performance.now();
+      if (now - lastUpdate >= 33) {
+        lastUpdate = now;
+        setDragPos({ x_pct, y_pct });
+        // Broadcast visitor card position to other connected users (never broadcast annotation)
+        if (!meta.isAnnotation && channelRef.current) {
+          channelRef.current.send({ type: 'broadcast', event: 'card_move', payload: {
+            id: meta.id, x_pct, y_pct, dragging: true,
+          }});
+        }
+      }
     };
 
     const onUp = () => {
       const meta = dragMetaRef.current;
       const pos  = dragPosRef.current;
+
       if (meta && pos) {
         if (meta.isAnnotation) {
+          // Annotation: save to localStorage (unchanged behaviour)
           const newPos = { x_pct: pos.x_pct, y_pct: pos.y_pct };
           setAnnotationPos(newPos);
           try {
-              localStorage.setItem('annotation-pos-v', '2');
-              localStorage.setItem('annotation-position', JSON.stringify(newPos));
-            } catch {}
-        } else if (meta.isPreset) {
-          setPresetPositions(prev => {
-            const next = { ...prev, [meta.id]: { x_pct: pos.x_pct, y_pct: pos.y_pct } };
-            try {
-              localStorage.setItem('preset-positions-v', '4');
-              localStorage.setItem('preset-pin-positions', JSON.stringify(next));
-            } catch {}
-            return next;
-          });
+            localStorage.setItem('annotation-pos-v', '2');
+            localStorage.setItem('annotation-position', JSON.stringify(newPos));
+          } catch {}
+          justDraggedRef.current = true;
         } else {
-          setComments(prev => prev.map(c => c.id === meta.id ? { ...c, ...pos } : c));
-          setVisitorPositions(prev => {
-            const next = { ...prev, [meta.id]: { x_pct: pos.x_pct, y_pct: pos.y_pct } };
-            try { localStorage.setItem('visitor-comment-positions', JSON.stringify(next)); } catch {}
-            return next;
-          });
-          supabase.from('comments').update({ x_pct: pos.x_pct, y_pct: pos.y_pct }).eq('id', meta.id);
+          // Visitor comment — owner only
+          const finalX = pos.x_pct;
+          const finalY = pos.y_pct;
+          const preDrag = preDragPosRef.current;
+          const positionChanged = !preDrag
+            || Math.abs(finalX - preDrag.x_pct) > 0.1
+            || Math.abs(finalY - preDrag.y_pct) > 0.1;
+
+          if (positionChanged) {
+            // Broadcast final position so other users snap to it
+            const ch = channelRef.current;
+            if (ch) {
+              ch.send({ type: 'broadcast', event: 'card_move', payload: {
+                id: meta.id, x_pct: finalX, y_pct: finalY, dragging: false,
+              }});
+            }
+
+            // Optimistic update — owner sees the new position immediately
+            setComments(prev => prev.map(c => c.id === meta.id
+              ? { ...c, x_pct: finalX, y_pct: finalY } : c));
+
+            // Debounced single DB write — prevents double-write on rapid mouseup
+            clearTimeout(dbWriteTimerRef.current);
+            const capturedId  = meta.id;
+            const capturedPre = preDrag;
+            dbWriteTimerRef.current = setTimeout(async () => {
+              const { error } = await supabase.from('comments')
+                .update({ x_pct: finalX, y_pct: finalY }).eq('id', capturedId);
+              if (error && capturedPre) {
+                // Revert to pre-drag position and show subtle error indicator
+                setComments(prev => prev.map(c => c.id === capturedId
+                  ? { ...c, x_pct: capturedPre.x_pct, y_pct: capturedPre.y_pct } : c));
+                setCardErrors(prev => ({ ...prev, [capturedId]: true }));
+                setTimeout(() => setCardErrors(prev => {
+                  const n = { ...prev }; delete n[capturedId]; return n;
+                }), 3000);
+              }
+            }, 100);
+
+            justDraggedRef.current = true;
+          }
         }
-        justDraggedRef.current = true;
+      }
+
+      document.body.style.userSelect = '';
+      setDraggingId(null); setDragPos(null);
+      dragMetaRef.current = null; dragPosRef.current = null;
+    };
+
+    // touchcancel: abort silently, no DB write, card reverts to comments state
+    const onCancel = () => {
+      document.body.style.userSelect = '';
+      setDraggingId(null); setDragPos(null);
+      dragMetaRef.current = null; dragPosRef.current = null;
+    };
+
+    // Escape: revert visitor card to pre-drag position and broadcast revert
+    const onEscape = (e) => {
+      if (e.key !== 'Escape') return;
+      const meta    = dragMetaRef.current;
+      const preDrag = preDragPosRef.current;
+      if (meta && !meta.isAnnotation && preDrag) {
+        setComments(prev => prev.map(c => c.id === meta.id
+          ? { ...c, x_pct: preDrag.x_pct, y_pct: preDrag.y_pct } : c));
+        const ch = channelRef.current;
+        if (ch) {
+          ch.send({ type: 'broadcast', event: 'card_move', payload: {
+            id: meta.id, x_pct: preDrag.x_pct, y_pct: preDrag.y_pct, dragging: false,
+          }});
+        }
       }
       document.body.style.userSelect = '';
       setDraggingId(null); setDragPos(null);
       dragMetaRef.current = null; dragPosRef.current = null;
     };
 
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
+    window.addEventListener('mousemove',   onMove);
+    window.addEventListener('mouseup',     onUp);
+    window.addEventListener('touchmove',   onMove, { passive: false });
+    window.addEventListener('touchend',    onUp);
+    window.addEventListener('touchcancel', onCancel);
+    window.addEventListener('keydown',     onEscape);
     return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('mousemove',   onMove);
+      window.removeEventListener('mouseup',     onUp);
+      window.removeEventListener('touchmove',   onMove);
+      window.removeEventListener('touchend',    onUp);
+      window.removeEventListener('touchcancel', onCancel);
+      window.removeEventListener('keydown',     onEscape);
       document.body.style.userSelect = '';
     };
   }, [draggingId, overlayHeight]);
+
+  // Cancel visitor card drag if the owner logs out mid-drag
+  useEffect(() => {
+    if (isOwner || !draggingId || draggingId === '__annotation__') return;
+    const preDrag = preDragPosRef.current;
+    if (preDrag) {
+      setComments(prev => prev.map(c => c.id === draggingId
+        ? { ...c, x_pct: preDrag.x_pct, y_pct: preDrag.y_pct } : c));
+    }
+    setDraggingId(null); setDragPos(null);
+    dragMetaRef.current = null; dragPosRef.current = null;
+    document.body.style.userSelect = '';
+  }, [isOwner, draggingId]);
 
   const startAnnotationDrag = (e) => {
     e.stopPropagation();
     dragStartRef.current = { x: e.clientX, y: e.clientY };
     dragMetaRef.current = {
       id: '__annotation__',
-      isPreset: false,
       isAnnotation: true,
       offsetX_px: e.clientX - (annotationPos.x_pct / 100) * window.innerWidth,
       offsetY_px: e.pageY  - (annotationPos.y_pct / 100) * overlayHeight,
@@ -430,13 +575,19 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     setDraggingId('__annotation__');
   };
 
-  const startDrag = (e, id, x_pct, y_pct, isPreset = false) => {
-    e.stopPropagation();
-    dragStartRef.current = { x: e.clientX, y: e.clientY };
-    dragMetaRef.current  = {
-      id, isPreset,
-      offsetX_px: e.clientX - (x_pct / 100) * window.innerWidth,
-      offsetY_px: e.pageY  - (y_pct / 100) * overlayHeight,
+  // Owner-only: start dragging a visitor comment card. Handles both mouse and touch events.
+  const startDrag = (e, id, x_pct, y_pct) => {
+    if (!isOwner) return;
+    if (e.stopPropagation) e.stopPropagation();
+    const clientX = e.clientX ?? (e.touches ? e.touches[0]?.clientX : 0) ?? 0;
+    const pageY   = e.pageY   ?? (e.touches ? e.touches[0]?.pageY   : 0) ?? 0;
+    dragStartRef.current  = { x: clientX, y: pageY };
+    preDragPosRef.current = { x_pct, y_pct };
+    dragMetaRef.current   = {
+      id,
+      isAnnotation: false,
+      offsetX_px: clientX - (x_pct / 100) * window.innerWidth,
+      offsetY_px: pageY   - (y_pct / 100) * overlayHeight,
     };
     dragPosRef.current = { x_pct, y_pct };
     setExpandedId(null);
@@ -498,23 +649,55 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   };
 
   const renderCard = (id, author, body, color, x_pct, y_pct, isPreset, pulseIndex, isDragging, extraWrapperStyle) => {
-    const pos        = isDragging && dragPos ? dragPos : { x_pct, y_pct };
+    // Position priority: local drag > incoming remote broadcast > stored position
+    const remoteMove = !isPreset && remoteCardMoves[id];
+    let displayX = x_pct;
+    let displayY = y_pct;
+    let isRemotelyMoving = false;
+
+    if (isDragging && dragPos) {
+      displayX = dragPos.x_pct;
+      displayY = dragPos.y_pct;
+    } else if (remoteMove) {
+      displayX = remoteMove.x_pct;
+      displayY = remoteMove.y_pct;
+      isRemotelyMoving = true;
+    }
+
     const isExpanded = expandedId === id;
     const deg        = getDeg(id);
     const pulseAnim  = pulseActive && isPreset
       ? { animation: `cc-pulse 600ms ease ${pulseIndex * 50}ms 1 both` }
       : {};
 
+    // Only owner can drag visitor cards. Preset pins are never draggable by anyone.
+    const canDrag = isOwner && !isPreset;
+
+    const wrapperStyle = {
+      ...cardWrapperStyle(displayX, displayY, deg),
+      cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
+      ...(isDragging ? { willChange: 'transform' } : {}),
+      ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
+      ...extraWrapperStyle,
+    };
+
+    const cardClass = [
+      'cc-card',
+      isExpanded          ? 'cc-card-expanded'      : '',
+      isRemotelyMoving    ? 'cc-card-remote-moving'  : '',
+    ].filter(Boolean).join(' ');
+
     return (
       <div
         key={id}
-        style={{ ...cardWrapperStyle(pos.x_pct, pos.y_pct, deg), cursor: isDragging ? 'grabbing' : 'grab', ...extraWrapperStyle }}
-        onMouseDown={(e) => startDrag(e, id, pos.x_pct, pos.y_pct, isPreset)}
+        style={wrapperStyle}
+        onMouseDown={canDrag ? (e) => startDrag(e, id, x_pct, y_pct) : undefined}
+        onTouchStart={canDrag ? (e) => startDrag(e, id, x_pct, y_pct) : undefined}
         onClick={(e) => onCardClick(e, id)}
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={onCardLeave}
       >
-        <div className={`cc-card${isExpanded ? ' cc-card-expanded' : ''}`} style={pulseAnim}>
+        <div className={cardClass} style={pulseAnim}>
           <div className="cc-header">
             <span className="cc-dot" style={{ backgroundColor: color }} />
             <span className="cc-author">{author}</span>
@@ -530,6 +713,13 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             >
               <Trash2 size={12} />
             </button>
+          )}
+          {cardErrors[id] && (
+            <div style={{
+              position: 'absolute', top: -4, right: -4,
+              width: 8, height: 8, borderRadius: '50%',
+              backgroundColor: '#ef4444', border: '1.5px solid white',
+            }} />
           )}
         </div>
       </div>
@@ -553,7 +743,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
               const isFadingOut = fadingOutIds.has(pin.id);
               const isFadingIn  = fadingInIds.has(pin.id);
               const opacity = isFadingOut || isFadingIn ? 0 : 1;
-              return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId,
+              return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, false,
                 { opacity, transition: 'opacity 150ms ease' });
             })}
             {comments.map((pin, i) => {
