@@ -39,6 +39,16 @@ const truncate = (text, words = 7) => {
   return parts.slice(0, words).join(' ') + '…';
 };
 
+const getOrCreateSessionToken = () => {
+  try {
+    const existing = localStorage.getItem('wahab_session_token');
+    if (existing) return existing;
+    const token = crypto.randomUUID();
+    localStorage.setItem('wahab_session_token', token);
+    return token;
+  } catch { return null; }
+};
+
 // Fixed viewport container — no scroll contribution, clips overflow so it never extends the page
 const fixedOverlayStyle = (mode) => ({
   position: 'fixed',
@@ -130,6 +140,10 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const justDraggedRef = useRef(false);
   const preDragPosRef  = useRef(null);   // pre-drag position for revert-on-escape
   const dbWriteTimerRef = useRef(null);  // debounce DB write on drop
+  // Session token for visitor self-service — read once on mount, updated after first comment drop
+  const localSessionToken = useRef(
+    typeof window !== 'undefined' ? localStorage.getItem('wahab_session_token') : null
+  );
 
   // Remote move auto-clear timers
   const remoteMoveTimers = useRef({});
@@ -321,7 +335,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         if (payload.id === sessionId) return;
         setCursors(prev => ({ ...prev, [payload.id]: payload }));
       })
-      // Real-time card position updates from the owner dragging on another browser
+      // Visitor self-service deletion — remove card immediately for all connected users
+      .on('broadcast', { event: 'card_delete' }, ({ payload }) => {
+        setComments(prev => prev.filter(c => c.id !== payload.id));
+      })
+      // Real-time card position updates from whoever is dragging on another browser
       .on('broadcast', { event: 'card_move' }, ({ payload }) => {
         if (payload.dragging) {
           setRemoteCardMoves(prev => ({ ...prev, [payload.id]: { x_pct: payload.x_pct, y_pct: payload.y_pct } }));
@@ -478,11 +496,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
             // Debounced single DB write — prevents double-write on rapid mouseup
             clearTimeout(dbWriteTimerRef.current);
-            const capturedId  = meta.id;
-            const capturedPre = preDrag;
+            const capturedId    = meta.id;
+            const capturedPre   = preDrag;
+            const capturedToken = meta.sessionToken; // null = owner write, string = visitor write
             dbWriteTimerRef.current = setTimeout(async () => {
-              const { error } = await supabase.from('comments')
-                .update({ x_pct: finalX, y_pct: finalY }).eq('id', capturedId);
+              const base = supabase.from('comments').update({ x_pct: finalX, y_pct: finalY }).eq('id', capturedId);
+              const { error } = await (capturedToken ? base.eq('session_token', capturedToken) : base);
               if (error && capturedPre) {
                 // Revert to pre-drag position and show subtle error indicator
                 setComments(prev => prev.map(c => c.id === capturedId
@@ -548,9 +567,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     };
   }, [draggingId, overlayHeight]);
 
-  // Cancel any card drag immediately if the owner logs out mid-drag
+  // Cancel drag if the owner logs out mid-drag — but only for owner-initiated drags.
+  // Visitor self-service drags (sessionToken !== null) are not tied to auth state.
   useEffect(() => {
     if (isOwner || !draggingId || draggingId === '__annotation__') return;
+    const meta = dragMetaRef.current;
+    if (meta && meta.sessionToken !== null) return; // visitor drag — continue unaffected
     const preDrag = preDragPosRef.current;
     if (preDrag) {
       setComments(prev => prev.map(c => c.id === draggingId
@@ -575,9 +597,10 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     setDraggingId('__annotation__');
   };
 
-  // Owner only: drag a visitor comment card. Preset pins are never draggable.
+  // Owner or card owner: drag a visitor comment card. Preset pins are never draggable.
+  // canDrag in renderCard already gates this — startDrag is the safety net.
   const startDrag = (e, id, x_pct, y_pct) => {
-    if (!isOwner) return;
+    if (!isOwner && !localSessionToken.current) return;
     if (e.stopPropagation) e.stopPropagation();
     const clientX = e.clientX ?? (e.touches ? e.touches[0]?.clientX : 0) ?? 0;
     const pageY   = e.pageY   ?? (e.touches ? e.touches[0]?.pageY   : 0) ?? 0;
@@ -586,6 +609,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     dragMetaRef.current   = {
       id,
       isAnnotation: false,
+      // null for owner (no token check on write); token string for visitor self-service
+      sessionToken: isOwner ? null : localSessionToken.current,
       offsetX_px: clientX - (x_pct / 100) * window.innerWidth,
       offsetY_px: pageY   - (y_pct / 100) * overlayHeight,
     };
@@ -610,9 +635,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const saveDraft = async () => {
     if (!draftBody.trim() || !draft) return;
     setSaving(true);
+    const token = getOrCreateSessionToken();
+    localSessionToken.current = token; // sync ref in case this is the first comment
     const { data, error } = await supabase.from('comments').insert({
       page, x_pct: draft.x_pct, y_pct: draft.y_pct,
       author: draftAuthor.trim() || 'Anonymous', body: draftBody.trim(),
+      session_token: token,
     }).select().single();
     setSaving(false);
     if (!error && data) setComments(prev => prev.some(c => c.id === data.id) ? prev : [...prev, data]);
@@ -624,6 +652,26 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     setVisitorPositions(prev => { const n = { ...prev }; delete n[id]; return n; });
     setExpandedId(null);
     await supabase.from('comments').delete().eq('id', id);
+  };
+
+  const handleVisitorDelete = async (id) => {
+    const card = comments.find(c => c.id === id);
+    if (!card) return;
+    // Optimistic removal
+    setComments(prev => prev.filter(c => c.id !== id));
+    setVisitorPositions(prev => { const n = { ...prev }; delete n[id]; return n; });
+    setExpandedId(null);
+    // Fast broadcast so other connected users see it disappear immediately
+    const ch = channelRef.current;
+    if (ch) ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
+    const token = localSessionToken.current;
+    const { error } = await supabase.from('comments').delete().eq('id', id).eq('session_token', token);
+    if (error) {
+      // Restore card and show subtle error
+      setComments(prev => prev.some(c => c.id === id) ? prev : [...prev, card]);
+      setCardErrors(prev => ({ ...prev, [id]: true }));
+      setTimeout(() => setCardErrors(prev => { const n = { ...prev }; delete n[id]; return n; }), 3000);
+    }
   };
 
   const handleLogin = async (e) => {
@@ -648,7 +696,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     if (isTouchDevice()) setExpandedId(prev => prev === id ? null : id);
   };
 
-  const renderCard = (id, author, body, color, x_pct, y_pct, isPreset, pulseIndex, isDragging, extraWrapperStyle) => {
+  const renderCard = (id, author, body, color, x_pct, y_pct, isPreset, pulseIndex, isDragging, sessionToken, extraWrapperStyle) => {
     // Position priority: local drag > incoming remote broadcast > stored position
     const remoteMove = !isPreset && remoteCardMoves[id];
     let displayX = x_pct;
@@ -670,8 +718,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       ? { animation: `cc-pulse 600ms ease ${pulseIndex * 50}ms 1 both` }
       : {};
 
-    // Owner only. Preset pins are never draggable by anyone.
-    const canDrag = isOwner && !isPreset;
+    // Visitor owns this card if their localStorage token matches
+    const isOwnCard = !isPreset && !!sessionToken && sessionToken === localSessionToken.current;
+    // Owner supersedes session token access. Preset pins are never draggable or deletable.
+    const canDrag   = !isPreset && (isOwner || isOwnCard);
+    const canDelete = !isPreset && (isOwner || isOwnCard);
 
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg),
@@ -683,8 +734,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
     const cardClass = [
       'cc-card',
-      isExpanded          ? 'cc-card-expanded'      : '',
-      isRemotelyMoving    ? 'cc-card-remote-moving'  : '',
+      isExpanded       ? 'cc-card-expanded'     : '',
+      isRemotelyMoving ? 'cc-card-remote-moving' : '',
     ].filter(Boolean).join(' ');
 
     return (
@@ -704,11 +755,14 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             <span className={`cc-preview${isExpanded ? ' cc-preview-hidden' : ''}`}>{truncate(body)}</span>
           </div>
           <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
-          {isExpanded && isOwner && !isPreset && (
+          {isExpanded && canDelete && (
             <button
               type="button"
               className="cc-delete"
-              onClick={(e) => { e.stopPropagation(); handleDelete(id); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                isOwner ? handleDelete(id) : handleVisitorDelete(id);
+              }}
               aria-label="Delete comment"
             >
               <Trash2 size={12} />
@@ -743,14 +797,14 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
               const isFadingOut = fadingOutIds.has(pin.id);
               const isFadingIn  = fadingInIds.has(pin.id);
               const opacity = isFadingOut || isFadingIn ? 0 : 1;
-              return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, false,
+              return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, false, null,
                 { opacity, transition: 'opacity 150ms ease' });
             })}
             {comments.map((pin, i) => {
               const override = visitorPositions[pin.id];
               const x = override ? override.x_pct : pin.x_pct;
               const y = override ? override.y_pct : pin.y_pct;
-              return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId);
+              return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId, pin.session_token);
             })}
           </>
         )}
