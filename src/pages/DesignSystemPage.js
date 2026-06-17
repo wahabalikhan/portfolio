@@ -10,7 +10,7 @@ export default function DesignSystemPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   usePageTitle('From Framework to Design System');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 pt-16 pb-28 tab-panel">
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
