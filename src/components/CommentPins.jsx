@@ -266,6 +266,18 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return defaults;
   });
 
+  // Per-page localStorage position cache for regular comments.
+  // Writes on drag and on remote updates; survives refresh even if the async DB write
+  // hasn't returned yet (or silently failed due to RLS). DB positions seed the cache for
+  // brand-new comments so the initial render is always correct.
+  const [commentPosCache, setCommentPosCache] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`cc-pos-${page}`);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {};
+  });
+
   useEffect(() => {
     try { localStorage.removeItem(`cc-overlay-h-${page}`); } catch {}
   }, [page]);
@@ -418,7 +430,24 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   useEffect(() => {
     supabase.from('comments').select('*').eq('page', page).then(({ data, error }) => {
-      if (!error && data) setComments(data);
+      if (!error && data) {
+        setComments(data);
+        // Seed cache for any comment not yet in it; clean up deleted ones.
+        setCommentPosCache(prev => {
+          const dbIds = new Set(data.map(c => c.id));
+          const n = { ...prev };
+          let changed = false;
+          data.forEach(c => {
+            if (!(c.id in n)) { n[c.id] = { x_pct: c.x_pct, y_pct: c.y_pct }; changed = true; }
+          });
+          Object.keys(n).forEach(id => {
+            if (!dbIds.has(id)) { delete n[id]; changed = true; }
+          });
+          if (!changed) return prev;
+          try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+          return n;
+        });
+      }
     });
   }, [page]);
 
@@ -445,6 +474,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
           setRemoteCardMoves(prev => { const n = { ...prev }; delete n[payload.id]; return n; });
           setComments(prev => prev.map(c => c.id === payload.id
             ? { ...c, x_pct: payload.x_pct, y_pct: payload.y_pct } : c));
+          setCommentPosCache(prev => {
+            const n = { ...prev, [payload.id]: { x_pct: payload.x_pct, y_pct: payload.y_pct } };
+            try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+            return n;
+          });
         }
       })
       .on('presence', { event: 'sync' }, () => {
@@ -454,15 +488,36 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         setCursors(prev => { if (!(key in prev)) return prev; const n = { ...prev }; delete n[key]; return n; });
       })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
-        ({ new: row }) => setComments(prev => prev.some(c => c.id === row.id) ? prev : [...prev, row])
+        ({ new: row }) => {
+          setComments(prev => prev.some(c => c.id === row.id) ? prev : [...prev, row]);
+          setCommentPosCache(prev => {
+            if (prev[row.id]) return prev;
+            const n = { ...prev, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } };
+            try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+            return n;
+          });
+        }
       )
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
-        ({ old: row }) => setComments(prev => prev.filter(c => c.id !== row.id))
+        ({ old: row }) => {
+          setComments(prev => prev.filter(c => c.id !== row.id));
+          setCommentPosCache(prev => {
+            if (!(row.id in prev)) return prev;
+            const n = { ...prev }; delete n[row.id];
+            try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+            return n;
+          });
+        }
       )
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
         ({ new: row }) => {
           setComments(prev => prev.map(c => c.id === row.id
             ? { ...c, x_pct: row.x_pct, y_pct: row.y_pct } : c));
+          setCommentPosCache(prev => {
+            const n = { ...prev, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } };
+            try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+            return n;
+          });
           setRemoteCardMoves(prev => { const n = { ...prev }; delete n[row.id]; return n; });
           clearTimeout(remoteMoveTimers.current[row.id]);
           delete remoteMoveTimers.current[row.id];
@@ -569,7 +624,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       if (now - lastUpdate >= 33) {
         lastUpdate = now;
         setDragPos({ x_pct, y_pct });
-        if (!meta.isAnnotation && channelRef.current) {
+        if (!meta.isAnnotation && !meta.isPreset && channelRef.current) {
           channelRef.current.send({ type: 'broadcast', event: 'card_move', payload: {
             id: meta.id, x_pct, y_pct, dragging: true,
           }});
@@ -590,6 +645,24 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             localStorage.setItem('annotation-position', JSON.stringify(newPos));
           } catch {}
           justDraggedRef.current = true;
+        } else if (meta.isPreset) {
+          const finalX = pos.x_pct;
+          const finalY = pos.y_pct;
+          const preDrag = preDragPosRef.current;
+          const positionChanged = !preDrag
+            || Math.abs(finalX - preDrag.x_pct) > 0.1
+            || Math.abs(finalY - preDrag.y_pct) > 0.1;
+          if (positionChanged) {
+            setPresetPositions(prev => {
+              const updated = { ...prev, [meta.id]: { x_pct: finalX, y_pct: finalY } };
+              try {
+                localStorage.setItem('preset-positions-v', '5');
+                localStorage.setItem('preset-pin-positions', JSON.stringify(updated));
+              } catch {}
+              return updated;
+            });
+          }
+          justDraggedRef.current = true;
         } else {
           const finalX = pos.x_pct;
           const finalY = pos.y_pct;
@@ -607,6 +680,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             }
             setComments(prev => prev.map(c => c.id === meta.id
               ? { ...c, x_pct: finalX, y_pct: finalY } : c));
+            setCommentPosCache(prev => {
+              const n = { ...prev, [meta.id]: { x_pct: finalX, y_pct: finalY } };
+              try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+              return n;
+            });
 
             clearTimeout(dbWriteTimerRef.current);
             const capturedId    = meta.id;
@@ -647,7 +725,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       if (e.key !== 'Escape') return;
       const meta    = dragMetaRef.current;
       const preDrag = preDragPosRef.current;
-      if (meta && !meta.isAnnotation && preDrag) {
+      if (meta && !meta.isAnnotation && !meta.isPreset && preDrag) {
         setComments(prev => prev.map(c => c.id === meta.id
           ? { ...c, x_pct: preDrag.x_pct, y_pct: preDrag.y_pct } : c));
         const ch = channelRef.current;
@@ -721,6 +799,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     dragMetaRef.current = {
       id,
       isAnnotation: false,
+      isPreset: PRESET_PINS.some(p => p.id === id),
       sessionToken: isOwner ? null : localSessionToken.current,
       offsetX_px: (clientX - m.left)  - (x_pct / 100) * m.width,
       offsetY_px: (pageY   - m.absTop) - (y_pct / 100) * overlayHeight,
@@ -763,6 +842,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     setSaving(false);
     if (!error && data) {
       setComments(prev => prev.some(c => c.id === data.id) ? prev : [...prev, data]);
+      setCommentPosCache(prev => {
+        if (prev[data.id]) return prev;
+        const n = { ...prev, [data.id]: { x_pct: data.x_pct, y_pct: data.y_pct } };
+        try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+        return n;
+      });
       // If they typed a name that differs from their anon identity, upgrade to real name
       if (enteredName && enteredName !== getOrCreateAnonName()) {
         try {
@@ -776,6 +861,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const handleDelete = async (id) => {
     setComments(prev => prev.filter(c => c.id !== id));
+    setCommentPosCache(prev => {
+      if (!(id in prev)) return prev;
+      const n = { ...prev }; delete n[id];
+      try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+      return n;
+    });
     setExpandedId(null);
     await supabase.from('comments').delete().eq('id', id);
   };
@@ -784,6 +875,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     const card = comments.find(c => c.id === id);
     if (!card) return;
     setComments(prev => prev.filter(c => c.id !== id));
+    setCommentPosCache(prev => {
+      if (!(id in prev)) return prev;
+      const n = { ...prev }; delete n[id];
+      try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+      return n;
+    });
     setExpandedId(null);
     const ch = channelRef.current;
     if (ch) ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
@@ -842,7 +939,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       : {};
 
     const isOwnCard = !isPreset && !!sessionToken && sessionToken === localSessionToken.current;
-    const canDrag   = !isPreset && (isOwner || isOwnCard);
+    const canDrag   = isPreset ? isOwner : (isOwner || isOwnCard);
     const canDelete = !isPreset && (isOwner || isOwnCard);
 
     const wrapperStyle = {
@@ -917,12 +1014,15 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             const isFadingOut = fadingOutIds.has(pin.id);
             const isFadingIn  = fadingInIds.has(pin.id);
             const opacity = isFadingOut || isFadingIn ? 0 : 1;
-            return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, false, null,
+            return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId, null,
               { opacity, transition: 'opacity 150ms ease' });
           })}
 
           {comments.map((pin, i) => {
-            return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), pin.x_pct, pin.y_pct, false, i, pin.id === draggingId, pin.session_token);
+            const cached = commentPosCache[pin.id];
+            const x = cached ? cached.x_pct : pin.x_pct;
+            const y = cached ? cached.y_pct : pin.y_pct;
+            return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId, pin.session_token);
           })}
 
           {page === 'home' && (() => {
