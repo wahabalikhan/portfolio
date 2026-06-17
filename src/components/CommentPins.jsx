@@ -220,7 +220,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const [draftBody, setDraftBody] = useState('');
   const [expandedId, setExpandedId] = useState(null);
   const [saving, setSaving]       = useState(false);
-  const [hidden, setHidden]       = useState(false);
+  const [hidden, setHidden]       = useState(() => {
+    try { return localStorage.getItem('wahab_comments_hidden') === 'true'; } catch { return false; }
+  });
   const [overlayHeight, setOverlayHeight] = useState(() =>
     typeof window !== 'undefined' ? document.documentElement.scrollHeight : 0
   );
@@ -1041,7 +1043,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         </div>
         <div className="ftip-wrap">
           <button type="button" aria-label={hidden ? 'Show comments' : 'Hide comments'} style={toolbarBtnStyle(hidden)}
-            onClick={() => setHidden(h => !h)}>
+            onClick={() => setHidden(h => {
+              const next = !h;
+              try { localStorage.setItem('wahab_comments_hidden', next); } catch {}
+              return next;
+            })}>
             {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
           <div className="ftip">{hidden ? 'Show' : 'Hide'} comments</div>
