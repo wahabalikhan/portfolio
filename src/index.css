@@ -1225,6 +1225,64 @@ html.dark .bg-blue-50 .text-gray-700 {
   opacity: 0;
 }
 
+/* Mobile: hide cursive annotation (comment system disabled on mobile) */
+@media (max-width: 767px) {
+  .floating-annotation { display: none; }
+  .max-w-3xl.mx-auto { padding-bottom: 2rem; }
+}
+
+/* Mobile toast */
+@keyframes mobileToastIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mobileToastOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(16px); }
+}
+.mobile-toast {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem);
+  left: 1.5rem;
+  right: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 40px 12px 16px;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  z-index: 200;
+  pointer-events: auto;
+  font-family: inherit;
+  color: #374151;
+  animation: mobileToastIn 300ms ease-out forwards;
+}
+.mobile-toast-out {
+  animation: mobileToastOut 200ms ease-in forwards;
+}
+.mobile-toast-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+html.dark .mobile-toast {
+  background: #1e1e2e;
+  border-color: rgba(255,255,255,0.12);
+  color: #e5e7eb;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+html.dark .mobile-toast-close { color: #6b7280; }
+
 .case-study-link:nth-child(1) { animation-delay: 0ms; }
 .case-study-link:nth-child(2) { animation-delay: 100ms; }
 .case-study-link:nth-child(3) { animation-delay: 200ms; }
