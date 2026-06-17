@@ -140,7 +140,7 @@ const cursorStyle = (xPct, yPct, color, contentLeft, contentWidth, contentAbsTop
 
 const toolbarStyle = {
   position: 'fixed',
-  bottom: '1.5rem',
+  bottom: '2rem',
   left: '50%',
   transform: 'translateX(-50%)',
   display: 'flex',
