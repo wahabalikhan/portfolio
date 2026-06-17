@@ -293,11 +293,24 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   // Create the portal root div and append it to body.
   useEffect(() => {
     const div = document.createElement('div');
-    div.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:0;overflow:visible;pointer-events:none;';
+    div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:0;overflow:visible;pointer-events:none;';
     document.body.appendChild(div);
     setPortalRoot(div);
     return () => { document.body.removeChild(div); };
   }, []);
+
+  // The portal container is position:fixed so it doesn't add to document scroll height.
+  // We scroll-link the overlay by translating it by -scrollY so pins stay page-anchored.
+  useEffect(() => {
+    const sync = () => {
+      if (overlayRef.current) {
+        overlayRef.current.style.transform = `translateY(${-window.scrollY}px)`;
+      }
+    };
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+    return () => window.removeEventListener('scroll', sync);
+  }, [portalRoot]);
 
   // Measure the content container's position and dimensions.
   // Uses functional state update with equality check to avoid re-renders when nothing changed.

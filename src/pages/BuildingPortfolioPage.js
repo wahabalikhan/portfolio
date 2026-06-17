@@ -9,7 +9,7 @@ export default function BuildingPortfolioPage() {
   const navigate = useNavigate();
   usePageTitle('Building this portfolio');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 pt-16 pb-28 tab-panel">
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">

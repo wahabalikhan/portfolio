@@ -9,7 +9,7 @@ export default function DesignSystemsBlogPage() {
   const navigate = useNavigate();
   usePageTitle('Design systems and the importance of documentation');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 pt-16 pb-28 tab-panel">
       <BackButton onClick={() => navigate(-1)} />
       
       <h1 className="text-5xl font-bold mb-4 text-gray-900" style={{ fontFamily: 'monospace' }}>
