@@ -10,7 +10,7 @@ export default function SchemasPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   usePageTitle('Reframing a quick-win request into a user-validated strategy');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 pt-16 pb-28 tab-panel">
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">

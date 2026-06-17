@@ -46,7 +46,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       }, 1500);
     };
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 relative home-page">
+    <div className="max-w-3xl mx-auto px-6 pt-16 pb-28 relative home-page">
       <CommentPins page="home" activeTab={activeTab} />
       <div className="flex items-stretch gap-4 mb-6">
         <img
@@ -195,13 +195,13 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               <p className="text-sm text-gray-500 py-8 text-center">Loading repositories…</p>
             )}
             {error && (
-              <p style={{ fontSize: '14px', color: '#b45309', padding: '1rem 0' }}>
+              <p style={{ fontSize: '14px', color: '#ef4444', padding: '1rem 0' }}>
                 Couldn't load repos right now — see them at{' '}
                 <a
                   href="https://github.com/wahabalikhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#b45309', textDecoration: 'underline' }}
+                  style={{ color: '#3b82f6', textDecoration: 'underline' }}
                 >
                   github.com/wahabalikhan
                 </a>
