@@ -9,7 +9,7 @@ const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#
 
 // Maximum play area width: 14-inch MacBook Pro logical CSS pixels (1512px).
 // Comments cannot be placed or dragged outside this centered boundary.
-const PLAY_AREA_WIDTH = 1450;
+const PLAY_AREA_WIDTH = 1380;
 
 // Returns the min/max x_pct values (content-relative) that correspond to the PLAY_AREA_WIDTH
 // boundary centered on the current viewport. Allows pins to reach the edge of a 14" MBP screen
@@ -1025,8 +1025,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       <div
         key={id}
         style={wrapperStyle}
-        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
-        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
+        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
+        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
         onClick={(e) => onCardClick(e, id)}
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={onCardLeave}
