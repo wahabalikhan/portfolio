@@ -94,7 +94,7 @@ const STACK = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200 pt-8" style={{ marginBottom: '4.5rem' }}>
+    <footer className="border-t border-gray-200 pt-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm text-gray-600">Made with 🫶🏼 using</span>
