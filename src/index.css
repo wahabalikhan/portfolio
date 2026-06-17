@@ -1229,6 +1229,7 @@ html.dark .bg-blue-50 .text-gray-700 {
 @media (max-width: 767px) {
   .floating-annotation { display: none; }
   .max-w-3xl.mx-auto { padding-bottom: 2rem; }
+  footer { margin-bottom: 0 !important; }
 }
 
 /* Mobile toast */
