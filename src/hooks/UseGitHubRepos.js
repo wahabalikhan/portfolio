@@ -9,15 +9,15 @@ export function useGithubRepos(username = import.meta.env.VITE_GITHUB_USERNAME) 
     const fetchRepos = async () => {
       try {
         setLoading(true);
+        const token = import.meta.env.VITE_GITHUB_TOKEN;
+        const headers = {
+          'Accept': 'application/vnd.github.v3+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
         const response = await fetch(
           `https://api.github.com/users/${username}/repos?sort=updated&per_page=100`,
-          {
-            headers: {
-              'Authorization': `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
-              'Accept': 'application/vnd.github.v3+json',
-              'X-GitHub-Api-Version': '2022-11-28'
-            }
-          }
+          { headers }
         );
         
         if (!response.ok) {
