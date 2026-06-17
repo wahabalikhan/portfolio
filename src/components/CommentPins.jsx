@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X } from 'lucide-react';
+import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X, Pencil, GripHorizontal } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
 const PRESET_COLOR = '#7F77DD';
@@ -133,7 +133,7 @@ const cursorStyle = (xPct, yPct, color, contentLeft, contentWidth, contentAbsTop
   left: `${contentLeft + (xPct / 100) * contentWidth}px`,
   top: `${contentAbsTop + (yPct / 100) * overlayHeight}px`,
   pointerEvents: 'none',
-  zIndex: 29,
+  zIndex: 35,
   transition: 'left 0.08s linear, top 0.08s linear',
   color,
 });
@@ -250,6 +250,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const [mobileToastVisible, setMobileToastVisible] = useState(false);
   const [mobileToastFading,  setMobileToastFading]  = useState(false);
+
+  const [editingId, setEditingId] = useState(null);
+  const [editBody,  setEditBody]  = useState('');
 
   const displayNameRef = useRef(''); // synced to getDisplayName(isOwner) on every render
 
@@ -607,7 +610,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   useEffect(() => {
     if (!expandedId) return;
-    const close = () => setExpandedId(null);
+    const close = (e) => {
+      if (e.target.closest('.cc-delete, .cc-edit-btn, .cc-edit-form')) return;
+      setExpandedId(null);
+      setEditingId(null);
+    };
     document.addEventListener('click', close);
     return () => document.removeEventListener('click', close);
   }, [expandedId]);
@@ -645,7 +652,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       if (now - lastUpdate >= 33) {
         lastUpdate = now;
         setDragPos({ x_pct, y_pct });
-        if (!meta.isAnnotation && !meta.isPreset && channelRef.current) {
+        if (!meta.isAnnotation && !meta.isPreset && !meta.isDraft && channelRef.current) {
           channelRef.current.send({ type: 'broadcast', event: 'card_move', payload: {
             id: meta.id, x_pct, y_pct, dragging: true,
           }});
@@ -658,7 +665,10 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       const pos  = dragPosRef.current;
 
       if (meta && pos) {
-        if (meta.isAnnotation) {
+        if (meta.isDraft) {
+          setDraft(prev => prev ? { ...prev, x_pct: pos.x_pct, y_pct: pos.y_pct } : null);
+          justDraggedRef.current = true;
+        } else if (meta.isAnnotation) {
           const newPos = { x_pct: pos.x_pct, y_pct: pos.y_pct };
           setAnnotationPos(newPos);
           try {
@@ -780,7 +790,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   // Cancel owner-initiated drag if they log out mid-drag.
   useEffect(() => {
-    if (isOwner || !draggingId || draggingId === '__annotation__') return;
+    if (isOwner || !draggingId || draggingId === '__annotation__' || draggingId === '__draft__') return;
     const meta = dragMetaRef.current;
     if (meta && meta.sessionToken !== null) return;
     const preDrag = preDragPosRef.current;
@@ -807,6 +817,41 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     dragPosRef.current = { ...annotationPos };
     setExpandedId(null);
     setDraggingId('__annotation__');
+  };
+
+  const startDraftDrag = (e) => {
+    if (!draft) return;
+    e.stopPropagation();
+    const m = contentMetricsRef.current;
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+    const pageY   = e.pageY ?? e.touches?.[0]?.pageY ?? (clientY + window.scrollY);
+    dragMetaRef.current = {
+      id: '__draft__',
+      isDraft: true,
+      isAnnotation: false,
+      isPreset: false,
+      sessionToken: null,
+      offsetX_px: (clientX - m.left) - (draft.x_pct / 100) * m.width,
+      offsetY_px: (pageY   - m.absTop) - (draft.y_pct / 100) * overlayHeight,
+    };
+    dragPosRef.current = { x_pct: draft.x_pct, y_pct: draft.y_pct };
+    setDraggingId('__draft__');
+  };
+
+  const handleEdit = async (id, newBody) => {
+    if (!newBody.trim()) return;
+    setComments(prev => prev.map(c => c.id === id ? { ...c, body: newBody.trim() } : c));
+    setEditingId(null);
+    await supabase.from('comments').update({ body: newBody.trim() }).eq('id', id);
+  };
+
+  const handleVisitorEdit = async (id, newBody) => {
+    if (!newBody.trim()) return;
+    const token = localSessionToken.current;
+    setComments(prev => prev.map(c => c.id === id ? { ...c, body: newBody.trim() } : c));
+    setEditingId(null);
+    await supabase.from('comments').update({ body: newBody.trim() }).eq('id', id).eq('session_token', token);
   };
 
   const startDrag = (e, id, x_pct, y_pct) => {
@@ -925,7 +970,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   };
 
   const onCardEnter = (id) => { if (!isTouchDevice()) setExpandedId(id); };
-  const onCardLeave = ()    => { if (!isTouchDevice()) setExpandedId(null); };
+  const onCardLeave = ()    => { if (!isTouchDevice()) { setExpandedId(null); setEditingId(null); } };
   const onCardClick = (e, id) => {
     e.stopPropagation();
     const start = dragStartRef.current;
@@ -960,6 +1005,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     const isOwnCard = !isPreset && !!sessionToken && sessionToken === localSessionToken.current;
     const canDrag   = isPreset ? isOwner : (isOwner || isOwnCard);
     const canDelete = !isPreset && (isOwner || isOwnCard);
+    const canEdit   = !isPreset && (isOwner || isOwnCard);
 
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, overlayHeight),
@@ -979,8 +1025,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       <div
         key={id}
         style={wrapperStyle}
-        onMouseDown={canDrag ? (e) => startDrag(e, id, x_pct, y_pct) : undefined}
-        onTouchStart={canDrag ? (e) => startDrag(e, id, x_pct, y_pct) : undefined}
+        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
+        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
         onClick={(e) => onCardClick(e, id)}
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={onCardLeave}
@@ -991,15 +1037,44 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             <span className="cc-author">{author}</span>
             <span className={`cc-preview${isExpanded ? ' cc-preview-hidden' : ''}`}>{truncate(body)}</span>
           </div>
-          <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
-          {isExpanded && canDelete && (
+          {editingId === id ? (
+            <div className="cc-edit-form" onClick={(e) => e.stopPropagation()}>
+              <textarea
+                value={editBody}
+                onChange={(e) => setEditBody(e.target.value)}
+                rows={3}
+                autoFocus
+                style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.375rem' }}
+              />
+              <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
+                <button type="button" className="cc-btn-cancel" onClick={(e) => { e.stopPropagation(); setEditingId(null); }}>Cancel</button>
+                <button
+                  type="button"
+                  className="cc-btn-save"
+                  onClick={(e) => { e.stopPropagation(); isOwner ? handleEdit(id, editBody) : handleVisitorEdit(id, editBody); }}
+                  disabled={!editBody.trim()}
+                  style={{ opacity: !editBody.trim() ? 0.6 : 1 }}
+                >Save</button>
+              </div>
+            </div>
+          ) : (
+            <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
+          )}
+          {isExpanded && editingId !== id && canEdit && (
+            <button
+              type="button"
+              className="cc-edit-btn"
+              onClick={(e) => { e.stopPropagation(); setEditBody(body); setEditingId(id); }}
+              aria-label="Edit comment"
+            >
+              <Pencil size={12} />
+            </button>
+          )}
+          {isExpanded && editingId !== id && canDelete && (
             <button
               type="button"
               className="cc-delete"
-              onClick={(e) => {
-                e.stopPropagation();
-                isOwner ? handleDelete(id) : handleVisitorDelete(id);
-              }}
+              onClick={(e) => { e.stopPropagation(); isOwner ? handleDelete(id) : handleVisitorDelete(id); }}
               aria-label="Delete comment"
             >
               <Trash2 size={12} />
@@ -1102,12 +1177,22 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         </div>
       ))}
 
-      {draft && !hidden && (
+      {draft && !hidden && (() => {
+        const draftX = (draggingId === '__draft__' && dragPos) ? dragPos.x_pct : draft.x_pct;
+        const draftY = (draggingId === '__draft__' && dragPos) ? dragPos.y_pct : draft.y_pct;
+        return (
         <div style={{
-          ...cardWrapperStyle(draft.x_pct, draft.y_pct, 0, cLeft, cWidth, cAbsTop, overlayHeight),
-          cursor: 'default', zIndex: 40,
+          ...cardWrapperStyle(draftX, draftY, 0, cLeft, cWidth, cAbsTop, overlayHeight),
+          cursor: draggingId === '__draft__' ? 'grabbing' : 'default', zIndex: 40,
         }}>
           <div className="cc-card cc-draft" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="cc-draft-handle"
+              onMouseDown={startDraftDrag}
+              onTouchStart={startDraftDrag}
+            >
+              <GripHorizontal size={14} />
+            </div>
             <input
               type="text"
               placeholder="Your name (or leave anonymous)"
@@ -1137,7 +1222,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 
