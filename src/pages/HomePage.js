@@ -46,7 +46,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       }, 1500);
     };
   return (
-    <div className="max-w-3xl mx-auto px-6 pt-16 pb-28 relative home-page">
+    <div className="max-w-3xl mx-auto px-6 py-16 relative home-page">
       <CommentPins page="home" activeTab={activeTab} />
       <div className="flex items-stretch gap-4 mb-6">
         <img
