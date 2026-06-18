@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { setActiveTab as setPresetTab, setPresetPinsVisible } from './presetPins.js';
 import HomePage from './pages/HomePage';
 import AIWorkflowPage from './pages/AIWorkflowPage';
 import GitDiffPage from './pages/GitDiffPage';
@@ -14,6 +15,13 @@ import ScrollToTop from './components/ScrollToTop';
 import ThemeToggle from './components/ThemeToggle';
 import PageNav from './components/PageNav';
 import NavBrand from './components/NavBrand';
+
+function PresetPinsSync({ activeTab }) {
+  const { pathname } = useLocation();
+  useEffect(() => { setPresetPinsVisible(pathname === '/'); }, [pathname]);
+  useEffect(() => { setPresetTab(activeTab); }, [activeTab]);
+  return null;
+}
 
 export default function App() {
   // For tab state on homepage only
@@ -68,6 +76,7 @@ export default function App() {
         }}
       >
         <ScrollToTop />
+        <PresetPinsSync activeTab={activeTab} />
         <div
           className="top-nav-bar"
           style={{
