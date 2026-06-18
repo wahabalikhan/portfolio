@@ -12,7 +12,7 @@ export default function DesignSystemsBlogPage() {
     <div className="max-w-3xl mx-auto px-6 py-16 tab-panel">
       <BackButton onClick={() => navigate(-1)} />
       
-      <h1 className="text-5xl font-bold mb-4 text-gray-900" style={{ fontFamily: 'monospace' }}>
+      <h1 className="text-4xl font-bold mb-2 text-gray-900">
         Design systems and the importance of documentation
       </h1>
       

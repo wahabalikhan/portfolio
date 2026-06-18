@@ -17,10 +17,10 @@ export default function AIWorkflowPage() {
                 The Designer Who Ships Code
             </h1>
 
-            <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> April 2026 - June 2026</p>
-            <p className="text-gray-600 mb-1"><span className="font-semibold">Team:</span> 2 Product Designers, 2 Engineers</p>
-            <p className="text-gray-600 mb-1"><span className="font-semibold">Role:</span> Designer and Builder. Workflow design, tooling, prototyping, development.</p>
-            <p className="text-gray-600 mb-4"><span className="font-semibold">Stack:</span> Figma, VS Code, Claude Code, Git, GitHub, Node.js, npm, React, HTML and CSS</p>
+            <p className="text-sm text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> April 2026 - June 2026</p>
+            <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Team:</span> 2 Product Designers, 2 Engineers</p>
+            <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Role:</span> Designer and Builder. Workflow design, tooling, prototyping, development.</p>
+            <p className="text-sm text-gray-600 mb-4"><span className="font-semibold">Stack:</span> Figma, VS Code, Claude Code, Git, GitHub, Node.js, npm, React, HTML and CSS</p>
 
             <img
                 src="/images/ai-workflow-hero.png"
@@ -62,19 +62,19 @@ export default function AIWorkflowPage() {
                     <h3 className="font-bold text-gray-900 mb-2">Results</h3>
                     <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="text-2xl font-bold bg-emerald-50">✅ Faster iteration</span> - from idea to working prototype in hours, not days
+                            <span className="font-bold bg-emerald-50">✅ Faster iteration</span> - from idea to working prototype in hours, not days
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="text-2xl font-bold bg-emerald-50">✅ Design files that stay current</span> - generated from or directly informed by the live product
+                            <span className="font-bold bg-emerald-50">✅ Design files that stay current</span> - generated from or directly informed by the live product
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="text-2xl font-bold bg-emerald-50">✅ Earlier feasibility checks</span> - issues surfaced before design sign-off, not after
+                            <span className="font-bold bg-emerald-50">✅ Earlier feasibility checks</span> - issues surfaced before design sign-off, not after
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="text-2xl font-bold bg-emerald-50">✅ Live changes pushed to production</span> - real users, not just local demos
+                            <span className="font-bold bg-emerald-50">✅ Live changes pushed to production</span> - real users, not just local demos
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-0">
-                            <span className="text-2xl font-bold bg-emerald-50">✅ Shorter feedback loops</span> - stakeholders react to working prototypes, not static screens
+                            <span className="font-bold bg-emerald-50">✅ Shorter feedback loops</span> - stakeholders react to working prototypes, not static screens
                         </p>
                     </div>
                 </div>
