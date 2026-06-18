@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X, Pencil, GripHorizontal } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
@@ -9,7 +9,7 @@ const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#
 
 // Maximum play area width: 14-inch MacBook Pro logical CSS pixels (1512px).
 // Comments cannot be placed or dragged outside this centered boundary.
-const PLAY_AREA_WIDTH = 1380;
+const PLAY_AREA_WIDTH = 1300;
 
 // Returns the min/max x_pct values (content-relative) that correspond to the PLAY_AREA_WIDTH
 // boundary centered on the current viewport. Allows pins to reach the edge of a 14" MBP screen
@@ -29,23 +29,27 @@ const getPlayAreaXBounds = (contentLeft, contentWidth) => {
 //   x_pct = (clientX - contentLeft) / contentWidth * 100
 //     → content-container-relative; 0 = left edge, 100 = right edge,
 //       negative = left of content, >100 = right of content.
-//   y_pct = (pageY - contentAbsTop) / overlayHeight * 100
-//     → page-height-relative from the content container's absolute top.
+//   y_pct = (pageY - contentAbsTop) / contentHeight * 100
+//     → content-height-relative from the content container's absolute top.
+//     Uses content column height (not document.scrollHeight) so positions are
+//     consistent across screen sizes — scrollHeight inflates on tall monitors
+//     due to min-height: 100vh, causing y-axis drift if used as denominator.
 //
 // Rendering converts back to absolute page pixels:
 //   left = contentLeft + x_pct/100 * contentWidth
-//   top  = contentAbsTop + y_pct/100 * overlayHeight
+//   top  = contentAbsTop + y_pct/100 * contentHeight
 //
 // The overlay is a portal on document.body (position:absolute, top:0, left:0, full page).
 // Pins can be placed and dragged anywhere on the page, not just within the content column.
 //
-// VERSION 5 preset positions (x_pct already content-relative from previous commit).
+// VERSION 6 preset positions — recalibrated for content-height y denominator and
+// (window.innerWidth - contentWidth)/2 contentLeft formula.
 const PRESET_PINS = [
-  { id: 'preset-1', x_pct: 75, y_pct: 8,  author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
-  { id: 'preset-2', x_pct: 12, y_pct: 62, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
-  { id: 'preset-3', x_pct: 22, y_pct: 32, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
-  { id: 'preset-4', x_pct: 72, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
-  { id: 'preset-5', x_pct: 83, y_pct: 75, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
+  { id: 'preset-1', x_pct: 78, y_pct: 6,  author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
+  { id: 'preset-2', x_pct: 8,  y_pct: 55, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
+  { id: 'preset-3', x_pct: 18, y_pct: 28, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
+  { id: 'preset-4', x_pct: 75, y_pct: 42, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
+  { id: 'preset-5', x_pct: 80, y_pct: 68, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
 ];
 
 const randomId = () =>
@@ -207,8 +211,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   // contentMetrics: measured from contentAnchorRef, kept in sync via ResizeObserver + resize event.
   // contentMetricsRef mirrors the state value for use in event handlers (avoids stale closures).
-  const [contentMetrics, setContentMetrics] = useState({ left: 0, width: 768, absTop: 0 });
-  const contentMetricsRef = useRef({ left: 0, width: 768, absTop: 0 });
+  // height is the content column's own rendered height — used as the y denominator so pin
+  // positions are consistent across screen sizes (document.scrollHeight inflates on taller
+  // monitors due to min-height: 100vh, causing y-axis drift).
+  const [contentMetrics, setContentMetrics] = useState({ left: 0, width: 768, absTop: 0, height: 0 });
+  const contentMetricsRef = useRef({ left: 0, width: 768, absTop: 0, height: 0 });
 
   // Portal root: a div appended to document.body that hosts the full-page overlay.
   const [portalRoot, setPortalRoot] = useState(null);
@@ -244,6 +251,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const [remoteCardMoves, setRemoteCardMoves] = useState({});
   const [cardErrors, setCardErrors]           = useState({});
+  const [pinSaveError, setPinSaveError]       = useState(null);
 
   const [draggingId, setDraggingId] = useState(null);
   const [dragPos, setDragPos]       = useState(null);
@@ -256,21 +264,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const displayNameRef = useRef(''); // synced to getDisplayName(isOwner) on every render
 
-  const [presetPositions, setPresetPositions] = useState(() => {
-    const VERSION = '5';
-    const defaults = Object.fromEntries(PRESET_PINS.map((p) => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }]));
-    try {
-      if (localStorage.getItem('preset-positions-v') === VERSION) {
-        const saved = localStorage.getItem('preset-pin-positions');
-        if (saved) return JSON.parse(saved);
-      }
-    } catch {}
-    try {
-      localStorage.setItem('preset-positions-v', VERSION);
-      localStorage.setItem('preset-pin-positions', JSON.stringify(defaults));
-    } catch {}
-    return defaults;
-  });
+  const [presetPositions, setPresetPositions] = useState(() =>
+    Object.fromEntries(PRESET_PINS.map(p => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }]))
+  );
 
   // Per-page localStorage position cache for regular comments.
   // Writes on drag and on remote updates; survives refresh even if the async DB write
@@ -288,25 +284,12 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     try { localStorage.removeItem(`cc-overlay-h-${page}`); } catch {}
   }, [page]);
 
+
   // Clear any stale visitor-position overrides from localStorage — positions now live
   // entirely in the DB and are loaded via the comments state on every mount.
   try { localStorage.removeItem('visitor-comment-positions'); } catch {}
 
-  const [annotationPos, setAnnotationPos] = useState(() => {
-    const VERSION = '3';
-    const DEFAULT = { x_pct: 68, y_pct: 15 };
-    try {
-      if (localStorage.getItem('annotation-pos-v') === VERSION) {
-        const saved = localStorage.getItem('annotation-position');
-        if (saved) return JSON.parse(saved);
-      }
-    } catch {}
-    try {
-      localStorage.setItem('annotation-pos-v', VERSION);
-      localStorage.setItem('annotation-position', JSON.stringify(DEFAULT));
-    } catch {}
-    return DEFAULT;
-  });
+  const [annotationPos, setAnnotationPos] = useState({ x_pct: 22, y_pct: 72 });
 
   // Create the portal root div and append it to body.
   useEffect(() => {
@@ -335,14 +318,19 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const updateContentMetrics = () => {
     const rect = contentAnchorRef.current?.getBoundingClientRect();
     if (!rect || rect.width === 0) return;
-    const newLeft   = rect.left;
     const newWidth  = rect.width;
     const newAbsTop = rect.top + window.scrollY;
+    const newHeight = contentAnchorRef.current?.parentElement?.getBoundingClientRect().height ?? 0;
+    // Derive contentLeft from window.innerWidth instead of rect.left.
+    // getBoundingClientRect().left differs between browsers (Chrome vs Safari) due to
+    // scrollbar-width handling. For a centred max-width container this is always correct.
+    const newLeft = (window.innerWidth - newWidth) / 2;
     setContentMetrics(prev => {
-      if (prev.left === newLeft && prev.width === newWidth && prev.absTop === newAbsTop) return prev;
-      return { left: newLeft, width: newWidth, absTop: newAbsTop };
+      if (prev.left === newLeft && prev.width === newWidth && prev.absTop === newAbsTop && prev.height === newHeight) return prev;
+      return { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight };
     });
-    contentMetricsRef.current = { left: newLeft, width: newWidth, absTop: newAbsTop };
+    contentMetricsRef.current = { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight };
+    console.log('[CommentPins] contentLeft fixed:', newLeft, 'window.innerWidth:', window.innerWidth, 'contentWidth:', newWidth);
   };
 
   useLayoutEffect(() => { updateContentMetrics(); }, []);
@@ -449,6 +437,25 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => cancelAnimationFrame(raf);
   }, [activeTab]);
 
+  // Load owner-positioned preset pin and annotation positions from Supabase on mount.
+  // Merges DB values over hardcoded defaults so all browsers see the owner's layout.
+  useEffect(() => {
+    if (isMobile) return;
+    supabase.from('pin_positions').select('*').eq('page', page).then(({ data, error }) => {
+      if (error) { console.warn('[CommentPins] Failed to load pin positions:', error); return; }
+      if (!data || data.length === 0) return;
+      setPresetPositions(prev => {
+        const next = { ...prev };
+        data.filter(r => r.type === 'preset').forEach(r => {
+          if (r.id in next) next[r.id] = { x_pct: r.x_pct, y_pct: r.y_pct };
+        });
+        return next;
+      });
+      const ann = data.find(r => r.type === 'annotation');
+      if (ann) setAnnotationPos({ x_pct: ann.x_pct, y_pct: ann.y_pct });
+    });
+  }, [page, isMobile]);
+
   useEffect(() => {
     if (isMobile) return;
     supabase.from('comments').select('*').eq('page', page).then(({ data, error }) => {
@@ -475,7 +482,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   useEffect(() => {
     if (isMobile) return;
-    const channel = supabase.channel(`room:${page}`, { config: { presence: { key: sessionId } } });
+    const channel = supabase.channel(`room:${page}`, { config: { broadcast: { self: false }, presence: { key: sessionId } } });
     channel
       .on('broadcast', { event: 'cursor' }, ({ payload }) => {
         if (payload.id === sessionId) return;
@@ -483,6 +490,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       })
       .on('broadcast', { event: 'card_delete' }, ({ payload }) => {
         setComments(prev => prev.filter(c => c.id !== payload.id));
+      })
+      .on('broadcast', { event: 'card_edit' }, ({ payload }) => {
+        setComments(prev => prev.map(c => c.id === payload.id ? { ...c, body: payload.body } : c));
       })
       .on('broadcast', { event: 'card_move' }, ({ payload }) => {
         if (payload.dragging) {
@@ -535,7 +545,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
         ({ new: row }) => {
           setComments(prev => prev.map(c => c.id === row.id
-            ? { ...c, x_pct: row.x_pct, y_pct: row.y_pct } : c));
+            ? { ...c, x_pct: row.x_pct, y_pct: row.y_pct, body: row.body, author: row.author } : c));
           setCommentPosCache(prev => {
             const n = { ...prev, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } };
             try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
@@ -544,6 +554,17 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
           setRemoteCardMoves(prev => { const n = { ...prev }; delete n[row.id]; return n; });
           clearTimeout(remoteMoveTimers.current[row.id]);
           delete remoteMoveTimers.current[row.id];
+        }
+      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pin_positions', filter: `page=eq.${page}` },
+        ({ eventType, new: row }) => {
+          if (eventType === 'INSERT' || eventType === 'UPDATE') {
+            if (row.type === 'preset') {
+              setPresetPositions(prev => ({ ...prev, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } }));
+            } else if (row.type === 'annotation') {
+              setAnnotationPos({ x_pct: row.x_pct, y_pct: row.y_pct });
+            }
+          }
         }
       )
       .subscribe(status => { if (status === 'SUBSCRIBED') channel.track({ color: cursorColor }); });
@@ -558,6 +579,48 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     };
   }, [page, sessionId, cursorColor, isMobile]);
 
+  const resyncComments = useCallback(async () => {
+    if (isMobile) return;
+    const { data, error } = await supabase
+      .from('comments').select('*').eq('page', page).order('created_at', { ascending: true });
+    if (error) { console.warn('[CommentPins] Resync failed:', error); return; }
+    if (data) {
+      setComments(data);
+      setCommentPosCache(() => {
+        const n = Object.fromEntries(data.map(c => [c.id, { x_pct: c.x_pct, y_pct: c.y_pct }]));
+        try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+        return n;
+      });
+    }
+  }, [page, isMobile]);
+
+  // Resync comments when the tab becomes visible again after being inactive.
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState !== 'visible') return;
+      const channelState = channelRef.current?.state;
+      if (channelState === 'closed' || channelState === 'errored') {
+        channelRef.current?.subscribe();
+      }
+      await resyncComments();
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [resyncComments]);
+
+  useEffect(() => {
+    let lastFocusResync = 0;
+    const handleFocus = async () => {
+      const now = Date.now();
+      if (now - lastFocusResync > 1000) {
+        lastFocusResync = now;
+        await resyncComments();
+      }
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [resyncComments]);
+
   // Cursor broadcast — x_pct/y_pct are content-relative so remote cursors appear at the
   // same content position regardless of each viewer's screen width.
   useEffect(() => {
@@ -569,20 +632,20 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       if (now - lastSent < 50) return;
       lastSent = now;
       const ch = channelRef.current;
-      if (!ch) return;
+      if (ch?.state !== 'joined') return;
       const m = contentMetricsRef.current;
       if (m.width === 0) return;
       ch.send({ type: 'broadcast', event: 'cursor', payload: {
         id: sessionId,
         x_pct: ((e.clientX - m.left) / m.width) * 100,
-        y_pct: overlayHeight > 0 ? ((e.pageY - m.absTop) / overlayHeight) * 100 : 0,
+        y_pct: m.height > 0 ? ((e.pageY - m.absTop) / m.height) * 100 : 0,
         color: cursorColor,
         name: displayNameRef.current,
       }});
     };
     window.addEventListener('mousemove', onMove);
     return () => window.removeEventListener('mousemove', onMove);
-  }, [sessionId, cursorColor, overlayHeight, isMobile]);
+  }, [sessionId, cursorColor, isMobile]);
 
   // Cursor style: copy (can place) vs not-allowed (outside play area).
   // Runs unthrottled on mousemove and writes directly to the overlay's DOM style
@@ -611,13 +674,14 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   useEffect(() => {
     if (!expandedId) return;
     const close = (e) => {
+      if (editingId) return;
       if (e.target.closest('.cc-delete, .cc-edit-btn, .cc-edit-form')) return;
       setExpandedId(null);
       setEditingId(null);
     };
     document.addEventListener('click', close);
     return () => document.removeEventListener('click', close);
-  }, [expandedId]);
+  }, [expandedId, editingId]);
 
   // Main drag effect.
   // Uses contentMetricsRef for fresh content position values without stale closures.
@@ -645,14 +709,14 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       const relY = pageY - m.absTop;
       const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
       const x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
-      const y_pct = Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / overlayHeight) * 100));
+      const y_pct = Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / m.height) * 100));
       dragPosRef.current = { x_pct, y_pct };
 
       const now = performance.now();
       if (now - lastUpdate >= 33) {
         lastUpdate = now;
         setDragPos({ x_pct, y_pct });
-        if (!meta.isAnnotation && !meta.isPreset && !meta.isDraft && channelRef.current) {
+        if (!meta.isAnnotation && !meta.isPreset && !meta.isDraft && channelRef.current?.state === 'joined') {
           channelRef.current.send({ type: 'broadcast', event: 'card_move', payload: {
             id: meta.id, x_pct, y_pct, dragging: true,
           }});
@@ -671,10 +735,18 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         } else if (meta.isAnnotation) {
           const newPos = { x_pct: pos.x_pct, y_pct: pos.y_pct };
           setAnnotationPos(newPos);
-          try {
-            localStorage.setItem('annotation-pos-v', '3');
-            localStorage.setItem('annotation-position', JSON.stringify(newPos));
-          } catch {}
+          if (isOwnerRef.current) {
+            supabase.from('pin_positions').upsert(
+              { id: 'annotation', x_pct: newPos.x_pct, y_pct: newPos.y_pct, type: 'annotation', page, updated_at: new Date().toISOString() },
+              { onConflict: 'id' }
+            ).then(({ error }) => {
+              if (error) {
+                console.warn('[CommentPins] Failed to save annotation position:', error);
+                setPinSaveError('annotation');
+                setTimeout(() => setPinSaveError(null), 2000);
+              }
+            });
+          }
           justDraggedRef.current = true;
         } else if (meta.isPreset) {
           const finalX = pos.x_pct;
@@ -684,14 +756,20 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             || Math.abs(finalX - preDrag.x_pct) > 0.1
             || Math.abs(finalY - preDrag.y_pct) > 0.1;
           if (positionChanged) {
-            setPresetPositions(prev => {
-              const updated = { ...prev, [meta.id]: { x_pct: finalX, y_pct: finalY } };
-              try {
-                localStorage.setItem('preset-positions-v', '5');
-                localStorage.setItem('preset-pin-positions', JSON.stringify(updated));
-              } catch {}
-              return updated;
-            });
+            setPresetPositions(prev => ({ ...prev, [meta.id]: { x_pct: finalX, y_pct: finalY } }));
+            if (isOwnerRef.current) {
+              const capturedId = meta.id;
+              supabase.from('pin_positions').upsert(
+                { id: capturedId, x_pct: finalX, y_pct: finalY, type: 'preset', page, updated_at: new Date().toISOString() },
+                { onConflict: 'id' }
+              ).then(({ error }) => {
+                if (error) {
+                  console.warn('[CommentPins] Failed to save preset position:', error);
+                  setPinSaveError(capturedId);
+                  setTimeout(() => setPinSaveError(null), 2000);
+                }
+              });
+            }
           }
           justDraggedRef.current = true;
         } else {
@@ -704,7 +782,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
           if (positionChanged) {
             const ch = channelRef.current;
-            if (ch) {
+            if (ch?.state === 'joined') {
               ch.send({ type: 'broadcast', event: 'card_move', payload: {
                 id: meta.id, x_pct: finalX, y_pct: finalY, dragging: false,
               }});
@@ -760,7 +838,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         setComments(prev => prev.map(c => c.id === meta.id
           ? { ...c, x_pct: preDrag.x_pct, y_pct: preDrag.y_pct } : c));
         const ch = channelRef.current;
-        if (ch) {
+        if (ch?.state === 'joined') {
           ch.send({ type: 'broadcast', event: 'card_move', payload: {
             id: meta.id, x_pct: preDrag.x_pct, y_pct: preDrag.y_pct, dragging: false,
           }});
@@ -786,7 +864,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       window.removeEventListener('keydown',     onEscape);
       document.body.style.userSelect = '';
     };
-  }, [draggingId, overlayHeight]);
+  }, [draggingId]);
 
   // Cancel owner-initiated drag if they log out mid-drag.
   useEffect(() => {
@@ -812,7 +890,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       id: '__annotation__',
       isAnnotation: true,
       offsetX_px: (e.clientX - m.left) - (annotationPos.x_pct / 100) * m.width,
-      offsetY_px: (e.pageY - m.absTop)  - (annotationPos.y_pct / 100) * overlayHeight,
+      offsetY_px: (e.pageY - m.absTop)  - (annotationPos.y_pct / 100) * m.height,
     };
     dragPosRef.current = { ...annotationPos };
     setExpandedId(null);
@@ -833,7 +911,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       isPreset: false,
       sessionToken: null,
       offsetX_px: (clientX - m.left) - (draft.x_pct / 100) * m.width,
-      offsetY_px: (pageY   - m.absTop) - (draft.y_pct / 100) * overlayHeight,
+      offsetY_px: (pageY   - m.absTop) - (draft.y_pct / 100) * m.height,
     };
     dragPosRef.current = { x_pct: draft.x_pct, y_pct: draft.y_pct };
     setDraggingId('__draft__');
@@ -841,17 +919,23 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const handleEdit = async (id, newBody) => {
     if (!newBody.trim()) return;
-    setComments(prev => prev.map(c => c.id === id ? { ...c, body: newBody.trim() } : c));
+    const trimmed = newBody.trim();
+    setComments(prev => prev.map(c => c.id === id ? { ...c, body: trimmed } : c));
     setEditingId(null);
-    await supabase.from('comments').update({ body: newBody.trim() }).eq('id', id);
+    const ch = channelRef.current;
+    if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_edit', payload: { id, body: trimmed } });
+    await supabase.from('comments').update({ body: trimmed }).eq('id', id);
   };
 
   const handleVisitorEdit = async (id, newBody) => {
     if (!newBody.trim()) return;
+    const trimmed = newBody.trim();
     const token = localSessionToken.current;
-    setComments(prev => prev.map(c => c.id === id ? { ...c, body: newBody.trim() } : c));
+    setComments(prev => prev.map(c => c.id === id ? { ...c, body: trimmed } : c));
     setEditingId(null);
-    await supabase.from('comments').update({ body: newBody.trim() }).eq('id', id).eq('session_token', token);
+    const ch = channelRef.current;
+    if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_edit', payload: { id, body: trimmed } });
+    await supabase.from('comments').update({ body: trimmed }).eq('id', id).eq('session_token', token);
   };
 
   const startDrag = (e, id, x_pct, y_pct) => {
@@ -869,7 +953,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       isPreset: PRESET_PINS.some(p => p.id === id),
       sessionToken: isOwner ? null : localSessionToken.current,
       offsetX_px: (clientX - m.left)  - (x_pct / 100) * m.width,
-      offsetY_px: (pageY   - m.absTop) - (y_pct / 100) * overlayHeight,
+      offsetY_px: (pageY   - m.absTop) - (y_pct / 100) * m.height,
     };
     dragPosRef.current = { x_pct, y_pct };
     setExpandedId(null);
@@ -886,10 +970,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
     const x_pct = ((e.clientX - m.left) / m.width) * 100;
     if (x_pct < minX || x_pct > maxX) return;
-    setDraft({
-      x_pct,
-      y_pct: overlayHeight > 0 ? ((e.pageY - m.absTop) / overlayHeight) * 100 : 0,
-    });
+    const y_pct = m.height > 0 ? ((e.pageY - m.absTop) / m.height) * 100 : 0;
+    setDraft({ x_pct, y_pct });
     const savedRealName = isOwner ? 'Wahab' : (() => { try { return localStorage.getItem('wahab_visitor_name') || ''; } catch { return ''; } })();
     setDraftAuthor(savedRealName); setDraftBody('');
   };
@@ -932,6 +1014,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       return n;
     });
     setExpandedId(null);
+    setEditingId(null);
+    const ch = channelRef.current;
+    if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
     await supabase.from('comments').delete().eq('id', id);
   };
 
@@ -946,9 +1031,10 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       return n;
     });
     setExpandedId(null);
+    setEditingId(null);
     const ch = channelRef.current;
-    if (ch) ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
-    const token = localSessionToken.current;
+    if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
+    const token = localStorage.getItem('wahab_session_token');
     const { error } = await supabase.from('comments').delete().eq('id', id).eq('session_token', token);
     if (error) {
       setComments(prev => prev.some(c => c.id === id) ? prev : [...prev, card]);
@@ -969,8 +1055,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return isMobile ? Math.max(-1, Math.min(1, deg)) : deg;
   };
 
-  const onCardEnter = (id) => { if (!isTouchDevice()) setExpandedId(id); };
-  const onCardLeave = ()    => { if (!isTouchDevice()) { setExpandedId(null); setEditingId(null); } };
+  const onCardEnter = (id) => { if (!isTouchDevice() && !editingId) setExpandedId(id); };
+  const onCardLeave = (id) => { if (!isTouchDevice() && !editingId) { setExpandedId(null); } };
   const onCardClick = (e, id) => {
     e.stopPropagation();
     const start = dragStartRef.current;
@@ -979,7 +1065,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     if (isTouchDevice()) setExpandedId(prev => prev === id ? null : id);
   };
 
-  const { left: cLeft, width: cWidth, absTop: cAbsTop } = contentMetrics;
+  const { left: cLeft, width: cWidth, absTop: cAbsTop, height: cHeight } = contentMetrics;
 
   const renderCard = (id, author, body, color, x_pct, y_pct, isPreset, pulseIndex, isDragging, sessionToken, extraWrapperStyle) => {
     const remoteMove = !isPreset && remoteCardMoves[id];
@@ -1008,7 +1094,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     const canEdit   = !isPreset && (isOwner || isOwnCard);
 
     const wrapperStyle = {
-      ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, overlayHeight),
+      ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, cHeight),
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
@@ -1029,7 +1115,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
         onClick={(e) => onCardClick(e, id)}
         onMouseEnter={() => onCardEnter(id)}
-        onMouseLeave={onCardLeave}
+        onMouseLeave={() => onCardLeave(id)}
       >
         <div className={cardClass} style={pulseAnim}>
           <div className="cc-header">
@@ -1108,8 +1194,29 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             const isFadingOut = fadingOutIds.has(pin.id);
             const isFadingIn  = fadingInIds.has(pin.id);
             const opacity = isFadingOut || isFadingIn ? 0 : 1;
-            return renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId, null,
-              { opacity, transition: 'opacity 150ms ease' });
+            return (
+              <React.Fragment key={pin.id}>
+                {renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId, null,
+                  { opacity, transition: 'opacity 150ms ease' })}
+                {pinSaveError === pin.id && (
+                  <div style={{
+                    position: 'absolute',
+                    left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
+                    top: `${cAbsTop + (pos.y_pct / 100) * cHeight - 32}px`,
+                    transform: 'translateX(-50%)',
+                    background: '#ef4444',
+                    color: '#fff',
+                    fontSize: '0.6875rem',
+                    fontWeight: 600,
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    whiteSpace: 'nowrap',
+                    pointerEvents: 'none',
+                    zIndex: 50,
+                  }}>position not saved</div>
+                )}
+              </React.Fragment>
+            );
           })}
 
           {comments.map((pin, i) => {
@@ -1123,36 +1230,55 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             const isDragging = draggingId === '__annotation__';
             const pos = isDragging && dragPos ? dragPos : annotationPos;
             return (
-              <div
-                style={{
-                  position: 'absolute',
-                  left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
-                  top: `${cAbsTop + (pos.y_pct / 100) * overlayHeight}px`,
-                  transform: 'translate(-50%, -50%) rotate(-2deg)',
-                  pointerEvents: 'auto',
-                  cursor: !isOwner ? 'default' : (isDragging ? 'grabbing' : 'grab'),
-                  zIndex: 31,
-                  userSelect: 'none',
-                }}
-                onMouseDown={isOwner ? startAnnotationDrag : undefined}
-              >
-                <div className="floating-annotation">
-                  <div>got thoughts?</div>
-                  <div>drop a comment</div>
-                  <div>anywhere on the page ↓</div>
-                  <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 6, marginLeft: 12 }}>
-                    <path d="M6 3 C2 14 28 18 24 34" strokeWidth="1.5" strokeLinecap="round" />
-                    <path d="M19 30 L24 34 L28 29" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+              <>
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
+                    top: `${cAbsTop + (pos.y_pct / 100) * cHeight}px`,
+                    transform: 'translate(-50%, -50%) rotate(-2deg)',
+                    pointerEvents: 'auto',
+                    cursor: !isOwner ? 'default' : (isDragging ? 'grabbing' : 'grab'),
+                    zIndex: 31,
+                    userSelect: 'none',
+                  }}
+                  onMouseDown={isOwner ? startAnnotationDrag : undefined}
+                >
+                  <div className="floating-annotation">
+                    <div>got thoughts?</div>
+                    <div>drop a comment</div>
+                    <div>anywhere on the page</div>
+                    <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 6, marginLeft: 12 }}>
+                      <path d="M6 3 C2 14 28 18 24 34" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M19 30 L24 34 L28 29" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
+                {pinSaveError === 'annotation' && (
+                  <div style={{
+                    position: 'absolute',
+                    left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
+                    top: `${cAbsTop + (pos.y_pct / 100) * cHeight - 48}px`,
+                    transform: 'translateX(-50%)',
+                    background: '#ef4444',
+                    color: '#fff',
+                    fontSize: '0.6875rem',
+                    fontWeight: 600,
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    whiteSpace: 'nowrap',
+                    pointerEvents: 'none',
+                    zIndex: 50,
+                  }}>position not saved</div>
+                )}
+              </>
             );
           })()}
         </>
       )}
 
       {Object.entries(cursors).map(([id, c]) => (
-        <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, cAbsTop, overlayHeight)}>
+        <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, cAbsTop, cHeight)}>
           <MousePointer2 size={20} fill={c.color} fillOpacity={0.25} />
           {c.name && (
             <div style={{
@@ -1182,7 +1308,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         const draftY = (draggingId === '__draft__' && dragPos) ? dragPos.y_pct : draft.y_pct;
         return (
         <div style={{
-          ...cardWrapperStyle(draftX, draftY, 0, cLeft, cWidth, cAbsTop, overlayHeight),
+          ...cardWrapperStyle(draftX, draftY, 0, cLeft, cWidth, cAbsTop, cHeight),
           cursor: draggingId === '__draft__' ? 'grabbing' : 'default', zIndex: 40,
         }}>
           <div className="cc-card cc-draft" onClick={(e) => e.stopPropagation()}>
