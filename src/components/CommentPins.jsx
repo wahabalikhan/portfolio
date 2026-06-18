@@ -198,6 +198,9 @@ export default function CommentPins({ page, activeTab }) {
   const preDragPosRef   = useRef(null);
   const dbWriteTimerRef = useRef(null);
 
+  const annotationDragMetaRef = useRef(null);
+  const annotationDragPosRef  = useRef(null);
+
   // Remote move auto-clear timers
   const remoteMoveTimers = useRef({});
 
@@ -253,6 +256,10 @@ export default function CommentPins({ page, activeTab }) {
   const [editingId, setEditingId] = useState(null);
   const [editBody,  setEditBody]  = useState('');
 
+  const [annotationPos, setAnnotationPos]       = useState({ x_pct: 15, y_pct: 45 });
+  const [annotationDragging, setAnnotationDragging] = useState(false);
+  const [annotationDragPos, setAnnotationDragPos]   = useState(null);
+
   const displayNameRef = useRef(''); // synced to getDisplayName(isOwner) on every render
 
   // Per-page localStorage position cache for regular comments.
@@ -275,6 +282,15 @@ export default function CommentPins({ page, activeTab }) {
   // Clear any stale visitor-position overrides from localStorage — positions now live
   // entirely in the DB and are loaded via the comments state on every mount.
   try { localStorage.removeItem('visitor-comment-positions'); } catch {}
+
+  // Load annotation position from Supabase on mount.
+  useEffect(() => {
+    supabase.from('pin_positions').select('*')
+      .eq('id', 'annotation').eq('page', page).single()
+      .then(({ data }) => {
+        if (data) setAnnotationPos({ x_pct: data.x_pct, y_pct: data.y_pct });
+      });
+  }, [page]);
 
   // Create the portal root div and append it to body.
   useEffect(() => {
@@ -449,6 +465,9 @@ export default function CommentPins({ page, activeTab }) {
             return n;
           });
         }
+      })
+      .on('broadcast', { event: 'annotation_move' }, ({ payload }) => {
+        setAnnotationPos({ x_pct: payload.x_pct, y_pct: payload.y_pct });
       })
       .on('presence', { event: 'sync' }, () => {
         setViewerCount(Object.keys(channel.presenceState()).length);
@@ -745,6 +764,70 @@ export default function CommentPins({ page, activeTab }) {
     };
   }, [draggingId]);
 
+  useEffect(() => {
+    if (!annotationDragging) return;
+    document.body.style.userSelect = 'none';
+
+    const onMove = (e) => {
+      const meta = annotationDragMetaRef.current;
+      if (!meta) return;
+      const clientX = e.clientX ?? (e.changedTouches?.[0]?.clientX) ?? 0;
+      const pageY   = e.pageY   ?? (e.changedTouches?.[0]?.pageY)   ?? 0;
+      const m = contentMetricsRef.current;
+      if (m.width === 0) return;
+      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
+      const x_pct = Math.max(minX, Math.min(maxX, ((clientX - m.left) - meta.offsetX_px) / m.width * 100));
+      const y_pct = Math.max(0, Math.min(95, (pageY - meta.offsetY_px) / Y_REFERENCE_HEIGHT * 100));
+      annotationDragPosRef.current = { x_pct, y_pct };
+      setAnnotationDragPos({ x_pct, y_pct });
+      if (channelRef.current?.state === 'joined') {
+        channelRef.current.send({ type: 'broadcast', event: 'annotation_move', payload: { x_pct, y_pct, dragging: true } });
+      }
+    };
+
+    const onUp = async () => {
+      const pos = annotationDragPosRef.current;
+      if (pos) {
+        const { x_pct, y_pct } = pos;
+        setAnnotationPos({ x_pct, y_pct });
+        if (channelRef.current?.state === 'joined') {
+          channelRef.current.send({ type: 'broadcast', event: 'annotation_move', payload: { x_pct, y_pct, dragging: false } });
+        }
+        await supabase.from('pin_positions').upsert({
+          id: 'annotation', x_pct, y_pct, type: 'annotation', page,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'id' });
+      }
+      document.body.style.userSelect = '';
+      setAnnotationDragging(false);
+      setAnnotationDragPos(null);
+      annotationDragMetaRef.current = null;
+      annotationDragPosRef.current  = null;
+    };
+
+    const onCancel = () => {
+      document.body.style.userSelect = '';
+      setAnnotationDragging(false);
+      setAnnotationDragPos(null);
+      annotationDragMetaRef.current = null;
+      annotationDragPosRef.current  = null;
+    };
+
+    window.addEventListener('mousemove',   onMove);
+    window.addEventListener('mouseup',     onUp);
+    window.addEventListener('touchmove',   onMove, { passive: false });
+    window.addEventListener('touchend',    onUp);
+    window.addEventListener('touchcancel', onCancel);
+    return () => {
+      window.removeEventListener('mousemove',   onMove);
+      window.removeEventListener('mouseup',     onUp);
+      window.removeEventListener('touchmove',   onMove);
+      window.removeEventListener('touchend',    onUp);
+      window.removeEventListener('touchcancel', onCancel);
+      document.body.style.userSelect = '';
+    };
+  }, [annotationDragging, page]);
+
   // Cancel owner-initiated drag if they log out mid-drag.
   useEffect(() => {
     if (isOwner || !draggingId || draggingId === '__draft__') return;
@@ -776,6 +859,22 @@ export default function CommentPins({ page, activeTab }) {
     };
     dragPosRef.current = { x_pct: draft.x_pct, y_pct: draft.y_pct };
     setDraggingId('__draft__');
+  };
+
+  const startAnnotationDrag = (e) => {
+    if (!isOwner) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const m = contentMetricsRef.current;
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+    const pageY   = e.pageY   ?? e.touches?.[0]?.pageY   ?? (clientY + window.scrollY);
+    annotationDragMetaRef.current = {
+      offsetX_px: (clientX - m.left) - (annotationPos.x_pct / 100) * m.width,
+      offsetY_px: pageY - (annotationPos.y_pct / 100) * Y_REFERENCE_HEIGHT,
+    };
+    annotationDragPosRef.current = { x_pct: annotationPos.x_pct, y_pct: annotationPos.y_pct };
+    setAnnotationDragging(true);
   };
 
   const handleEdit = async (id, newBody) => {
@@ -1047,28 +1146,31 @@ export default function CommentPins({ page, activeTab }) {
         return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token);
       })}
 
-      {!hidden && cWidth > 0 && (
-        <div
-          className="floating-annotation"
-          style={{
-            position: 'absolute',
-            left: `${cLeft + 0.15 * cWidth}px`,
-            top: `${cAbsTop + 0.45 * cHeight}px`,
-            transform: 'translate(-50%, -50%) rotate(-2deg)',
-            pointerEvents: 'none',
-            zIndex: 31,
-            userSelect: 'none',
-          }}
-        >
-          <div>got thoughts?</div>
-          <div>drop a comment</div>
-          <div>anywhere on the page ↓</div>
-          <svg width="56" height="44" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '2px 0 0 8px' }}>
-            <path d="M 8 6 C 4 18 4 30 18 36" strokeWidth="2" strokeLinecap="round" fill="none" stroke="currentColor" />
-            <path d="M 12 32 L 18 38 L 24 32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" stroke="currentColor" />
-          </svg>
-        </div>
-      )}
+      {!hidden && cWidth > 0 && (() => {
+        const annX = (annotationDragging && annotationDragPos) ? annotationDragPos.x_pct : annotationPos.x_pct;
+        const annY = (annotationDragging && annotationDragPos) ? annotationDragPos.y_pct : annotationPos.y_pct;
+        return (
+          <div
+            className="floating-annotation"
+            style={{
+              ...cardWrapperStyle(annX, annY, -2, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
+              pointerEvents: isOwner ? 'auto' : 'none',
+              cursor: isOwner ? (annotationDragging ? 'grabbing' : 'grab') : 'default',
+              userSelect: 'none',
+            }}
+            onMouseDown={isOwner ? startAnnotationDrag : undefined}
+            onTouchStart={isOwner ? startAnnotationDrag : undefined}
+          >
+            <div>got thoughts?</div>
+            <div>drop a comment</div>
+            <div>anywhere on the page ↓</div>
+            <svg width="56" height="44" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '2px 0 0 8px' }}>
+              <path d="M 8 6 C 4 18 4 30 18 36" strokeWidth="2" strokeLinecap="round" fill="none" stroke="currentColor" />
+              <path d="M 12 32 L 18 38 L 24 32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" stroke="currentColor" />
+            </svg>
+          </div>
+        );
+      })()}
 
       {Object.entries(cursors).map(([id, c]) => (
         <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, cAbsTop, cHeight)}>
