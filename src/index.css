@@ -1091,6 +1091,11 @@ html.dark .tech-pill-sky { background-color: #1c3344; color: #7dd3fc; }
   color: #656d76;
 }
 
+.gh-view-link {
+  font-size: 12px;
+  color: #0969da;
+}
+
 /* Dark mode */
 html.dark .gh-from       { color: #8b949e; }
 html.dark .gh-card       { background: #161b22; border-color: #30363d; }
@@ -1103,6 +1108,7 @@ html.dark .gh-description { color: #8b949e; }
 html.dark .gh-topic      { background: rgba(56, 139, 253, 0.1); color: #58a6ff; }
 html.dark .gh-lang       { color: #8b949e; }
 html.dark .gh-updated    { color: #8b949e; }
+html.dark .gh-view-link  { color: #58a6ff; }
 
 /* ── end GitHub cards ─────────────────────────────────────────────────── */
 
@@ -1254,8 +1260,9 @@ html.dark .bg-blue-50 .text-gray-700 {
   opacity: 0;
 }
 
-/* Home page only: toolbar clearance below footer */
-.home-page footer { margin-bottom: 4.5rem; }
+/* Toolbar clearance below footer on pages with the comment toolbar */
+.home-page footer,
+.experience-page footer { margin-bottom: 4.5rem; }
 /* Blog/case study pages: match footer bottom gap to pt-8 (2rem) */
 .max-w-3xl.mx-auto:not(.home-page) { padding-bottom: 3rem; }
 
