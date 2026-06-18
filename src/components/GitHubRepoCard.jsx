@@ -35,8 +35,9 @@ function timeAgo(dateStr) {
   return `Updated on ${date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
 }
 
-export default function GitHubRepoCard({ name, description, language, topics = [], updated, fork, parent, url }) {
-  const langColor = LANGUAGE_COLORS[language] || '#8b949e';
+export default function GitHubRepoCard({ name, description, language, langColor: langColorProp, topics = [], updated, updatedLabel, url }) {
+  const langColor = langColorProp || LANGUAGE_COLORS[language] || '#8b949e';
+  const updatedText = updatedLabel ? `Updated ${updatedLabel}` : (updated ? timeAgo(updated) : '');
 
   return (
     <a href={url} target="_blank" rel="noopener noreferrer" className="gh-card">
@@ -44,21 +45,6 @@ export default function GitHubRepoCard({ name, description, language, topics = [
         <span className="gh-repo-name">{name}</span>
         <span className="gh-badge">Public</span>
       </div>
-
-      {fork && parent && (
-        <p className="gh-fork-text">
-          Forked from{' '}
-          <a
-            href={parent.html_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="gh-fork-link"
-          >
-            {parent.full_name}
-          </a>
-        </p>
-      )}
 
       {description && <p className="gh-description">{description}</p>}
 
@@ -77,7 +63,11 @@ export default function GitHubRepoCard({ name, description, language, topics = [
             {language}
           </span>
         )}
-        {updated && <span className="gh-updated">{timeAgo(updated)}</span>}
+        {updatedText && <span className="gh-updated">{updatedText}</span>}
+      </div>
+
+      <div style={{ marginTop: 'auto', paddingTop: '0.75rem' }}>
+        <span className="gh-view-link">View on GitHub ↗</span>
       </div>
     </a>
   );

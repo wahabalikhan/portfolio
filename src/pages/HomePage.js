@@ -2,12 +2,50 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
-import { useGithubRepos } from '../hooks/UseGitHubRepos';
 import Footer from '../components/Footer';
 import CommentPins from '../components/CommentPins';
 import LinkedInPostCard from '../components/LinkedInPostCard';
 import GitHubRepoCard from '../components/GitHubRepoCard';
 import { usePageTitle } from '../hooks/usePageTitle';
+
+const HARDCODED_REPOS = [
+  {
+    name: 'portfolio',
+    description: 'The codebase behind this portfolio. Built in React and Vite with a real-time Figma-style comment system, live cursors, and multiplayer presence powered by Supabase. Every design decision on this site was made by a designer who then built it. This repo is the proof.',
+    language: 'JavaScript',
+    langColor: '#f1e05a',
+    topics: ['react', 'vite', 'supabase', 'claude'],
+    updatedLabel: '16 hours ago',
+    url: 'https://github.com/wahabalikhan/portfolio',
+  },
+  {
+    name: 'Insurance Brokerage System',
+    description: 'Final year CS project. I designed the UI in Figma first, then built the whole thing: a PHP and MySQL insurance platform with role-based access for admins, brokers, and consumers. Policy management, bookings, and quotes all in one system. Building it end-to-end taught me how design decisions become engineering constraints, which shapes how I work with engineers now.',
+    language: 'PHP',
+    langColor: '#4F5D95',
+    topics: ['figma', 'php', 'mysql', 'xampp'],
+    updatedLabel: '4 months ago',
+    url: 'https://github.com/wahabalikhan/final-FYP-Insurance_Brokerage_and_Management_System-19001546',
+  },
+  {
+    name: 'escape-game',
+    description: 'Solo university project in Java. A GUI-based 2D escape game built around object-oriented design, game loop architecture, and UI state management. Not a design project, but the systems thinking required to build it is the same thinking I bring to complex product design problems. Built in IntelliJ. Debugged extensively with Stack Overflow.',
+    language: 'Java',
+    langColor: '#b07219',
+    topics: ['java', 'oop', 'intellij'],
+    updatedLabel: '4 months ago',
+    url: 'https://github.com/wahabalikhan/escape-game',
+  },
+  {
+    name: 'bobbys-desserts',
+    description: 'University project built around a fictional brief for a desserts business. I designed the UI in Figma before writing a line of code, then built a PHP and MySQL web app with role-based access, authentication, and CRUD features. Same process I use professionally: design first, then build, then iterate.',
+    language: 'PHP',
+    langColor: '#4F5D95',
+    topics: ['figma', 'php', 'mysql', 'javascript'],
+    updatedLabel: '4 months ago',
+    url: 'https://github.com/wahabalikhan/bobbys-desserts',
+  },
+];
 
 
 function GitHubMark() {
@@ -19,7 +57,6 @@ function GitHubMark() {
 }
 
 export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
-    const { repos, loading, error } = useGithubRepos('wahabalikhan');
     usePageTitle();
 
     const [activeTooltip, setActiveTooltip] = useState(null);
@@ -58,8 +95,8 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
             {' '}them.
           </h1>
 
-          <p className="text-base text-gray-700 leading-relaxed mb-3">
-            Product Designer & Vibe Coder <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> Metrics-driven
+          <p className="text-base text-gray-700 leading-relaxed mb-3" style={{ fontSize: '15.6px' }}>
+            Product Designer <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> AI-first Coder <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> Metrics-driven
           </p>
 
         </div>
@@ -178,35 +215,21 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
               <span>from GitHub</span>
             </div>
 
-            {loading && (
-              <p className="text-sm text-gray-500 py-8 text-center">Loading repositories…</p>
-            )}
-            {error && (
-              <p style={{ fontSize: '14px', color: '#ef4444', padding: '1rem 0' }}>
-                Couldn't load repos right now — see them at{' '}
-                <a
-                  href="https://github.com/wahabalikhan"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#3b82f6', textDecoration: 'underline' }}
-                >
-                  github.com/wahabalikhan
-                </a>
-              </p>
-            )}
+            <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+              These repos span university projects and personal work. They're here because building things, even imperfect things, is how I learned to think like an engineer while designing like one.
+            </p>
 
             <div className="gh-grid">
-              {!loading && repos.map((repo) => (
+              {HARDCODED_REPOS.map((repo) => (
                 <GitHubRepoCard
-                  key={repo.id}
+                  key={repo.name}
                   name={repo.name}
                   description={repo.description}
                   language={repo.language}
-                  topics={repo.tech}
-                  updated={repo.updated}
-                  fork={repo.fork}
-                  parent={repo.parent}
-                  url={repo.github}
+                  langColor={repo.langColor}
+                  topics={repo.topics}
+                  updatedLabel={repo.updatedLabel}
+                  url={repo.url}
                 />
               ))}
             </div>
