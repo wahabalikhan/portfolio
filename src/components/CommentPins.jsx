@@ -3,9 +3,22 @@ import { createPortal } from 'react-dom';
 import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X, Pencil, GripHorizontal } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
-const PRESET_COLOR = '#7F77DD';
 const VISITOR_COLORS = ['#1D9E75', '#D85A30', '#D4537E', '#378ADD', '#BA7517'];
 const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#8B5CF6', '#EF4444', '#06B6D4'];
+
+const PRESET_COLOR = '#7F77DD';
+const PRESET_PINS = [
+  { id: 'preset-1', x_pct: 72, y_pct: 14, author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅' },
+  { id: 'preset-2', x_pct: 12, y_pct: 60, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝' },
+  { id: 'preset-3', x_pct: 15, y_pct: 35, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', tabs: ['Design'] },
+  { id: 'preset-4', x_pct: 74, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', tabs: ['Design'] },
+  { id: 'preset-5', x_pct: 76, y_pct: 72, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", tabs: ['Design'] },
+];
+const DEFAULT_ANNOTATION = { x_pct: 15, y_pct: 76 };
+
+// Cards centered via translate(-50%,-50%): clamp keeps card centre at least 5% from each edge.
+const clampX = (x_pct) => Math.min(Math.max(x_pct, 12), 92);
+const clampY = (y_pct) => Math.min(Math.max(y_pct, 5), 92);
 
 // Maximum play area width: 14-inch MacBook Pro logical CSS pixels (1512px).
 // Comments cannot be placed or dragged outside this centered boundary.
@@ -42,15 +55,6 @@ const getPlayAreaXBounds = (contentLeft, contentWidth) => {
 // The overlay is a portal on document.body (position:absolute, top:0, left:0, full page).
 // Pins can be placed and dragged anywhere on the page, not just within the content column.
 //
-// VERSION 6 preset positions — recalibrated for content-height y denominator and
-// (window.innerWidth - contentWidth)/2 contentLeft formula.
-const PRESET_PINS = [
-  { id: 'preset-1', x_pct: 78, y_pct: 14, author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
-  { id: 'preset-2', x_pct: 8,  y_pct: 60, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
-  { id: 'preset-3', x_pct: 15, y_pct: 35, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
-  { id: 'preset-4', x_pct: 75, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
-  { id: 'preset-5', x_pct: 80, y_pct: 72, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
-];
 
 const randomId = () =>
   (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).slice(2);
@@ -145,8 +149,10 @@ const cursorStyle = (xPct, yPct, color, contentLeft, contentWidth, contentAbsTop
 const toolbarStyle = {
   position: 'fixed',
   bottom: '2rem',
-  left: '50%',
-  transform: 'translateX(-50%)',
+  left: 0,
+  right: 0,
+  margin: '0 auto',
+  width: 'fit-content',
   display: 'flex',
   gap: '0.375rem',
   backgroundColor: '#ffffff',
@@ -180,18 +186,24 @@ const inputStyle = {
   color: '#111827', backgroundColor: '#ffffff', boxSizing: 'border-box',
 };
 
-export default function CommentPins({ page, showPresets = true, activeTab }) {
+export default function CommentPins({ page, activeTab }) {
   // contentAnchorRef — zero-height div inside the content container.
   // Its getBoundingClientRect() tells us the content column's left, width,
   // and absolute top position, used for all coordinate conversions.
-  const contentAnchorRef = useRef(null);
-  const overlayRef       = useRef(null);
-  const channelRef       = useRef(null);
-  const modeRef          = useRef('cursor'); // kept in sync for use in event handler closures
-  const isOwnerRef       = useRef(false);   // kept in sync for use in setTimeout callbacks
-  const activeTabRef     = useRef(activeTab);
-  const prevTabRef       = useRef(activeTab);
-  const tabFadeTimer     = useRef(null);
+  const contentAnchorRef   = useRef(null);
+  const overlayRef         = useRef(null);
+  const channelRef         = useRef(null);
+  const presetChannelRef   = useRef(null);
+  const modeRef            = useRef('cursor');
+  const isOwnerRef         = useRef(false);
+  const activeTabRef       = useRef(activeTab);
+  const prevTabRef         = useRef(activeTab);
+  const tabFadeTimer       = useRef(null);
+  const presetPinRefs      = useRef({});
+  const annotationRef      = useRef(null);
+  const presetPositionsRef = useRef(Object.fromEntries(PRESET_PINS.map(p => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }])));
+  const annotationPosRef   = useRef(DEFAULT_ANNOTATION);
+  const syncPresetTopsRef  = useRef(null);
 
   // Drag refs
   const dragMetaRef     = useRef(null);
@@ -219,10 +231,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   // Portal root: a div appended to document.body that hosts the full-page overlay.
   const [portalRoot, setPortalRoot] = useState(null);
-  // Fixed portal root: a position:fixed div for preset pins and annotation.
-  // Has no translateY transform, so its children stay viewport-fixed regardless of scroll.
-  const [fixedRoot, setFixedRoot] = useState(null);
-
   const [mode, setMode]           = useState('cursor');
   const [comments, setComments]   = useState([]);
   const [draft, setDraft]         = useState(null);
@@ -239,10 +247,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const [cursors, setCursors]     = useState({});
   const [viewerCount, setViewerCount] = useState(0);
   const [isMobile, setIsMobile]   = useState(() => typeof window !== 'undefined' && window.innerWidth <= 767);
-  const [pulseActive, setPulseActive] = useState(true);
-  const [fadingOutIds, setFadingOutIds] = useState(() => new Set());
-  const [fadingInIds,  setFadingInIds]  = useState(() => new Set());
-
   const [isOwner, setIsOwner]         = useState(false);
   const [showLogin, setShowLogin]     = useState(false);
   const [loginEmail, setLoginEmail]   = useState('');
@@ -254,10 +258,19 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const [remoteCardMoves, setRemoteCardMoves] = useState({});
   const [cardErrors, setCardErrors]           = useState({});
-  const [pinSaveError, setPinSaveError]       = useState(null);
 
   const [draggingId, setDraggingId] = useState(null);
   const [dragPos, setDragPos]       = useState(null);
+
+  // Preset-pin state
+  const [presetPositions, setPresetPositions] = useState(() =>
+    Object.fromEntries(PRESET_PINS.map(p => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }]))
+  );
+  const [annotationPos, setAnnotationPos] = useState(DEFAULT_ANNOTATION);
+  const [fadingOutIds, setFadingOutIds]   = useState(() => new Set());
+  const [fadingInIds,  setFadingInIds]    = useState(() => new Set());
+  const [pulseActive, setPulseActive]     = useState(true);
+  const [pinSaveError, setPinSaveError]   = useState(null);
 
   const [mobileToastVisible, setMobileToastVisible] = useState(false);
   const [mobileToastFading,  setMobileToastFading]  = useState(false);
@@ -266,10 +279,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   const [editBody,  setEditBody]  = useState('');
 
   const displayNameRef = useRef(''); // synced to getDisplayName(isOwner) on every render
-
-  const [presetPositions, setPresetPositions] = useState(() =>
-    Object.fromEntries(PRESET_PINS.map(p => [p.id, { x_pct: p.x_pct, y_pct: p.y_pct }]))
-  );
 
   // Per-page localStorage position cache for regular comments.
   // Writes on drag and on remote updates; survives refresh even if the async DB write
@@ -292,8 +301,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   // entirely in the DB and are loaded via the comments state on every mount.
   try { localStorage.removeItem('visitor-comment-positions'); } catch {}
 
-  const [annotationPos, setAnnotationPos] = useState({ x_pct: 15, y_pct: 76 });
-
   // Create the portal root div and append it to body.
   useEffect(() => {
     const div = document.createElement('div');
@@ -303,24 +310,28 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => { document.body.removeChild(div); };
   }, []);
 
-  // Fixed overlay for preset pins and annotation — no translateY transform, so children
-  // stay at stable viewport positions regardless of scroll depth or tab content height.
-  useEffect(() => {
-    const div = document.createElement('div');
-    div.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:39;overflow:visible;';
-    document.body.appendChild(div);
-    setFixedRoot(div);
-    return () => { document.body.removeChild(div); };
-  }, []);
-
-  // The portal container is position:fixed so it doesn't add to document scroll height.
-  // We scroll-link the overlay by translating it by -scrollY so pins stay page-anchored.
+  // Scroll-sync: translateY on the overlay keeps visitor comments page-anchored.
+  // Preset pins/annotation are direct children of portalRoot (position:fixed) so their
+  // tops are pure viewport percentages — updated imperatively here to avoid re-renders.
   useEffect(() => {
     const sync = () => {
       if (overlayRef.current) {
         overlayRef.current.style.transform = `translateY(${-window.scrollY}px)`;
       }
+      PRESET_PINS.forEach(pin => {
+        const el = presetPinRefs.current[pin.id];
+        if (!el || dragMetaRef.current?.id === pin.id) return;
+        const pos = presetPositionsRef.current[pin.id];
+        if (pos) {
+          el.style.top = `${(clampY(pos.y_pct) / 100) * window.innerHeight}px`;
+        }
+      });
+      if (annotationRef.current && dragMetaRef.current?.id !== '__annotation__') {
+        const pos = annotationPosRef.current;
+        annotationRef.current.style.top = `${(clampY(pos.y_pct) / 100) * window.innerHeight}px`;
+      }
     };
+    syncPresetTopsRef.current = sync;
     sync();
     window.addEventListener('scroll', sync, { passive: true });
     return () => window.removeEventListener('scroll', sync);
@@ -363,36 +374,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => setPulseActive(false), 900);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    const prevTab = prevTabRef.current;
-    prevTabRef.current = activeTab;
-    if (!activeTab || prevTab === activeTab) return;
-
-    const wasVisible   = (p) => !p.tabs || p.tabs.includes(prevTab);
-    const isNowVisible = (p) => !p.tabs || p.tabs.includes(activeTab);
-
-    const leaving  = PRESET_PINS.filter(p => wasVisible(p) && !isNowVisible(p));
-    const entering = PRESET_PINS.filter(p => !wasVisible(p) && isNowVisible(p));
-
-    if (leaving.length > 0) {
-      clearTimeout(tabFadeTimer.current);
-      setFadingOutIds(new Set(leaving.map(p => p.id)));
-      tabFadeTimer.current = setTimeout(() => setFadingOutIds(new Set()), 150);
-    }
-    if (entering.length > 0) {
-      const ids = new Set(entering.map(p => p.id));
-      setFadingInIds(ids);
-      requestAnimationFrame(() => requestAnimationFrame(() => setFadingInIds(new Set())));
-    }
-
-    return () => clearTimeout(tabFadeTimer.current);
-  }, [activeTab]);
-
-  useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 767);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
@@ -427,10 +408,101 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  activeTabRef.current   = activeTab;
-  modeRef.current        = mode;
-  isOwnerRef.current     = isOwner;
-  displayNameRef.current = getDisplayName(isOwner);
+  // Preset-pin effects
+  useEffect(() => {
+    const t = setTimeout(() => setPulseActive(false), 900);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const prevTab = prevTabRef.current;
+    prevTabRef.current = activeTab;
+    if (!activeTab || prevTab === activeTab) return;
+
+    const wasVisible   = (p) => !p.tabs || p.tabs.includes(prevTab);
+    const isNowVisible = (p) => !p.tabs || p.tabs.includes(activeTab);
+    const leaving  = PRESET_PINS.filter(p => wasVisible(p) && !isNowVisible(p));
+    const entering = PRESET_PINS.filter(p => !wasVisible(p) && isNowVisible(p));
+
+    if (leaving.length > 0) {
+      clearTimeout(tabFadeTimer.current);
+      setFadingOutIds(new Set(leaving.map(p => p.id)));
+      tabFadeTimer.current = setTimeout(() => setFadingOutIds(new Set()), 150);
+    }
+    if (entering.length > 0) {
+      const ids = new Set(entering.map(p => p.id));
+      setFadingInIds(ids);
+      requestAnimationFrame(() => requestAnimationFrame(() => setFadingInIds(new Set())));
+    }
+    return () => clearTimeout(tabFadeTimer.current);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (isMobile) return;
+    supabase.from('pin_positions').select('*').eq('page', page).then(({ data, error }) => {
+      if (error) { console.warn('[CommentPins] Failed to load pin positions:', error); return; }
+      if (!data || data.length === 0) return;
+      const next = { ...presetPositionsRef.current };
+      data.filter(r => r.type === 'preset').forEach(r => {
+        if (r.id in next) next[r.id] = { x_pct: r.x_pct, y_pct: r.y_pct };
+      });
+      presetPositionsRef.current = next;
+      setPresetPositions(next);
+      const ann = data.find(r => r.type === 'annotation');
+      if (ann) {
+        annotationPosRef.current = { x_pct: ann.x_pct, y_pct: ann.y_pct };
+        setAnnotationPos({ x_pct: ann.x_pct, y_pct: ann.y_pct });
+      }
+      requestAnimationFrame(() => syncPresetTopsRef.current?.());
+    });
+  }, [page, isMobile]);
+
+  useEffect(() => {
+    if (isMobile) return;
+    const channel = supabase.channel(`preset-positions:${page}`, {
+      config: { broadcast: { self: false } },
+    });
+    channel
+      .on('broadcast', { event: 'pin_position_update' }, ({ payload }) => {
+        if (!payload?.id) return;
+        if (payload.id === '__annotation__') {
+          annotationPosRef.current = { x_pct: payload.x_pct, y_pct: payload.y_pct };
+          setAnnotationPos({ x_pct: payload.x_pct, y_pct: payload.y_pct });
+        } else {
+          presetPositionsRef.current = { ...presetPositionsRef.current, [payload.id]: { x_pct: payload.x_pct, y_pct: payload.y_pct } };
+          setPresetPositions(prev => ({ ...prev, [payload.id]: { x_pct: payload.x_pct, y_pct: payload.y_pct } }));
+        }
+        requestAnimationFrame(() => syncPresetTopsRef.current?.());
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pin_positions', filter: `page=eq.${page}` },
+        ({ eventType, new: row }) => {
+          if (eventType === 'INSERT' || eventType === 'UPDATE') {
+            if (row.type === 'preset') {
+              presetPositionsRef.current = { ...presetPositionsRef.current, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } };
+              setPresetPositions(prev => ({ ...prev, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } }));
+            } else if (row.type === 'annotation') {
+              annotationPosRef.current = { x_pct: row.x_pct, y_pct: row.y_pct };
+              setAnnotationPos({ x_pct: row.x_pct, y_pct: row.y_pct });
+            }
+            requestAnimationFrame(() => syncPresetTopsRef.current?.());
+          }
+        }
+      )
+      .subscribe();
+
+    presetChannelRef.current = channel;
+    return () => {
+      supabase.removeChannel(channel);
+      presetChannelRef.current = null;
+    };
+  }, [page, isMobile]);
+
+  activeTabRef.current       = activeTab;
+  modeRef.current            = mode;
+  isOwnerRef.current         = isOwner;
+  displayNameRef.current     = getDisplayName(isOwner);
+  presetPositionsRef.current = presetPositions;
+  annotationPosRef.current   = annotationPos;
 
   useLayoutEffect(() => {
     const h = document.documentElement.scrollHeight;
@@ -450,25 +522,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     });
     return () => cancelAnimationFrame(raf);
   }, [activeTab]);
-
-  // Load owner-positioned preset pin and annotation positions from Supabase on mount.
-  // Merges DB values over hardcoded defaults so all browsers see the owner's layout.
-  useEffect(() => {
-    if (isMobile) return;
-    supabase.from('pin_positions').select('*').eq('page', page).then(({ data, error }) => {
-      if (error) { console.warn('[CommentPins] Failed to load pin positions:', error); return; }
-      if (!data || data.length === 0) return;
-      setPresetPositions(prev => {
-        const next = { ...prev };
-        data.filter(r => r.type === 'preset').forEach(r => {
-          if (r.id in next) next[r.id] = { x_pct: r.x_pct, y_pct: r.y_pct };
-        });
-        return next;
-      });
-      const ann = data.find(r => r.type === 'annotation');
-      if (ann) setAnnotationPos({ x_pct: ann.x_pct, y_pct: ann.y_pct });
-    });
-  }, [page, isMobile]);
 
   useEffect(() => {
     if (isMobile) return;
@@ -501,14 +554,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       .on('broadcast', { event: 'cursor' }, ({ payload }) => {
         if (payload.id === sessionId) return;
         setCursors(prev => ({ ...prev, [payload.id]: payload }));
-      })
-      .on('broadcast', { event: 'pin_position_update' }, ({ payload }) => {
-        if (!payload?.id) return;
-        if (payload.id === 'annotation') {
-          setAnnotationPos({ x_pct: payload.x_pct, y_pct: payload.y_pct });
-        } else {
-          setPresetPositions(prev => ({ ...prev, [payload.id]: { x_pct: payload.x_pct, y_pct: payload.y_pct } }));
-        }
       })
       .on('broadcast', { event: 'card_delete' }, ({ payload }) => {
         setComments(prev => prev.filter(c => c.id !== payload.id));
@@ -576,17 +621,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
           setRemoteCardMoves(prev => { const n = { ...prev }; delete n[row.id]; return n; });
           clearTimeout(remoteMoveTimers.current[row.id]);
           delete remoteMoveTimers.current[row.id];
-        }
-      )
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'pin_positions', filter: `page=eq.${page}` },
-        ({ eventType, new: row }) => {
-          if (eventType === 'INSERT' || eventType === 'UPDATE') {
-            if (row.type === 'preset') {
-              setPresetPositions(prev => ({ ...prev, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } }));
-            } else if (row.type === 'annotation') {
-              setAnnotationPos({ x_pct: row.x_pct, y_pct: row.y_pct });
-            }
-          }
         }
       )
       .subscribe(status => { if (status === 'SUBSCRIBED') channel.track({ color: cursorColor }); });
@@ -724,23 +758,35 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       const meta = dragMetaRef.current;
       if (!meta) return;
       const { clientX, clientY, pageY } = getXY(e);
-      const m = contentMetricsRef.current;
-      if (m.width === 0) return;
 
-      const relX = clientX - m.left;
-      const relY = pageY - m.absTop;
-      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
-      const x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
-      const y_pct = (meta.isAnnotation || meta.isPreset)
-        ? Math.max(0, Math.min(95, (clientY - meta.offsetY_px) / window.innerHeight * 100))
-        : Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / m.height) * 100));
+      let x_pct, y_pct;
+      if (meta.isPreset || meta.isAnnotation) {
+        x_pct = clampX(((clientX - meta.offsetX_px) / window.innerWidth) * 100);
+        y_pct = clampY(((clientY - meta.offsetY_px) / window.innerHeight) * 100);
+      } else {
+        const m = contentMetricsRef.current;
+        if (m.width === 0) return;
+        const relX = clientX - m.left;
+        const relY = pageY - m.absTop;
+        const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
+        x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
+        y_pct = Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / m.height) * 100));
+      }
       dragPosRef.current = { x_pct, y_pct };
+
+      if (meta.isPreset || meta.isAnnotation) {
+        const el = meta.isAnnotation ? annotationRef.current : presetPinRefs.current[meta.id];
+        if (el) {
+          el.style.left = pinLeft(x_pct);
+          el.style.top  = `${(clampY(y_pct) / 100) * window.innerHeight}px`;
+        }
+      }
 
       const now = performance.now();
       if (now - lastUpdate >= 33) {
         lastUpdate = now;
         setDragPos({ x_pct, y_pct });
-        if (!meta.isAnnotation && !meta.isPreset && !meta.isDraft && channelRef.current?.state === 'joined') {
+        if (!meta.isDraft && !meta.isPreset && !meta.isAnnotation && channelRef.current?.state === 'joined') {
           channelRef.current.send({ type: 'broadcast', event: 'card_move', payload: {
             id: meta.id, x_pct, y_pct, dragging: true,
           }});
@@ -753,56 +799,35 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       const pos  = dragPosRef.current;
 
       if (meta && pos) {
-        if (meta.isDraft) {
-          setDraft(prev => prev ? { ...prev, x_pct: pos.x_pct, y_pct: pos.y_pct } : null);
-          justDraggedRef.current = true;
-        } else if (meta.isAnnotation) {
-          const newPos = { x_pct: pos.x_pct, y_pct: pos.y_pct };
-          setAnnotationPos(newPos);
+        if (meta.isPreset || meta.isAnnotation) {
+          const finalX = clampX(pos.x_pct);
+          const finalY = clampY(pos.y_pct);
+          const ch = presetChannelRef.current;
+          if (ch?.state === 'joined') {
+            ch.send({ type: 'broadcast', event: 'pin_position_update', payload: { id: meta.id, x_pct: finalX, y_pct: finalY } });
+          }
           if (isOwnerRef.current) {
-            const ch = channelRef.current;
-            if (ch?.state === 'joined') {
-              ch.send({ type: 'broadcast', event: 'pin_position_update', payload: { id: 'annotation', x_pct: newPos.x_pct, y_pct: newPos.y_pct } });
-            }
+            const type = meta.isAnnotation ? 'annotation' : 'preset';
             supabase.from('pin_positions').upsert(
-              { id: 'annotation', x_pct: newPos.x_pct, y_pct: newPos.y_pct, type: 'annotation', page, updated_at: new Date().toISOString() },
+              { id: meta.id, x_pct: finalX, y_pct: finalY, type, page, updated_at: new Date().toISOString() },
               { onConflict: 'id' }
             ).then(({ error }) => {
               if (error) {
-                console.warn('[CommentPins] Failed to save annotation position:', error);
-                setPinSaveError('annotation');
+                setPinSaveError(meta.id);
                 setTimeout(() => setPinSaveError(null), 2000);
               }
             });
           }
-          justDraggedRef.current = true;
-        } else if (meta.isPreset) {
-          const finalX = pos.x_pct;
-          const finalY = pos.y_pct;
-          const preDrag = preDragPosRef.current;
-          const positionChanged = !preDrag
-            || Math.abs(finalX - preDrag.x_pct) > 0.1
-            || Math.abs(finalY - preDrag.y_pct) > 0.1;
-          if (positionChanged) {
+          if (meta.isAnnotation) {
+            annotationPosRef.current = { x_pct: finalX, y_pct: finalY };
+            setAnnotationPos({ x_pct: finalX, y_pct: finalY });
+          } else {
+            presetPositionsRef.current = { ...presetPositionsRef.current, [meta.id]: { x_pct: finalX, y_pct: finalY } };
             setPresetPositions(prev => ({ ...prev, [meta.id]: { x_pct: finalX, y_pct: finalY } }));
-            if (isOwnerRef.current) {
-              const capturedId = meta.id;
-              const ch = channelRef.current;
-              if (ch?.state === 'joined') {
-                ch.send({ type: 'broadcast', event: 'pin_position_update', payload: { id: capturedId, x_pct: finalX, y_pct: finalY } });
-              }
-              supabase.from('pin_positions').upsert(
-                { id: capturedId, x_pct: finalX, y_pct: finalY, type: 'preset', page, updated_at: new Date().toISOString() },
-                { onConflict: 'id' }
-              ).then(({ error }) => {
-                if (error) {
-                  console.warn('[CommentPins] Failed to save preset position:', error);
-                  setPinSaveError(capturedId);
-                  setTimeout(() => setPinSaveError(null), 2000);
-                }
-              });
-            }
           }
+          requestAnimationFrame(() => syncPresetTopsRef.current?.());
+        } else if (meta.isDraft) {
+          setDraft(prev => prev ? { ...prev, x_pct: pos.x_pct, y_pct: pos.y_pct } : null);
           justDraggedRef.current = true;
         } else {
           const finalX = pos.x_pct;
@@ -866,7 +891,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       if (e.key !== 'Escape') return;
       const meta    = dragMetaRef.current;
       const preDrag = preDragPosRef.current;
-      if (meta && !meta.isAnnotation && !meta.isPreset && preDrag) {
+      if (meta && !meta.isDraft && !meta.isPreset && !meta.isAnnotation && preDrag) {
         setComments(prev => prev.map(c => c.id === meta.id
           ? { ...c, x_pct: preDrag.x_pct, y_pct: preDrag.y_pct } : c));
         const ch = channelRef.current;
@@ -900,7 +925,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   // Cancel owner-initiated drag if they log out mid-drag.
   useEffect(() => {
-    if (isOwner || !draggingId || draggingId === '__annotation__' || draggingId === '__draft__') return;
+    if (isOwner || !draggingId || draggingId === '__draft__') return;
     const meta = dragMetaRef.current;
     if (meta && meta.sessionToken !== null) return;
     const preDrag = preDragPosRef.current;
@@ -913,22 +938,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     document.body.style.userSelect = '';
   }, [isOwner, draggingId]);
 
-  const startAnnotationDrag = (e) => {
-    if (!isOwner) return;
-    e.stopPropagation();
-    const m = contentMetricsRef.current;
-    dragStartRef.current = { x: e.clientX, y: e.clientY };
-    dragMetaRef.current = {
-      id: '__annotation__',
-      isAnnotation: true,
-      offsetX_px: (e.clientX - m.left) - (annotationPos.x_pct / 100) * m.width,
-      offsetY_px: e.clientY - (annotationPos.y_pct / 100) * window.innerHeight,
-    };
-    dragPosRef.current = { ...annotationPos };
-    setExpandedId(null);
-    setDraggingId('__annotation__');
-  };
-
   const startDraftDrag = (e) => {
     if (!draft) return;
     e.stopPropagation();
@@ -939,8 +948,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     dragMetaRef.current = {
       id: '__draft__',
       isDraft: true,
-      isAnnotation: false,
-      isPreset: false,
       sessionToken: null,
       offsetX_px: (clientX - m.left) - (draft.x_pct / 100) * m.width,
       offsetY_px: (pageY   - m.absTop) - (draft.y_pct / 100) * m.height,
@@ -981,15 +988,30 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     preDragPosRef.current = { x_pct, y_pct };
     dragMetaRef.current = {
       id,
-      isAnnotation: false,
-      isPreset: PRESET_PINS.some(p => p.id === id),
       sessionToken: isOwner ? null : localSessionToken.current,
       offsetX_px: (clientX - m.left) - (x_pct / 100) * m.width,
-      offsetY_px: PRESET_PINS.some(p => p.id === id)
-        ? clientY - (y_pct / 100) * window.innerHeight
-        : (pageY - m.absTop) - (y_pct / 100) * m.height,
+      offsetY_px: (pageY - m.absTop) - (y_pct / 100) * m.height,
     };
     dragPosRef.current = { x_pct, y_pct };
+    setExpandedId(null);
+    setDraggingId(id);
+  };
+
+  const startPresetDrag = (e, id, isAnnotation, currentX, currentY) => {
+    if (!isOwner) return;
+    e.stopPropagation();
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+    dragStartRef.current  = { x: clientX, y: clientY };
+    preDragPosRef.current = null;
+    dragMetaRef.current = {
+      id,
+      isPreset: !isAnnotation,
+      isAnnotation,
+      offsetX_px: clientX - (currentX / 100) * window.innerWidth,
+      offsetY_px: clientY - (currentY / 100) * window.innerHeight,
+    };
+    dragPosRef.current = { x_pct: currentX, y_pct: currentY };
     setExpandedId(null);
     setDraggingId(id);
   };
@@ -1101,8 +1123,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   const { left: cLeft, width: cWidth, absTop: cAbsTop, height: cHeight } = contentMetrics;
 
-  const renderCard = (id, author, body, color, x_pct, y_pct, isPreset, pulseIndex, isDragging, sessionToken, extraWrapperStyle) => {
-    const remoteMove = !isPreset && remoteCardMoves[id];
+  const pinLeft = (x_pct) => `${(clampX(x_pct) / 100) * window.innerWidth}px`;
+  const pinTop  = (y_pct) => `${(clampY(y_pct) / 100) * window.innerHeight}px`;
+
+  const renderCard = (id, author, body, color, x_pct, y_pct, isDragging, sessionToken) => {
+    const remoteMove = remoteCardMoves[id];
     let displayX = x_pct;
     let displayY = y_pct;
     let isRemotelyMoving = false;
@@ -1118,22 +1143,16 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
     const isExpanded = expandedId === id;
     const deg        = getDeg(id);
-    const pulseAnim  = pulseActive && isPreset
-      ? { animation: `cc-pulse 600ms ease ${pulseIndex * 50}ms 1 both` }
-      : {};
-
-    const isOwnCard = !isPreset && !!sessionToken && sessionToken === localSessionToken.current;
-    const canDrag   = isPreset ? isOwner : (isOwner || isOwnCard);
-    const canDelete = !isPreset && (isOwner || isOwnCard);
-    const canEdit   = !isPreset && (isOwner || isOwnCard);
+    const isOwnCard  = !!sessionToken && sessionToken === localSessionToken.current;
+    const canDrag    = isOwner || isOwnCard;
+    const canDelete  = isOwner || isOwnCard;
+    const canEdit    = isOwner || isOwnCard;
 
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, cHeight),
-      ...(isPreset ? { left: `${cLeft + (displayX / 100) * cWidth}px`, top: `${(displayY / 100) * window.innerHeight}px` } : {}),
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
-      ...extraWrapperStyle,
     };
 
     const cardClass = [
@@ -1152,7 +1171,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={() => onCardLeave(id)}
       >
-        <div className={cardClass} style={pulseAnim}>
+        <div className={cardClass}>
           <div className="cc-header">
             <span className="cc-dot" style={{ backgroundColor: color }} />
             <span className="cc-author">{author}</span>
@@ -1213,84 +1232,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     );
   };
 
-  // Preset pins and annotation live in a separate position:fixed portal with no scroll
-  // transform, so they stay at stable viewport positions regardless of scroll or tab switch.
-  const fixedOverlay = (
-    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-      {!hidden && showPresets && PRESET_PINS.filter(pin =>
-        !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
-      ).map((pin, i) => {
-        const pos = presetPositions[pin.id];
-        if (!pos) return null;
-        const isFadingOut = fadingOutIds.has(pin.id);
-        const isFadingIn  = fadingInIds.has(pin.id);
-        const opacity = isFadingOut || isFadingIn ? 0 : 1;
-        return (
-          <React.Fragment key={pin.id}>
-            {renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId, null,
-              { opacity, transition: 'opacity 150ms ease' })}
-            {pinSaveError === pin.id && (
-              <div style={{
-                position: 'absolute',
-                left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
-                top: `${(pos.y_pct / 100) * window.innerHeight - 32}px`,
-                transform: 'translateX(-50%)',
-                background: '#ef4444', color: '#fff',
-                fontSize: '0.6875rem', fontWeight: 600,
-                padding: '2px 8px', borderRadius: '4px',
-                whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 50,
-              }}>position not saved</div>
-            )}
-          </React.Fragment>
-        );
-      })}
-
-      {!hidden && page === 'home' && (() => {
-        const isDragging = draggingId === '__annotation__';
-        const pos = isDragging && dragPos ? dragPos : annotationPos;
-        return (
-          <>
-            <div
-              style={{
-                position: 'absolute',
-                left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
-                top: `${(pos.y_pct / 100) * window.innerHeight}px`,
-                transform: 'translate(-50%, -50%) rotate(-2deg)',
-                pointerEvents: 'auto',
-                cursor: !isOwner ? 'default' : (isDragging ? 'grabbing' : 'grab'),
-                zIndex: 31,
-                userSelect: 'none',
-              }}
-              onMouseDown={isOwner ? startAnnotationDrag : undefined}
-            >
-              <div className="floating-annotation">
-                <div>got thoughts?</div>
-                <div>drop a comment</div>
-                <div>anywhere on the page</div>
-                <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 6, marginLeft: 12 }}>
-                  <path d="M6 3 C2 14 28 18 24 34" strokeWidth="1.5" strokeLinecap="round" />
-                  <path d="M19 30 L24 34 L28 29" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </div>
-            {pinSaveError === 'annotation' && (
-              <div style={{
-                position: 'absolute',
-                left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
-                top: `${(pos.y_pct / 100) * window.innerHeight - 48}px`,
-                transform: 'translateX(-50%)',
-                background: '#ef4444', color: '#fff',
-                fontSize: '0.6875rem', fontWeight: 600,
-                padding: '2px 8px', borderRadius: '4px',
-                whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 50,
-              }}>position not saved</div>
-            )}
-          </>
-        );
-      })()}
-    </div>
-  );
-
   const overlay = (
     <div
       ref={overlayRef}
@@ -1301,7 +1242,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         const cached = commentPosCache[pin.id];
         const x = cached ? cached.x_pct : pin.x_pct;
         const y = cached ? cached.y_pct : pin.y_pct;
-        return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId, pin.session_token);
+        return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token);
       })}
 
       {Object.entries(cursors).map(([id, c]) => (
@@ -1380,6 +1321,116 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     </div>
   );
 
+  // Preset pins and annotation rendered as direct children of portalRoot (position:fixed).
+  // No translateY ancestor — top is pure viewport percentage, no scrollY needed.
+  const presetContent = (
+    <>
+      {!hidden && PRESET_PINS.filter(pin =>
+        !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
+      ).map((pin, i) => {
+        const pos = presetPositions[pin.id];
+        if (!pos) return null;
+        const isDraggingPin = pin.id === draggingId;
+        const displayX     = isDraggingPin && dragPos ? dragPos.x_pct : pos.x_pct;
+        const displayY     = isDraggingPin && dragPos ? dragPos.y_pct : pos.y_pct;
+        const isFadingOut  = fadingOutIds.has(pin.id);
+        const isFadingIn   = fadingInIds.has(pin.id);
+        const deg          = cardRotation(pin.id);
+        const isExpanded   = expandedId === pin.id;
+        const pulseAnim    = pulseActive ? { animation: `cc-pulse 600ms ease ${i * 50}ms 1 both` } : {};
+
+        return (
+          <React.Fragment key={pin.id}>
+            <div
+              ref={el => { presetPinRefs.current[pin.id] = el; }}
+              style={{
+                position: 'absolute',
+                left: pinLeft(displayX),
+                transform: `translate(-50%, -50%) rotate(${deg}deg)`,
+                pointerEvents: 'auto',
+                zIndex: 31,
+                cursor: isOwner ? (isDraggingPin ? 'grabbing' : 'grab') : 'default',
+                opacity: isFadingOut || isFadingIn ? 0 : 1,
+                transition: 'opacity 150ms ease',
+                ...(isDraggingPin ? { willChange: 'transform' } : {}),
+              }}
+              onMouseDown={isOwner ? (e) => startPresetDrag(e, pin.id, false, pos.x_pct, pos.y_pct) : undefined}
+              onTouchStart={isOwner ? (e) => startPresetDrag(e, pin.id, false, pos.x_pct, pos.y_pct) : undefined}
+              onMouseEnter={() => setExpandedId(pin.id)}
+              onMouseLeave={() => setExpandedId(null)}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={`cc-card${isExpanded ? ' cc-card-expanded' : ''}`} style={pulseAnim}>
+                <div className="cc-header">
+                  <span className="cc-dot" style={{ backgroundColor: PRESET_COLOR }} />
+                  <span className="cc-author">{pin.author}</span>
+                  <span className={`cc-preview${isExpanded ? ' cc-preview-hidden' : ''}`}>{truncate(pin.body)}</span>
+                </div>
+                <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{pin.body}</p>
+              </div>
+            </div>
+            {pinSaveError === pin.id && (
+              <div style={{
+                position: 'absolute',
+                left: pinLeft(displayX),
+                top: `${(clampY(displayY) / 100) * window.innerHeight - 32}px`,
+                transform: 'translateX(-50%)',
+                background: '#ef4444', color: '#fff',
+                fontSize: '0.6875rem', fontWeight: 600,
+                padding: '2px 8px', borderRadius: '4px',
+                whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 50,
+              }}>position not saved</div>
+            )}
+          </React.Fragment>
+        );
+      })}
+
+      {!hidden && page === 'home' && (() => {
+        const isDraggingAnn = draggingId === '__annotation__';
+        const annPos = isDraggingAnn && dragPos ? dragPos : annotationPos;
+        return (
+          <>
+            <div
+              ref={annotationRef}
+              style={{
+                position: 'absolute',
+                left: pinLeft(annPos.x_pct),
+                transform: 'translate(-50%, -50%) rotate(-2deg)',
+                pointerEvents: 'auto',
+                cursor: !isOwner ? 'default' : (isDraggingAnn ? 'grabbing' : 'grab'),
+                zIndex: 31,
+                userSelect: 'none',
+              }}
+              onMouseDown={isOwner ? (e) => startPresetDrag(e, '__annotation__', true, annotationPos.x_pct, annotationPos.y_pct) : undefined}
+            >
+              <div className="floating-annotation">
+                <div>got thoughts?</div>
+                <div>drop a comment</div>
+                <div>anywhere on the page</div>
+                <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 6, marginLeft: 12 }}>
+                  <path d="M6 3 C2 14 28 18 24 34" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M19 30 L24 34 L28 29" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </div>
+            {pinSaveError === '__annotation__' && (
+              <div style={{
+                position: 'absolute',
+                left: pinLeft(annPos.x_pct),
+                top: `${(clampY(annPos.y_pct) / 100) * window.innerHeight - 48}px`,
+                transform: 'translateX(-50%)',
+                background: '#ef4444', color: '#fff',
+                fontSize: '0.6875rem', fontWeight: 600,
+                padding: '2px 8px', borderRadius: '4px',
+                whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 50,
+              }}>position not saved</div>
+            )}
+          </>
+        );
+      })()}
+    </>
+  );
+
   const dismissToast = () => {
     setMobileToastFading(true);
     setTimeout(() => { setMobileToastFading(false); setMobileToastVisible(false); }, 200);
@@ -1405,8 +1456,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 0, pointerEvents: 'none' }}
       />
 
-      {portalRoot && createPortal(overlay, portalRoot)}
-      {fixedRoot && createPortal(fixedOverlay, fixedRoot)}
+      {portalRoot && createPortal(<>{overlay}{presetContent}</>, portalRoot)}
 
       {/* Toolbar */}
       <div style={toolbarStyle}>
@@ -1434,6 +1484,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             onClick={() => setHidden(h => {
               const next = !h;
               try { localStorage.setItem('wahab_comments_hidden', next); } catch {}
+              window.dispatchEvent(new CustomEvent('wahab:comments:hidden:change', { detail: next }));
               return next;
             })}>
             {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -1458,7 +1509,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       {showLogin && !isOwner && (
         <div
           style={{
-            position: 'fixed', bottom: '5rem', left: '50%', transform: 'translateX(-50%)',
+            position: 'fixed', bottom: '5rem', left: 0, right: 0, margin: '0 auto',
             backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '0.75rem',
             padding: '1rem', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 101, width: '240px',
           }}
