@@ -1110,6 +1110,10 @@ html.dark .gh-lang       { color: #8b949e; }
 html.dark .gh-updated    { color: #8b949e; }
 html.dark .gh-view-link  { color: #58a6ff; }
 
+/* GitHub icon fill adapts to card background */
+.gh-tool-github { fill: #24292f; }
+html.dark .gh-tool-github { fill: #e6edf3; }
+
 /* ── end GitHub cards ─────────────────────────────────────────────────── */
 
 /* Colored info tiles - Challenge, Impact, Info etc - using existing Tailwind color classes */
