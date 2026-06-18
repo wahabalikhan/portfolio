@@ -45,11 +45,11 @@ const getPlayAreaXBounds = (contentLeft, contentWidth) => {
 // VERSION 6 preset positions — recalibrated for content-height y denominator and
 // (window.innerWidth - contentWidth)/2 contentLeft formula.
 const PRESET_PINS = [
-  { id: 'preset-1', x_pct: 72, y_pct: 14, author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
+  { id: 'preset-1', x_pct: 78, y_pct: 14, author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
   { id: 'preset-2', x_pct: 8,  y_pct: 60, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
   { id: 'preset-3', x_pct: 15, y_pct: 35, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
-  { id: 'preset-4', x_pct: 74, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
-  { id: 'preset-5', x_pct: 76, y_pct: 72, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
+  { id: 'preset-4', x_pct: 75, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
+  { id: 'preset-5', x_pct: 80, y_pct: 72, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
 ];
 
 const randomId = () =>
@@ -292,7 +292,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   // entirely in the DB and are loaded via the comments state on every mount.
   try { localStorage.removeItem('visitor-comment-positions'); } catch {}
 
-  const [annotationPos, setAnnotationPos] = useState({ x_pct: 16, y_pct: 76 });
+  const [annotationPos, setAnnotationPos] = useState({ x_pct: 15, y_pct: 76 });
 
   // Create the portal root div and append it to body.
   useEffect(() => {
@@ -309,6 +309,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     const div = document.createElement('div');
     div.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:39;overflow:visible;';
     document.body.appendChild(div);
+    console.log('[FixedPortal] created and appended:', div, 'in DOM:', document.body.contains(div));
     setFixedRoot(div);
     return () => { document.body.removeChild(div); };
   }, []);
@@ -728,9 +729,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       const relX = clientX - m.left;
       const relY = pageY - m.absTop;
       const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
-      const x_pct = (meta.isAnnotation || meta.isPreset)
-        ? Math.max(0, Math.min(100, (clientX - meta.offsetX_px) / window.innerWidth * 100))
-        : Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
+      const x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
       const y_pct = (meta.isAnnotation || meta.isPreset)
         ? Math.max(0, Math.min(95, (clientY - meta.offsetY_px) / window.innerHeight * 100))
         : Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / m.height) * 100));
@@ -921,7 +920,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     dragMetaRef.current = {
       id: '__annotation__',
       isAnnotation: true,
-      offsetX_px: e.clientX - (annotationPos.x_pct / 100) * window.innerWidth,
+      offsetX_px: (e.clientX - m.left) - (annotationPos.x_pct / 100) * m.width,
       offsetY_px: e.clientY - (annotationPos.y_pct / 100) * window.innerHeight,
     };
     dragPosRef.current = { ...annotationPos };
@@ -984,9 +983,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       isAnnotation: false,
       isPreset: PRESET_PINS.some(p => p.id === id),
       sessionToken: isOwner ? null : localSessionToken.current,
-      offsetX_px: PRESET_PINS.some(p => p.id === id)
-        ? clientX - (x_pct / 100) * window.innerWidth
-        : (clientX - m.left) - (x_pct / 100) * m.width,
+      offsetX_px: (clientX - m.left) - (x_pct / 100) * m.width,
       offsetY_px: PRESET_PINS.some(p => p.id === id)
         ? clientY - (y_pct / 100) * window.innerHeight
         : (pageY - m.absTop) - (y_pct / 100) * m.height,
@@ -1131,7 +1128,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, cHeight),
-      ...(isPreset ? { left: `${(displayX / 100) * window.innerWidth}px`, top: `${(displayY / 100) * window.innerHeight}px` } : {}),
+      ...(isPreset ? { left: `${cLeft + (displayX / 100) * cWidth}px`, top: `${(displayY / 100) * window.innerHeight}px` } : {}),
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
@@ -1218,7 +1215,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   // Preset pins and annotation live in a separate position:fixed portal with no scroll
   // transform, so they stay at stable viewport positions regardless of scroll or tab switch.
   const fixedOverlay = (
-    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+      onMouseEnter={() => console.log('[FixedPortal] mouse entered fixed overlay')}>
       {!hidden && showPresets && PRESET_PINS.filter(pin =>
         !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
       ).map((pin, i) => {
@@ -1234,7 +1232,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             {pinSaveError === pin.id && (
               <div style={{
                 position: 'absolute',
-                left: `${(pos.x_pct / 100) * window.innerWidth}px`,
+                left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
                 top: `${(pos.y_pct / 100) * window.innerHeight - 32}px`,
                 transform: 'translateX(-50%)',
                 background: '#ef4444', color: '#fff',
@@ -1255,7 +1253,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             <div
               style={{
                 position: 'absolute',
-                left: `${(pos.x_pct / 100) * window.innerWidth}px`,
+                left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
                 top: `${(pos.y_pct / 100) * window.innerHeight}px`,
                 transform: 'translate(-50%, -50%) rotate(-2deg)',
                 pointerEvents: 'auto',
@@ -1278,7 +1276,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             {pinSaveError === 'annotation' && (
               <div style={{
                 position: 'absolute',
-                left: `${(pos.x_pct / 100) * window.innerWidth}px`,
+                left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
                 top: `${(pos.y_pct / 100) * window.innerHeight - 48}px`,
                 transform: 'translateX(-50%)',
                 background: '#ef4444', color: '#fff',
@@ -1408,6 +1406,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       />
 
       {portalRoot && createPortal(overlay, portalRoot)}
+      {(() => { console.log('[FixedPortal] rendering portal, fixedRoot:', fixedRoot, 'isNull:', fixedRoot === null); return null; })()}
       {fixedRoot && createPortal(fixedOverlay, fixedRoot)}
 
       {/* Toolbar */}
