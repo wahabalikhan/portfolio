@@ -19,7 +19,7 @@ export default function AIWorkflowPage() {
 
             <p className="text-sm text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> April 2026 - June 2026</p>
             <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Team:</span> 2 Product Designers, 2 Engineers</p>
-            <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Role:</span> Designer and Builder. Workflow design, tooling, prototyping, development.</p>
+            <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Role:</span> Designer and contributor. Workflow adoption, tooling setup, code changes, engineering collaboration.</p>
             <p className="text-sm text-gray-600 mb-4"><span className="font-semibold">Stack:</span> Figma, VS Code, Claude Code, Git, GitHub, Node.js, npm, React, HTML and CSS</p>
 
             <img
@@ -37,44 +37,40 @@ export default function AIWorkflowPage() {
                             ⚠️ <span className='font-bold' style={{ color: '#374151' }}>Design and code have always run on parallel tracks.</span>
                         </p>
                         <p className="mb-6" style={{ color: '#374151' }}>
-                            I'd design in Figma, hand off specs, and wait. Sometimes days, sometimes weeks, before seeing how a feature actually looked and behaved in the product. By the time it shipped, the Figma file was already out of date. Feedback arrived too late. Feasibility issues surfaced after design sign-off, not before.
+                            At Adverity, an initiative was already underway to close that gap — to bring designers closer to the codebase and reduce the friction between design intent and what actually ships. The workflow existed in draft form. The step-by-step guide existed. The goal was clear. Getting it to actually work, consistently, across different machines and setups, was the harder part.
                         </p>
                         <p style={{ color: '#374151' }}>
-                            The gap wasn't a process failure. It was a structural one. <span className='font-bold' style={{ color: '#374151' }}>Design and engineering were operating in completely separate environments, and nothing was keeping them in sync.</span>
+                            That's where I came in.
                         </p>
                     </div>
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">My Role</h3>
-                    <p className="text-gray-700 leading-relaxed mb-2">I ran this end-to-end:</p>
+                    <p className="text-gray-700 leading-relaxed mb-2">I joined this initiative halfway through, collaborating with a dedicated designer who had already been laying the groundwork. My contribution was in getting the workflow from "almost there" to actually working — and then using it on real work.</p>
+                    <p className="text-gray-700 leading-relaxed mb-2">Specifically:</p>
                     <p className="text-gray-700 mb-4">
                         <ul className='list-disc list-inside'>
-                            <li>Evaluated AI-assisted tools for moving between design and code</li>
-                            <li>Set up a full local development environment: Node.js, npm packages, Git, VS Code, Claude Code</li>
-                            <li>Used Claude Code to scaffold, modify, and test real components from design intent</li>
-                            <li>Committed and reviewed code via Git and GitHub, working closely with engineers to ensure changes passed tests before anything went live</li>
-                            <li>Applied the workflow to real projects, including live changes pushed to production</li>
+                            <li>Worked through the setup process collaboratively: installing dependencies, working through Docker configuration, debugging errors, and feeding fixes back into the step-by-step guide so the next person did not hit the same walls</li>
+                            <li>Helped get the workflow to a polished, documented state that the wider team could follow</li>
+                            <li>Participated in a team workshop to explore what AI looks like in design workflows and get everyone set up and aligned</li>
+                            <li>Used the workflow to make real changes: committing via Git, getting changes reviewed by engineers, ensuring they passed tests, and getting them merged to the main branch and shipped to customers</li>
                         </ul>
                     </p>
-                    <p className="text-gray-700 leading-relaxed mb-2">The primary focus was working directly in the codebase: scaffolding components, reviewing diffs, shipping changes through engineering review. Rebuilding live product pages as editable Figma files and building live prototypes were part of the process too, but the real shift was moving design closer to where the product actually lives.</p>
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">Results</h3>
                     <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ Faster iteration</span> - from idea to working prototype in hours, not days
+                            <span className="font-bold bg-emerald-50">✅ Real changes shipped to production</span> - seen by customers, not just local demos
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ Design files that stay current</span> - generated from or directly informed by the live product
+                            <span className="font-bold bg-emerald-50">✅ A workflow that went from half-working to documented</span> - usable by the wider team
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ Earlier feasibility checks</span> - issues surfaced before design sign-off, not after
-                        </p>
-                        <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ Live changes pushed to production</span> - real users, not just local demos
+                            <span className="font-bold bg-emerald-50">✅ Faster idea communication</span> - live prototypes instead of static screens for early conversations with engineers and product
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-0">
-                            <span className="font-bold bg-emerald-50">✅ Shorter feedback loops</span> - stakeholders react to working prototypes, not static screens
+                            <span className="font-bold bg-emerald-50">✅ Design files grounded in reality</span> - generated from what was actually live, not rebuilt from memory
                         </p>
                     </div>
                 </div>
@@ -122,8 +118,8 @@ export default function AIWorkflowPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">What the Workflow Actually Looks Like</h2>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">1. Import and explore</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">Pull a live product page into Figma as fully editable layers. Annotate, restyle, and explore layout changes without rebuilding from scratch. The Figma file starts from reality, not from memory.</p>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">1. Browser to Figma</h3>
+                <p className="text-gray-700 leading-relaxed mb-6">Pull a live product page directly into Figma as fully editable layers. Rather than starting from scratch or working from memory, the design file starts from what is actually live. Annotate, restyle, and explore changes on top of the real product. I contributed to getting this part of the process working alongside the other designer.</p>
 
                 <img
                     src="/images/ai-workflow-figma.png"
@@ -133,8 +129,8 @@ export default function AIWorkflowPage() {
                 />
                 <p className='mb-8 text-xs'>A live product page imported into Figma as fully editable layers, ready to annotate, restyle, or explore without rebuilding it from scratch.</p>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">2. Design and prototype in code</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">Take a design direction into VS Code. Use Claude Code to scaffold the component or feature, then review, refine, and test it locally. The prototype is running on real code, not a static mockup.</p>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">2. Making changes in code</h3>
+                <p className="text-gray-700 leading-relaxed mb-6">Take a direction from Figma into VS Code. Use Claude Code to scaffold or modify components, review the output, refine it, and test it locally against the live product. Then commit via Git, push to GitHub, and go through engineering review. Changes had to pass tests before anything got merged. This was the core of what I used day-to-day: making copy and code changes, working with engineers, and seeing things go live.</p>
 
                 <img
                     src="/images/ai-workflow-prototype.png"
@@ -144,9 +140,6 @@ export default function AIWorkflowPage() {
                 />
                 <p className='mb-8 text-xs'>A design direction taken into VS Code and scaffolded with Claude Code - running on real code, not a static mockup.</p>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">3. Review and ship</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">Run the change in the local dev environment. Check it against the live product. Commit via Git, push to GitHub, and go through engineering review before anything reaches users. Live changes were pushed to production and tested by real users.</p>
-
                 <img
                     src="/images/ai-workflow-execution.png"
                     alt="Reviewing and shipping a change"
@@ -155,8 +148,8 @@ export default function AIWorkflowPage() {
                 />
                 <p className='mb-8 text-xs'>Running a change locally, reviewing it against the live product, then committing via Git and pushing to GitHub for engineering review.</p>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">4. Sync and repeat</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">When the live product changes, the Figma file gets updated to match. When a Figma exploration goes further, it feeds back into code. Neither side goes stale.</p>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">3. Live prototyping</h3>
+                <p className="text-gray-700 leading-relaxed mb-6">Another designer on the team built a separate workflow for generating live prototypes quickly, turning a design direction into something working and interactive in minutes rather than hours in Figma. I used this to get ideas across to engineers and product people faster, get a feel for animations and interactions, and move conversations forward without needing a fully polished static design first.</p>
 
                 <img
                     src="/images/ai-workflow-testing.png"
@@ -170,25 +163,27 @@ export default function AIWorkflowPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Why This Matters</h2>
 
-                <p className="text-gray-700 leading-relaxed mb-6">Working closer to the codebase changes how you make design decisions. You're not designing in a vacuum and hoping it's feasible. You're testing against real constraints from the start. UX and implementation influence each other in the same sitting. That's where the best design work happens.</p>
+                <p className="text-gray-700 leading-relaxed mb-6">Working closer to the codebase changes how you make design decisions. You are not designing in a vacuum and hoping it is feasible. You are testing against real constraints from the start. When design and engineering are operating in the same space, feedback loops shrink and the gap between what is designed and what ships gets smaller.</p>
+
+                <p className="text-gray-700 leading-relaxed mb-6">This project reinforced that practically, not theoretically. I did not build the workflow. I helped get it over the line, used it on real work, and saw changes go live in front of customers.</p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Without this workflow</h3>
                 <p className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Design happens disconnected from the live product</li>
                         <li>Feedback only arrives after something is fully built</li>
-                        <li>Figma files drift out of sync and become less useful over time</li>
-                        <li>Ideas that don't work in code are only discovered after design sign-off</li>
+                        <li>Figma files are rebuilt from memory rather than generated from reality</li>
+                        <li>Ideas take hours to communicate as static screens</li>
                     </ul>
                 </p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">With it</h3>
                 <p className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
-                        <li>Design decisions are grounded in what's technically real, not just visually possible</li>
+                        <li>Design decisions are grounded in what is technically real from the start</li>
                         <li>Feedback loops shrink from sprints to sessions</li>
+                        <li>Prototypes replace static screens in early engineering conversations</li>
                         <li>The gap between designed and shipped gets smaller with every project</li>
-                        <li>Design work becomes inherently more collaborative with engineering, because it's happening in the same space</li>
                     </ul>
                 </p>
             </section>
@@ -196,10 +191,10 @@ export default function AIWorkflowPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Reflection</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    The closer design lives to the real product, the more useful it becomes.
+                    The honest version of this project is that it was collaborative from start to finish. The initiative existed before I joined. Another designer had done significant groundwork. Engineers were involved at every step. My contribution was in the middle and at the end: helping get the workflow working, participating in getting the team aligned, and using it to ship real things.
                 </p>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    Working this way also changed how I think about my own skill set. Not as a designer who hands off to engineers, but as someone who can move fluidly between design intent and working code, and who understands what it takes to get something over the line.
+                    That collaboration is actually the point. A closer-to-code design workflow only works if multiple people can run it. Getting it to a state where that was possible was the real outcome.
                 </p>
             </section>
 
@@ -207,11 +202,14 @@ export default function AIWorkflowPage() {
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Next Steps</h2>
                 <p className="text-gray-700 leading-relaxed">
                     <ul className='list-disc list-inside'>
-                        <li>Formalise the workflow into a repeatable, documented process for future projects</li>
+                        <li>Formalise the workflow further into a repeatable process other designers can pick up independently</li>
                         <li>Explore AI-assisted design QA: checking shipped UI against design intent automatically</li>
-                        <li>Apply this approach to a larger multi-page product, not just a single portfolio</li>
-                        <li>Contribute to a component-level design system that's kept in sync with the codebase</li>
+                        <li>Apply this approach to larger, multi-page products</li>
+                        <li>Contribute to a component-level design system kept in sync with the codebase</li>
                     </ul>
+                </p>
+                <p className="text-gray-400 italic mt-4 leading-relaxed">
+                    The role was made redundant in June 2026 before these could be taken further. The workflow and documentation remain with the team.
                 </p>
             </section>
 
