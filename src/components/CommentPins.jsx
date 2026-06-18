@@ -430,9 +430,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   }, []);
 
   useEffect(() => {
-    if (activeTab !== 'Design') return;
     const raf = requestAnimationFrame(() => {
-      setOverlayHeight(prev => Math.max(document.documentElement.scrollHeight, prev));
+      setOverlayHeight(document.documentElement.scrollHeight);
     });
     return () => cancelAnimationFrame(raf);
   }, [activeTab]);
