@@ -11,6 +11,11 @@ const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#
 // Comments cannot be placed or dragged outside this centered boundary.
 const PLAY_AREA_WIDTH = 1300;
 
+// Fixed y-coordinate denominator. Must not change across tabs or screen sizes.
+// scrollHeight was rejected because it varies per tab (Design: ~3678, Development: ~1975, Extras: ~1846),
+// causing comments to jump when switching tabs. 4000 exceeds the tallest tab's height on any screen.
+const Y_REFERENCE_HEIGHT = 4000;
+
 // Returns the min/max x_pct values (content-relative) that correspond to the PLAY_AREA_WIDTH
 // boundary centered on the current viewport. Allows pins to reach the edge of a 14" MBP screen
 // but no further, regardless of how wide the actual viewport is.
@@ -824,7 +829,7 @@ export default function CommentPins({ page, activeTab }) {
     const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
     const x_pct = ((e.clientX - m.left) / m.width) * 100;
     if (x_pct < minX || x_pct > maxX) return;
-    const y_pct = (e.pageY / document.documentElement.scrollHeight) * 100;
+    const y_pct = (e.pageY / Y_REFERENCE_HEIGHT) * 100;
     setDraft({ x_pct, y_pct });
     const savedRealName = isOwner ? 'Wahab' : (() => { try { return localStorage.getItem('wahab_visitor_name') || ''; } catch { return ''; } })();
     setDraftAuthor(savedRealName); setDraftBody('');
@@ -946,7 +951,7 @@ export default function CommentPins({ page, activeTab }) {
     const canEdit    = isOwner || isOwnCard;
 
     const wrapperStyle = {
-      ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, 0, document.documentElement.scrollHeight),
+      ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
@@ -1096,7 +1101,7 @@ export default function CommentPins({ page, activeTab }) {
         const draftY = (draggingId === '__draft__' && dragPos) ? dragPos.y_pct : draft.y_pct;
         return (
         <div style={{
-          ...cardWrapperStyle(draftX, draftY, 0, cLeft, cWidth, 0, document.documentElement.scrollHeight),
+          ...cardWrapperStyle(draftX, draftY, 0, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
           cursor: draggingId === '__draft__' ? 'grabbing' : 'default', zIndex: 40,
         }}>
           <div className="cc-card cc-draft" onClick={(e) => e.stopPropagation()}>
