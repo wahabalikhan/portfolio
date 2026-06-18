@@ -45,11 +45,11 @@ const getPlayAreaXBounds = (contentLeft, contentWidth) => {
 // VERSION 6 preset positions — recalibrated for content-height y denominator and
 // (window.innerWidth - contentWidth)/2 contentLeft formula.
 const PRESET_PINS = [
-  { id: 'preset-1', x_pct: 78, y_pct: 14, author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
-  { id: 'preset-2', x_pct: 8,  y_pct: 65, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
-  { id: 'preset-3', x_pct: 18, y_pct: 35, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
-  { id: 'preset-4', x_pct: 75, y_pct: 50, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
-  { id: 'preset-5', x_pct: 80, y_pct: 78, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
+  { id: 'preset-1', x_pct: 72, y_pct: 14, author: 'Wahab', body: 'took about 3 attempts to get this headline right 😅', preset: true },
+  { id: 'preset-2', x_pct: 8,  y_pct: 60, author: 'Wahab', body: 'built this portfolio at 2am. Claude Code did not judge me 🤝', preset: true },
+  { id: 'preset-3', x_pct: 15, y_pct: 35, author: 'Wahab', body: 'yes I did time it with a stopwatch 👀 36.1% is very real', preset: true, tabs: ['Design'] },
+  { id: 'preset-4', x_pct: 74, y_pct: 48, author: 'Wahab', body: 'this one kept me up at night. in a good way 🌙', preset: true, tabs: ['Design'] },
+  { id: 'preset-5', x_pct: 76, y_pct: 72, author: 'Wahab', body: "if you've scrolled this far... you should probably just hire me 👋", preset: true, tabs: ['Design'] },
 ];
 
 const randomId = () =>
@@ -219,6 +219,9 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
   // Portal root: a div appended to document.body that hosts the full-page overlay.
   const [portalRoot, setPortalRoot] = useState(null);
+  // Fixed portal root: a position:fixed div for preset pins and annotation.
+  // Has no translateY transform, so its children stay viewport-fixed regardless of scroll.
+  const [fixedRoot, setFixedRoot] = useState(null);
 
   const [mode, setMode]           = useState('cursor');
   const [comments, setComments]   = useState([]);
@@ -289,7 +292,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   // entirely in the DB and are loaded via the comments state on every mount.
   try { localStorage.removeItem('visitor-comment-positions'); } catch {}
 
-  const [annotationPos, setAnnotationPos] = useState({ x_pct: 22, y_pct: 78 });
+  const [annotationPos, setAnnotationPos] = useState({ x_pct: 16, y_pct: 76 });
 
   // Create the portal root div and append it to body.
   useEffect(() => {
@@ -297,6 +300,16 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:0;overflow:visible;pointer-events:none;';
     document.body.appendChild(div);
     setPortalRoot(div);
+    return () => { document.body.removeChild(div); };
+  }, []);
+
+  // Fixed overlay for preset pins and annotation — no translateY transform, so children
+  // stay at stable viewport positions regardless of scroll depth or tab content height.
+  useEffect(() => {
+    const div = document.createElement('div');
+    div.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:39;overflow:visible;';
+    document.body.appendChild(div);
+    setFixedRoot(div);
     return () => { document.body.removeChild(div); };
   }, []);
 
@@ -700,24 +713,26 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
     const getXY = (e) => {
       if (e.changedTouches && e.changedTouches.length > 0) {
-        return { clientX: e.changedTouches[0].clientX, pageY: e.changedTouches[0].pageY };
+        return { clientX: e.changedTouches[0].clientX, clientY: e.changedTouches[0].clientY, pageY: e.changedTouches[0].pageY };
       }
-      return { clientX: e.clientX, pageY: e.pageY };
+      return { clientX: e.clientX, clientY: e.clientY, pageY: e.pageY };
     };
 
     const onMove = (e) => {
       const meta = dragMetaRef.current;
       if (!meta) return;
-      const { clientX, pageY } = getXY(e);
+      const { clientX, clientY, pageY } = getXY(e);
       const m = contentMetricsRef.current;
       if (m.width === 0) return;
 
       const relX = clientX - m.left;
       const relY = pageY - m.absTop;
       const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
-      const x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
+      const x_pct = (meta.isAnnotation || meta.isPreset)
+        ? Math.max(0, Math.min(100, (clientX - meta.offsetX_px) / window.innerWidth * 100))
+        : Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
       const y_pct = (meta.isAnnotation || meta.isPreset)
-        ? Math.max(0, Math.min(95, (pageY - meta.offsetY_px) / window.innerHeight * 100))
+        ? Math.max(0, Math.min(95, (clientY - meta.offsetY_px) / window.innerHeight * 100))
         : Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / m.height) * 100));
       dragPosRef.current = { x_pct, y_pct };
 
@@ -906,8 +921,8 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     dragMetaRef.current = {
       id: '__annotation__',
       isAnnotation: true,
-      offsetX_px: (e.clientX - m.left) - (annotationPos.x_pct / 100) * m.width,
-      offsetY_px: e.pageY - (annotationPos.y_pct / 100) * window.innerHeight,
+      offsetX_px: e.clientX - (annotationPos.x_pct / 100) * window.innerWidth,
+      offsetY_px: e.clientY - (annotationPos.y_pct / 100) * window.innerHeight,
     };
     dragPosRef.current = { ...annotationPos };
     setExpandedId(null);
@@ -969,9 +984,11 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       isAnnotation: false,
       isPreset: PRESET_PINS.some(p => p.id === id),
       sessionToken: isOwner ? null : localSessionToken.current,
-      offsetX_px: (clientX - m.left) - (x_pct / 100) * m.width,
+      offsetX_px: PRESET_PINS.some(p => p.id === id)
+        ? clientX - (x_pct / 100) * window.innerWidth
+        : (clientX - m.left) - (x_pct / 100) * m.width,
       offsetY_px: PRESET_PINS.some(p => p.id === id)
-        ? pageY - (y_pct / 100) * window.innerHeight
+        ? clientY - (y_pct / 100) * window.innerHeight
         : (pageY - m.absTop) - (y_pct / 100) * m.height,
     };
     dragPosRef.current = { x_pct, y_pct };
@@ -1114,7 +1131,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, cHeight),
-      ...(isPreset ? { top: `${(displayY / 100) * window.innerHeight + window.scrollY}px` } : {}),
+      ...(isPreset ? { left: `${(displayX / 100) * window.innerWidth}px`, top: `${(displayY / 100) * window.innerHeight}px` } : {}),
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
@@ -1198,104 +1215,96 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     );
   };
 
+  // Preset pins and annotation live in a separate position:fixed portal with no scroll
+  // transform, so they stay at stable viewport positions regardless of scroll or tab switch.
+  const fixedOverlay = (
+    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+      {!hidden && showPresets && PRESET_PINS.filter(pin =>
+        !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
+      ).map((pin, i) => {
+        const pos = presetPositions[pin.id];
+        if (!pos) return null;
+        const isFadingOut = fadingOutIds.has(pin.id);
+        const isFadingIn  = fadingInIds.has(pin.id);
+        const opacity = isFadingOut || isFadingIn ? 0 : 1;
+        return (
+          <React.Fragment key={pin.id}>
+            {renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId, null,
+              { opacity, transition: 'opacity 150ms ease' })}
+            {pinSaveError === pin.id && (
+              <div style={{
+                position: 'absolute',
+                left: `${(pos.x_pct / 100) * window.innerWidth}px`,
+                top: `${(pos.y_pct / 100) * window.innerHeight - 32}px`,
+                transform: 'translateX(-50%)',
+                background: '#ef4444', color: '#fff',
+                fontSize: '0.6875rem', fontWeight: 600,
+                padding: '2px 8px', borderRadius: '4px',
+                whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 50,
+              }}>position not saved</div>
+            )}
+          </React.Fragment>
+        );
+      })}
+
+      {!hidden && page === 'home' && (() => {
+        const isDragging = draggingId === '__annotation__';
+        const pos = isDragging && dragPos ? dragPos : annotationPos;
+        return (
+          <>
+            <div
+              style={{
+                position: 'absolute',
+                left: `${(pos.x_pct / 100) * window.innerWidth}px`,
+                top: `${(pos.y_pct / 100) * window.innerHeight}px`,
+                transform: 'translate(-50%, -50%) rotate(-2deg)',
+                pointerEvents: 'auto',
+                cursor: !isOwner ? 'default' : (isDragging ? 'grabbing' : 'grab'),
+                zIndex: 31,
+                userSelect: 'none',
+              }}
+              onMouseDown={isOwner ? startAnnotationDrag : undefined}
+            >
+              <div className="floating-annotation">
+                <div>got thoughts?</div>
+                <div>drop a comment</div>
+                <div>anywhere on the page</div>
+                <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 6, marginLeft: 12 }}>
+                  <path d="M6 3 C2 14 28 18 24 34" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M19 30 L24 34 L28 29" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </div>
+            {pinSaveError === 'annotation' && (
+              <div style={{
+                position: 'absolute',
+                left: `${(pos.x_pct / 100) * window.innerWidth}px`,
+                top: `${(pos.y_pct / 100) * window.innerHeight - 48}px`,
+                transform: 'translateX(-50%)',
+                background: '#ef4444', color: '#fff',
+                fontSize: '0.6875rem', fontWeight: 600,
+                padding: '2px 8px', borderRadius: '4px',
+                whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 50,
+              }}>position not saved</div>
+            )}
+          </>
+        );
+      })()}
+    </div>
+  );
+
   const overlay = (
     <div
       ref={overlayRef}
       style={overlayStyle(mode, overlayHeight)}
       onClick={handleOverlayClick}
     >
-      {!hidden && (
-        <>
-          {showPresets && PRESET_PINS.filter(pin =>
-            !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
-          ).map((pin, i) => {
-            const pos = presetPositions[pin.id];
-            if (!pos) return null;
-            const isFadingOut = fadingOutIds.has(pin.id);
-            const isFadingIn  = fadingInIds.has(pin.id);
-            const opacity = isFadingOut || isFadingIn ? 0 : 1;
-            return (
-              <React.Fragment key={pin.id}>
-                {renderCard(pin.id, pin.author, pin.body, PRESET_COLOR, pos.x_pct, pos.y_pct, true, i, pin.id === draggingId, null,
-                  { opacity, transition: 'opacity 150ms ease' })}
-                {pinSaveError === pin.id && (
-                  <div style={{
-                    position: 'absolute',
-                    left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
-                    top: `${(pos.y_pct / 100) * window.innerHeight - 32}px`,
-                    transform: 'translateX(-50%)',
-                    background: '#ef4444',
-                    color: '#fff',
-                    fontSize: '0.6875rem',
-                    fontWeight: 600,
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    whiteSpace: 'nowrap',
-                    pointerEvents: 'none',
-                    zIndex: 50,
-                  }}>position not saved</div>
-                )}
-              </React.Fragment>
-            );
-          })}
-
-          {comments.map((pin, i) => {
-            const cached = commentPosCache[pin.id];
-            const x = cached ? cached.x_pct : pin.x_pct;
-            const y = cached ? cached.y_pct : pin.y_pct;
-            return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId, pin.session_token);
-          })}
-
-          {page === 'home' && (() => {
-            const isDragging = draggingId === '__annotation__';
-            const pos = isDragging && dragPos ? dragPos : annotationPos;
-            return (
-              <>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
-                    top: `${(pos.y_pct / 100) * window.innerHeight + window.scrollY}px`,
-                    transform: 'translate(-50%, -50%) rotate(-2deg)',
-                    pointerEvents: 'auto',
-                    cursor: !isOwner ? 'default' : (isDragging ? 'grabbing' : 'grab'),
-                    zIndex: 31,
-                    userSelect: 'none',
-                  }}
-                  onMouseDown={isOwner ? startAnnotationDrag : undefined}
-                >
-                  <div className="floating-annotation">
-                    <div>got thoughts?</div>
-                    <div>drop a comment</div>
-                    <div>anywhere on the page</div>
-                    <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 6, marginLeft: 12 }}>
-                      <path d="M6 3 C2 14 28 18 24 34" strokeWidth="1.5" strokeLinecap="round" />
-                      <path d="M19 30 L24 34 L28 29" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                </div>
-                {pinSaveError === 'annotation' && (
-                  <div style={{
-                    position: 'absolute',
-                    left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
-                    top: `${(pos.y_pct / 100) * window.innerHeight - 48}px`,
-                    transform: 'translateX(-50%)',
-                    background: '#ef4444',
-                    color: '#fff',
-                    fontSize: '0.6875rem',
-                    fontWeight: 600,
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    whiteSpace: 'nowrap',
-                    pointerEvents: 'none',
-                    zIndex: 50,
-                  }}>position not saved</div>
-                )}
-              </>
-            );
-          })()}
-        </>
-      )}
+      {!hidden && comments.map((pin, i) => {
+        const cached = commentPosCache[pin.id];
+        const x = cached ? cached.x_pct : pin.x_pct;
+        const y = cached ? cached.y_pct : pin.y_pct;
+        return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, false, i, pin.id === draggingId, pin.session_token);
+      })}
 
       {Object.entries(cursors).map(([id, c]) => (
         <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, cAbsTop, cHeight)}>
@@ -1399,6 +1408,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       />
 
       {portalRoot && createPortal(overlay, portalRoot)}
+      {fixedRoot && createPortal(fixedOverlay, fixedRoot)}
 
       {/* Toolbar */}
       <div style={toolbarStyle}>
