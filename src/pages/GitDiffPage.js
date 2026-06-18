@@ -17,9 +17,9 @@ export default function GitDiffPage() {
                 Designing confidence into a high-risk engineering workflow
             </h1>
 
-            <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 - March 2025 ~ 3 months</p>
-            <p className="text-gray-600 mb-1"><span className="font-semibold">Team:</span> DataOps (PO, Engineers), 1 additional Product Designer</p>
-            <p className="text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer. Research, strategy, design, testing, metrics.</p>
+            <p className="text-sm text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 - March 2025 ~ 3 months</p>
+            <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Team:</span> DataOps (PO, Engineers), 1 additional Product Designer</p>
+            <p className="text-sm text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer. Research, strategy, design, testing, metrics.</p>
 
             <img
                 src="/images/matillion-bg.png"
@@ -66,13 +66,13 @@ export default function GitDiffPage() {
                     <h3 className="font-bold text-gray-900 mb-2">Results</h3>
                     <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className=" text-2xl font-bold bg-emerald-50">✅ 34% increase</span> in successful commits
+                            <span className=" font-bold bg-emerald-50">✅ 34% increase</span> in successful commits
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="text-2xl font-bold bg-emerald-50">✅ 15% decrease</span> in error recoveries
+                            <span className="font-bold bg-emerald-50">✅ 15% decrease</span> in error recoveries
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-0">
-                            <span className=" text-2xl font-bold bg-emerald-50">✅ 100% task success rate</span> in usability testing
+                            <span className=" font-bold bg-emerald-50">✅ 100% task success rate</span> in usability testing
                         </p>
                     </div>
                 </div>
@@ -255,13 +255,13 @@ export default function GitDiffPage() {
 
                 <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-3">
                     <p className="text-gray-700 bg-emerald-50 mb-2">
-                        <span className=" text-2xl font-bold bg-emerald-50">✅ 34% increase</span> in successful commits
+                        <span className=" font-bold bg-emerald-50">✅ 34% increase</span> in successful commits
                     </p>
                     <p className="text-gray-700 bg-emerald-50 mb-2">
-                        <span className="text-2xl font-bold bg-emerald-50">✅ 15% decrease</span> in error recoveries
+                        <span className="font-bold bg-emerald-50">✅ 15% decrease</span> in error recoveries
                     </p>
                     <p className="text-gray-700 bg-emerald-50 mb-0">
-                        <span className=" text-2xl font-bold bg-emerald-50">✅ 100% success rate</span> in usability testing
+                        <span className=" font-bold bg-emerald-50">✅ 100% success rate</span> in usability testing
                     </p>
                 </div>
 

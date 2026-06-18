@@ -21,10 +21,10 @@ export default function DesignSystemPage() {
         36.1% reduction in design task completion time, achieved by building Matillion's ETL design system from scratch: components, patterns, and documentation, while embedding UX practice into how the engineering team worked.
       </p>
 
-      <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> February 2022 - June 2022 ~ 5 months</p>
-      <p className="text-gray-600 mb-1"><span className="font-semibold">Team:</span> Solo. Designed, built, tested, and documented end-to-end.</p>
-      <p className="text-gray-600 mb-1"><span className="font-semibold">Role:</span> Product Designer. Design system architecture, component design, UX education, engineering enablement.</p>
-      <p className="text-gray-600 mb-4"><span className="font-semibold">Stack:</span> Figma (Auto Layout, Variants, Component Properties), Sencha GXT (Java/ExtJS)</p>
+      <p className="text-sm text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> February 2022 - June 2022 ~ 5 months</p>
+      <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Team:</span> Solo. Designed, built, tested, and documented end-to-end.</p>
+      <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Role:</span> Product Designer. Design system architecture, component design, UX education, engineering enablement.</p>
+      <p className="text-sm text-gray-600 mb-4"><span className="font-semibold">Stack:</span> Figma (Auto Layout, Variants, Component Properties), Sencha GXT (Java/ExtJS)</p>
 
       <img
         src="/images/ds.png"
@@ -70,22 +70,22 @@ export default function DesignSystemPage() {
           <h3 className="font-bold text-gray-900 mb-2">Results</h3>
           <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
             <p className="text-gray-700 bg-emerald-50 mb-2">
-              <span className="text-2xl font-bold bg-emerald-50">✅ 36.1% faster</span> design task completion, measured through structured before/after testing
+              <span className="font-bold bg-emerald-50">✅ 36.1% faster</span> design task completion, measured through structured before/after testing
             </p>
             <p className="text-gray-700 bg-emerald-50 mb-2">
-              <span className="text-2xl font-bold bg-emerald-50">✅ Full design system shipped</span> - components, patterns, and documentation, all live and in use
+              <span className="font-bold bg-emerald-50">✅ Full design system shipped</span> - components, patterns, and documentation, all live and in use
             </p>
             <p className="text-gray-700 bg-emerald-50 mb-2">
-              <span className="text-2xl font-bold bg-emerald-50">✅ Engineering team upskilled</span> - practical UX knowledge embedded in how the team works
+              <span className="font-bold bg-emerald-50">✅ Engineering team upskilled</span> - practical UX knowledge embedded in how the team works
             </p>
             <p className="text-gray-700 bg-emerald-50 mb-2">
-              <span className="text-2xl font-bold bg-emerald-50">✅ Product consistency improved</span> - shared components and patterns replaced designer-by-designer decisions
+              <span className="font-bold bg-emerald-50">✅ Product consistency improved</span> - shared components and patterns replaced designer-by-designer decisions
             </p>
             <p className="text-gray-700 bg-emerald-50 mb-2">
-              <span className="text-2xl font-bold bg-emerald-50">✅ Design reviews more focused</span> - less time correcting inconsistencies, more time improving the experience
+              <span className="font-bold bg-emerald-50">✅ Design reviews more focused</span> - less time correcting inconsistencies, more time improving the experience
             </p>
             <p className="text-gray-700 bg-emerald-50 mb-0">
-              <span className="text-2xl font-bold bg-emerald-50">✅ Business value protected</span> - delivered alongside prioritised product work, not instead of it
+              <span className="font-bold bg-emerald-50">✅ Business value protected</span> - delivered alongside prioritised product work, not instead of it
             </p>
           </div>
         </div>
@@ -198,7 +198,7 @@ export default function DesignSystemPage() {
 
         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-6">
           <p className="text-gray-700 bg-emerald-50 mb-0">
-            <span className="text-2xl font-bold bg-emerald-50">✅ Result: 36.1% reduction</span> in time to complete design tasks
+            <span className="font-bold bg-emerald-50">✅ Result: 36.1% reduction</span> in time to complete design tasks
           </p>
         </div>
 
