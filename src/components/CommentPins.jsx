@@ -1114,7 +1114,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
 
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, cHeight),
-      ...(isPreset ? { top: `${(displayY / 100) * window.innerHeight}px` } : {}),
+      ...(isPreset ? { top: `${(displayY / 100) * window.innerHeight + window.scrollY}px` } : {}),
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
@@ -1255,7 +1255,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
                   style={{
                     position: 'absolute',
                     left: `${cLeft + (pos.x_pct / 100) * cWidth}px`,
-                    top: `${(pos.y_pct / 100) * window.innerHeight}px`,
+                    top: `${(pos.y_pct / 100) * window.innerHeight + window.scrollY}px`,
                     transform: 'translate(-50%, -50%) rotate(-2deg)',
                     pointerEvents: 'auto',
                     cursor: !isOwner ? 'default' : (isDragging ? 'grabbing' : 'grab'),
