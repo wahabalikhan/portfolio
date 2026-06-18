@@ -101,7 +101,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
               {
                 id: 'ai-workflow',
                 title: 'The Designer Who Ships Code',
-                description: <>A detailed look at how I rebuilt my day-to-day design workflow around AI tools, turning live product pages into editable Figma files, building live prototypes for faster feedback, and working closer to the codebase than ever before.</>,
+                description: <>How I closed the gap between Figma and production. Using Claude Code, VS Code, and Git to move between design and a live codebase. From idea to shipped product in hours, not sprints.</>,
                 logo_src: '/images/adverity.jpg',
                 company: 'Adverity',
                 bg_src: '/images/ai-workflow-hero.png',
@@ -109,9 +109,8 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
               },
               {
                 id: 'git-diff',
-                title: 'How user-centric design improved visibility of user changes',
-                description: <>Introduced the Git Diff experience around real user needs, streamlining how data engineers review and commit changes to improve clarity, reduce errors, and build trust.
-The result: <span className="font-bold">34% more commits</span> and <span className="font-bold">15% fewer resets</span>.</>,
+                title: 'Designing confidence into a high-risk engineering workflow',
+                description: <>Data engineers were committing changes they couldn't see, leading to errors and lost trust in the tool. I redesigned the workflow to give them clarity before the point of no return. <span className="font-bold">34% more commits.</span> <span className="font-bold">15% fewer resets.</span></>,
                 logo_src: '/images/matillion-logo.svg',
                 company: 'Matillion',
                 bg_src: '/images/matillion-bg.png',
@@ -120,7 +119,7 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               {
                 id: 'design-system',
                 title: 'From Framework to Design System',
-                description: <><span className="font-bold">36.1% reduction in design task completion time</span>, achieved by building Matillion's ETL design system from scratch - components, patterns, and documentation - while embedding UX practice into how the engineering team worked.</>,
+                description: <>36.1% reduction in design task completion time, achieved by building Matillion's ETL design system from scratch: components, patterns, and documentation, while embedding UX practice into how the engineering team worked.</>,
                 logo_src: '/images/matillion-logo.svg',
                 company: 'Matillion',
                 bg_src: '/images/ds.png',
@@ -128,8 +127,8 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
               },
               {
                 id: 'schemas',
-                title: 'Turning an anecdotal feature request into a validated, user-driven strategy',
-                description: <>Securing stakeholder buy-in to validate a time-sensitive 'quick-win' request for with research, leading to refined reshape priorities and merge workflows for aligned business outcomes. <span className="font-bold">Increased stakeholder confidence by 12.3%</span></>,
+                title: 'Reframing a quick-win request into a user-validated strategy',
+                description: <>A stakeholder asked for a search bar. I asked why. A month of research prevented the wrong thing from being built and redirected the roadmap toward the real problem. <span className="font-bold">Stakeholder confidence up 12.3%.</span></>,
                 logo_src: '/images/matillion-logo.svg',
                 company: 'Matillion',
                 bg_src: '/images/schema_bg.png',
