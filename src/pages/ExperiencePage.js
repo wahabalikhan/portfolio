@@ -15,7 +15,7 @@ const experience = [
       'Joined an in-progress AI-assisted design workflow initiative and contributed to getting it from a half-built process to a documented, team-wide workflow, working through setup, debugging, and refining the step-by-step guide collaboratively with another designer.',
       'Worked through environment setup hands-on: resolving Docker configuration issues, debugging dependency errors, and feeding solutions back into the documentation so the process was repeatable for others.',
       'Took part in a team workshop mapping AI into design workflows, contributing to how the team understood and adopted the new process.',
-      'Used the workflow to ship real changes — making code and copy changes via VS Code and Claude Code, going through engineering review, passing tests, and seeing changes merged to production in front of customers.',
+      'Used the workflow to ship real changes: making code and copy changes via VS Code and Claude Code, going through engineering review, passing tests, and seeing changes merged to production in front of customers.',
       'Contributed to the browser-to-Figma process, grounding design work in live product pages rather than rebuilding from memory.',
     ],
   },
@@ -50,7 +50,7 @@ const experience = [
 
 const testimonials = [
   {
-    highlight: 'Thinking of hiring Wahab? Smart move — but make sure you have space for his inevitable growth.',
+    highlight: 'Thinking of hiring Wahab? Smart move, but make sure you have space for his inevitable growth.',
     quote: 'He was fundamental in design system work that enabled our team to build and ship consistent products faster. Many, including myself and our Principal UXD, were consistently surprised by his ability to immediately demonstrate rapid new learnings in his outputs.',
     name: 'Craig Barron',
     role: 'Experience Design Leader (ex-Matillion, hired and managed Wahab)',
@@ -66,7 +66,7 @@ const testimonials = [
     avatar: '/images/adam.jpeg',
   },
   {
-    highlight: 'I was particularly impressed by his initiative in developing a design system for one of our products that lacked one — demonstrating strategic thinking and a great eye for process improvement.',
+    highlight: 'I was particularly impressed by his initiative in developing a design system for one of our products that lacked one, demonstrating strategic thinking and a great eye for process improvement.',
     quote: 'Wahab brought a refreshing perspective to our team, consistently demonstrating thoughtfulness, curiosity, and a growth mindset. His self-learning skills enabled him to quickly understand complex topics and make a meaningful impact on whichever project he worked on.',
     name: 'José Viso',
     role: 'Staff Product Designer at Snowplow (senior colleague at Matillion)',
@@ -78,7 +78,7 @@ const testimonials = [
 export default function ExperiencePage() {
   usePageTitle('Experience');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 relative">
+    <div className="max-w-3xl mx-auto px-6 py-16 relative experience-page">
       <CommentPins page="experience" showPresets={false} />
       <h1 className="text-3xl font-bold mb-10 text-gray-900">Experience</h1>
 
@@ -161,7 +161,7 @@ export default function ExperiencePage() {
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               />
               <p className="text-gray-900 font-semibold">
-                {t.name} <span className="text-gray-500 font-normal">— {t.role}</span>
+                {t.name}<span className="text-gray-500 font-normal">, {t.role}</span>
               </p>
             </div>
             <a
