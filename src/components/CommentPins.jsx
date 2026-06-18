@@ -488,6 +488,14 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
         if (payload.id === sessionId) return;
         setCursors(prev => ({ ...prev, [payload.id]: payload }));
       })
+      .on('broadcast', { event: 'pin_position_update' }, ({ payload }) => {
+        if (!payload?.id) return;
+        if (payload.id === 'annotation') {
+          setAnnotationPos({ x_pct: payload.x_pct, y_pct: payload.y_pct });
+        } else {
+          setPresetPositions(prev => ({ ...prev, [payload.id]: { x_pct: payload.x_pct, y_pct: payload.y_pct } }));
+        }
+      })
       .on('broadcast', { event: 'card_delete' }, ({ payload }) => {
         setComments(prev => prev.filter(c => c.id !== payload.id));
       })
@@ -736,6 +744,10 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
           const newPos = { x_pct: pos.x_pct, y_pct: pos.y_pct };
           setAnnotationPos(newPos);
           if (isOwnerRef.current) {
+            const ch = channelRef.current;
+            if (ch?.state === 'joined') {
+              ch.send({ type: 'broadcast', event: 'pin_position_update', payload: { id: 'annotation', x_pct: newPos.x_pct, y_pct: newPos.y_pct } });
+            }
             supabase.from('pin_positions').upsert(
               { id: 'annotation', x_pct: newPos.x_pct, y_pct: newPos.y_pct, type: 'annotation', page, updated_at: new Date().toISOString() },
               { onConflict: 'id' }
@@ -759,6 +771,10 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
             setPresetPositions(prev => ({ ...prev, [meta.id]: { x_pct: finalX, y_pct: finalY } }));
             if (isOwnerRef.current) {
               const capturedId = meta.id;
+              const ch = channelRef.current;
+              if (ch?.state === 'joined') {
+                ch.send({ type: 'broadcast', event: 'pin_position_update', payload: { id: capturedId, x_pct: finalX, y_pct: finalY } });
+              }
               supabase.from('pin_positions').upsert(
                 { id: capturedId, x_pct: finalX, y_pct: finalY, type: 'preset', page, updated_at: new Date().toISOString() },
                 { onConflict: 'id' }
