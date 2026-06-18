@@ -109,6 +109,7 @@ const overlayStyle = (mode, height) => ({
   height: height > 0 ? `${height}px` : '100%',
   zIndex: 30,
   pointerEvents: mode === 'comment' ? 'auto' : 'none',
+  cursor: mode === 'comment' ? 'copy' : 'default',
 });
 
 // Converts content-relative x_pct and page-relative y_pct to absolute pixel positions
@@ -584,12 +585,6 @@ export default function CommentPins({ page, activeTab }) {
     return () => window.removeEventListener('mousemove', onMove);
   }, []);
 
-  // Reset overlay cursor whenever mode changes.
-  useEffect(() => {
-    if (!overlayRef.current) return;
-    overlayRef.current.style.cursor = mode === 'comment' ? 'not-allowed' : 'default';
-  }, [mode]);
-
   useEffect(() => {
     if (!expandedId) return;
     const close = (e) => {
@@ -1046,6 +1041,29 @@ export default function CommentPins({ page, activeTab }) {
         const y = cached ? cached.y_pct : pin.y_pct;
         return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token);
       })}
+
+      {!hidden && cWidth > 0 && (
+        <div
+          className="floating-annotation"
+          style={{
+            position: 'absolute',
+            left: `${cLeft + 0.15 * cWidth}px`,
+            top: `${cAbsTop + 0.45 * cHeight}px`,
+            transform: 'translate(-50%, -50%) rotate(-2deg)',
+            pointerEvents: 'none',
+            zIndex: 31,
+            userSelect: 'none',
+          }}
+        >
+          <div>got thoughts?</div>
+          <div>drop a comment</div>
+          <div>anywhere on the page ↓</div>
+          <svg width="56" height="44" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '2px 0 0 8px' }}>
+            <path d="M 8 6 C 4 18 4 30 18 36" strokeWidth="2" strokeLinecap="round" fill="none" stroke="currentColor" />
+            <path d="M 12 32 L 18 38 L 24 32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" stroke="currentColor" />
+          </svg>
+        </div>
+      )}
 
       {Object.entries(cursors).map(([id, c]) => (
         <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, cAbsTop, cHeight)}>
