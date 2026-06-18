@@ -1256,7 +1256,7 @@ export default function CommentPins({ page, activeTab }) {
   if (isMobile) {
     return mobileToastVisible ? (
       <div className={`mobile-toast${mobileToastFading ? ' mobile-toast-out' : ''}`}>
-        <span>✨ More fun on desktop — drop comments, see who else is here.</span>
+        <span>✨ More fun on desktop: drop comments and see who else is here.</span>
         <button className="mobile-toast-close" onClick={dismissToast} aria-label="Dismiss">
           <X size={14} />
         </button>
