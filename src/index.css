@@ -83,7 +83,6 @@ select {
 
 .nav-link-active::after {
   width: 100%;
-  transition: none;
 }
 
 html.dark .nav-link { color: #9ca3af; }

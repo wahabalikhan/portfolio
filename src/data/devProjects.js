@@ -6,7 +6,7 @@ export const devProjectMeta = {
     icon: IconCode,
     accent: 'violet',
     title: 'Portfolio',
-    description: 'A live, AI-assisted personal site — designed, coded, and shipped through conversational prompts from layout to deployment.',
+    description: 'A live, AI-assisted personal site: designed, coded, and shipped through conversational prompts from layout to deployment.',
     tech: ['React', 'Tailwind CSS', 'Vite'],
   },
   'escape-game': {

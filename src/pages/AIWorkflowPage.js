@@ -37,7 +37,7 @@ export default function AIWorkflowPage() {
                             ⚠️ <span className='font-bold' style={{ color: '#374151' }}>Design and code have always run on parallel tracks.</span>
                         </p>
                         <p className="mb-6" style={{ color: '#374151' }}>
-                            At Adverity, an initiative was already underway to close that gap — to bring designers closer to the codebase and reduce the friction between design intent and what actually ships. The workflow existed in draft form. The step-by-step guide existed. The goal was clear. Getting it to actually work, consistently, across different machines and setups, was the harder part.
+                            At Adverity, an initiative was already underway to close that gap, bringing designers closer to the codebase and reducing the friction between design intent and what actually ships. The workflow existed in draft form. The step-by-step guide existed. The goal was clear. Getting it to actually work, consistently, across different machines and setups, was the harder part.
                         </p>
                         <p style={{ color: '#374151' }}>
                             That's where I came in.
@@ -46,7 +46,7 @@ export default function AIWorkflowPage() {
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">My Role</h3>
-                    <p className="text-gray-700 leading-relaxed mb-2">I joined this initiative halfway through, collaborating with a dedicated designer who had already been laying the groundwork. My contribution was in getting the workflow from "almost there" to actually working — and then using it on real work.</p>
+                    <p className="text-gray-700 leading-relaxed mb-2">I joined this initiative halfway through, collaborating with a dedicated designer who had already been laying the groundwork. My contribution was in getting the workflow from "almost there" to actually working, and then using it on real work.</p>
                     <p className="text-gray-700 leading-relaxed mb-2">Specifically:</p>
                     <p className="text-gray-700 mb-4">
                         <ul className='list-disc list-inside'>
