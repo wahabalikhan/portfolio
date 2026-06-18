@@ -1146,7 +1146,7 @@ export default function CommentPins({ page, activeTab }) {
         return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token);
       })}
 
-      {!hidden && cWidth > 0 && (() => {
+      {page === 'home' && !hidden && cWidth > 0 && (() => {
         const annX = (annotationDragging && annotationDragPos) ? annotationDragPos.x_pct : annotationPos.x_pct;
         const annY = (annotationDragging && annotationDragPos) ? annotationDragPos.y_pct : annotationPos.y_pct;
         return (
