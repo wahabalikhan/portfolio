@@ -101,7 +101,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
               {
                 id: 'ai-workflow',
                 title: 'The Designer Who Ships Code',
-                description: <>How I built a closer-to-code design workflow using Claude Code, VS Code, and Git, moving between Figma and a live codebase to prototype and validate design decisions against the real product, with engineers reviewing changes before anything shipped.</>,
+                description: <>How I contributed to bringing a closer-to-code design workflow to life at Adverity, collaborating on setup, getting it from half-built to team-wide, and using it to ship real changes through engineering review to production.</>,
                 logo_src: '/images/adverity.jpg',
                 company: 'Adverity',
                 bg_src: '/images/ai_thumbnail.png',
