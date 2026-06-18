@@ -309,7 +309,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
     const div = document.createElement('div');
     div.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:39;overflow:visible;';
     document.body.appendChild(div);
-    console.log('[FixedPortal] created and appended:', div, 'in DOM:', document.body.contains(div));
     setFixedRoot(div);
     return () => { document.body.removeChild(div); };
   }, []);
@@ -330,21 +329,23 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   // Measure the content container's position and dimensions.
   // Uses functional state update with equality check to avoid re-renders when nothing changed.
   const updateContentMetrics = () => {
-    const rect = contentAnchorRef.current?.getBoundingClientRect();
-    if (!rect || rect.width === 0) return;
+    const el = contentAnchorRef.current?.parentElement;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0) return;
     const newWidth  = rect.width;
-    const newAbsTop = rect.top + window.scrollY;
-    const newHeight = contentAnchorRef.current?.parentElement?.getBoundingClientRect().height ?? 0;
+    const newAbsTop = contentAnchorRef.current.getBoundingClientRect().top + window.scrollY;
+    const newHeight = rect.height;
     // Derive contentLeft from window.innerWidth instead of rect.left.
     // getBoundingClientRect().left differs between browsers (Chrome vs Safari) due to
     // scrollbar-width handling. For a centred max-width container this is always correct.
     const newLeft = (window.innerWidth - newWidth) / 2;
+    const r = Math.round;
     setContentMetrics(prev => {
-      if (prev.left === newLeft && prev.width === newWidth && prev.absTop === newAbsTop && prev.height === newHeight) return prev;
+      if (r(prev.left) === r(newLeft) && r(prev.width) === r(newWidth) && r(prev.absTop) === r(newAbsTop) && r(prev.height) === r(newHeight)) return prev;
       return { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight };
     });
     contentMetricsRef.current = { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight };
-    console.log('[CommentPins] contentLeft fixed:', newLeft, 'window.innerWidth:', window.innerWidth, 'contentWidth:', newWidth);
   };
 
   useLayoutEffect(() => { updateContentMetrics(); }, []);
@@ -1215,8 +1216,7 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
   // Preset pins and annotation live in a separate position:fixed portal with no scroll
   // transform, so they stay at stable viewport positions regardless of scroll or tab switch.
   const fixedOverlay = (
-    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-      onMouseEnter={() => console.log('[FixedPortal] mouse entered fixed overlay')}>
+    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
       {!hidden && showPresets && PRESET_PINS.filter(pin =>
         !pin.tabs || pin.tabs.includes(activeTab) || fadingOutIds.has(pin.id)
       ).map((pin, i) => {
@@ -1406,7 +1406,6 @@ export default function CommentPins({ page, showPresets = true, activeTab }) {
       />
 
       {portalRoot && createPortal(overlay, portalRoot)}
-      {(() => { console.log('[FixedPortal] rendering portal, fixedRoot:', fixedRoot, 'isNull:', fixedRoot === null); return null; })()}
       {fixedRoot && createPortal(fixedOverlay, fixedRoot)}
 
       {/* Toolbar */}
