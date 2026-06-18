@@ -9,18 +9,6 @@ import LinkedInPostCard from '../components/LinkedInPostCard';
 import GitHubRepoCard from '../components/GitHubRepoCard';
 import { usePageTitle } from '../hooks/usePageTitle';
 
-// HARDCODED PREVIEW — remove this card once GitHub API is confirmed working in production
-const PREVIEW_CARD = {
-  id: '__preview__',
-  name: 'portfolio',
-  description: 'Coding my portfolio live! Built with Vite + React, Supabase for real-time comments, and deployed via GitHub.',
-  language: 'JavaScript',
-  topics: ['react', 'vite', 'supabase'],
-  updated: new Date(Date.now() - 5 * 3600 * 1000).toISOString(),
-  fork: false,
-  parent: null,
-  github: 'https://github.com/wahabalikhan/portfolio',
-};
 
 function GitHubMark() {
   return (
@@ -209,17 +197,6 @@ The result: <span className="font-bold">34% more commits</span> and <span classN
             )}
 
             <div className="gh-grid">
-              <GitHubRepoCard
-                key={PREVIEW_CARD.id}
-                name={PREVIEW_CARD.name}
-                description={PREVIEW_CARD.description}
-                language={PREVIEW_CARD.language}
-                topics={PREVIEW_CARD.topics}
-                updated={PREVIEW_CARD.updated}
-                fork={PREVIEW_CARD.fork}
-                parent={PREVIEW_CARD.parent}
-                url={PREVIEW_CARD.github}
-              />
               {!loading && repos.map((repo) => (
                 <GitHubRepoCard
                   key={repo.id}
