@@ -11,7 +11,9 @@ const experience = [
     dates: 'Apr 2026 – Jun 2026',
     location: 'Remote / Vienna, Austria',
     context: 'Data and marketing intelligence platform',
-    paragraph: 'Designed AI-powered features and built a closer-to-code workflow using Claude Code, VS Code, and version control, moving between Figma and the live codebase to prototype and validate design decisions against the real product, with changes reviewed by engineers before shipping.',
+    bullets: [
+      'Designed AI-powered features and built a closer-to-code workflow using Claude Code, VS Code, and version control, moving between Figma and the live codebase to prototype and validate design decisions against the real product, with changes reviewed by engineers before shipping.',
+    ],
   },
   {
     title: 'Product Designer',
@@ -21,7 +23,12 @@ const experience = [
     location: 'Manchester, UK',
     context: 'Data pipeline and ETL platform for data engineers',
     progression: 'Joined at junior level and progressed to mid-level over just under five years',
-    paragraph: 'Designed the Git diff interface for high-risk pipeline actions, achieving a 34% increase in successful commits and 15% reduction in error recoveries. Built the ETL design system from scratch as sole designer, reducing design task completion time by 36.1%. Led research that reframed a stakeholder quick-win request into a validated service improvement, boosting stakeholder confidence by 12.3%. Progressed from junior to mid-level over five years, mentoring junior designers and working closely with engineering throughout.',
+    bullets: [
+      'Designed the Git diff interface for high-risk pipeline actions, achieving a 34% increase in successful commits and 15% reduction in error recoveries.',
+      'Built the ETL design system from scratch as sole designer, reducing design task completion time by 36.1%.',
+      'Led research that reframed a stakeholder quick-win request into a validated service improvement, boosting stakeholder confidence by 12.3%.',
+      'Progressed from junior to mid-level over five years, mentoring junior designers and working closely with engineering throughout.',
+    ],
   },
   {
     title: 'UI/UX Design Intern',
@@ -30,7 +37,10 @@ const experience = [
     dates: 'Oct 2020 – Jan 2021',
     location: 'London, UK',
     context: 'Digital agency, first professional design role',
-    paragraph: 'First professional design role. Supported UX research, prototyping, and iteration for client websites and digital campaigns, collaborating with senior designers to improve user journeys and task completion rates.',
+    bullets: [
+      'First professional design role.',
+      'Supported UX research, prototyping, and iteration for client websites and digital campaigns, collaborating with senior designers to improve user journeys and task completion rates.',
+    ],
   },
 ];
 
