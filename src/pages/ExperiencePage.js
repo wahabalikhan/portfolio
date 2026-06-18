@@ -11,11 +11,7 @@ const experience = [
     dates: 'Apr 2026 – Jun 2026',
     location: 'Remote / Vienna, Austria',
     context: 'Data and marketing intelligence platform',
-    bullets: [
-      'Designed AI-powered features for a data and marketing intelligence platform used by analytics and BI teams, working across discovery, interaction design, and delivery.',
-      'Built a closer-to-code design workflow using Claude Code, VS Code, and version control (Git), moving between Figma and the live codebase to prototype and validate design decisions against the real product, with changes reviewed by engineers before shipping.',
-      'Collaborated with engineering to ensure design intent translated cleanly into production UI throughout.',
-    ],
+    paragraph: 'Designed AI-powered features and built a closer-to-code workflow using Claude Code, VS Code, and version control, moving between Figma and the live codebase to prototype and validate design decisions against the real product, with changes reviewed by engineers before shipping.',
   },
   {
     title: 'Product Designer',
@@ -25,37 +21,7 @@ const experience = [
     location: 'Manchester, UK',
     context: 'Data pipeline and ETL platform for data engineers',
     progression: 'Joined at junior level and progressed to mid-level over just under five years',
-    subtiers: [
-      {
-        label: 'Mid-level Product Designer, May 2025 – Apr 2026',
-        bullets: [
-          'Led end-to-end design of complex, developer-facing features across the full lifecycle: discovery, problem framing, interaction design, prototyping, usability testing, and implementation support.',
-          'Designed a side-by-side comparison interface for high-risk pipeline actions, making changes transparent and reviewable before actioning. Achieved a 34% increase in successful commits and 15% reduction in error recoveries. Prototyped directly with engineers to validate feasibility and refine the interaction model under real technical constraints.',
-          'Led design for pipeline variables and schema features, complex multi-step workflows for technical users where clarity, error prevention, and system transparency were critical. Conducted user interviews that reframed scope from a surface feature to a broader service improvement, boosting stakeholder confidence by 12.3% and preventing misdirected development effort.',
-          'Partnered closely with front-end engineers on interaction behaviours, states, edge cases, and technical constraints, attending implementation reviews regularly to close the gap between design intent and shipped product.',
-          'Mentored junior designers and placement students through design critiques, pairing sessions, and guidance on interaction design, accessibility, and systems thinking.',
-          'Used usability testing, behavioural analytics, and support data to drive iterative improvements, grounding design decisions in evidence throughout.',
-        ],
-      },
-      {
-        label: 'Associate Product Designer, Sep 2023 – May 2025',
-        bullets: [
-          'Took end-to-end ownership of features from concept through release across multiple core workflows, balancing user needs, technical feasibility, and delivery speed in a fast-moving agile environment.',
-          'Translated user research findings into actionable design decisions, validated through structured usability testing and iterated based on observed behaviour and analytics data.',
-          'Worked in a multi-disciplinary team alongside product managers, engineers, and researchers, driving design decisions forward while staying closely aligned with engineering on implementation quality and handover.',
-          'Took ownership of evolving and maintaining the ETL design system at scale, expanding component coverage, improving accessibility (WCAG 2.1) compliance, and onboarding other designers and engineers onto the system as it matured.',
-        ],
-      },
-      {
-        label: 'Junior Product Designer, Jul 2021 – Sep 2023',
-        bullets: [
-          'Built Matillion\'s ETL design system from scratch as the sole designer: components, variants, auto layout, patterns, edge cases, and documentation. Reduced design task completion time by 36.1%, measured through structured before/after task testing with the design team. Mapped components to the Sencha GXT framework and introduced custom components where the framework fell short.',
-          'Embedded UX culture into the engineering team. Ran sessions on UX fundamentals, introduced the design system as a shared working resource, and established a rhythm where engineers engaged with design thinking earlier in the process.',
-          'Led interaction design for key developer-facing features, simplifying complex multi-step workflows for technical users.',
-          'Conducted usability testing and iterated designs based on observed user behaviour, helping embed an evidence-based approach to design decisions across the team.',
-        ],
-      },
-    ],
+    paragraph: 'Designed the Git diff interface for high-risk pipeline actions, achieving a 34% increase in successful commits and 15% reduction in error recoveries. Built the ETL design system from scratch as sole designer, reducing design task completion time by 36.1%. Led research that reframed a stakeholder quick-win request into a validated service improvement, boosting stakeholder confidence by 12.3%. Progressed from junior to mid-level over five years, mentoring junior designers and working closely with engineering throughout.',
   },
   {
     title: 'UI/UX Design Intern',
@@ -64,10 +30,7 @@ const experience = [
     dates: 'Oct 2020 – Jan 2021',
     location: 'London, UK',
     context: 'Digital agency, first professional design role',
-    bullets: [
-      'Supported UX research, prototyping, and iteration for client websites and digital campaigns.',
-      'Collaborated with senior designers to improve user journeys and task completion rates.',
-    ],
+    paragraph: 'First professional design role. Supported UX research, prototyping, and iteration for client websites and digital campaigns, collaborating with senior designers to improve user journeys and task completion rates.',
   },
 ];
 
@@ -136,7 +99,9 @@ export default function ExperiencePage() {
                 </p>
               )}
 
-              {job.subtiers ? (
+              {job.paragraph ? (
+                <p className="text-gray-700 leading-relaxed">{job.paragraph}</p>
+              ) : job.subtiers ? (
                 <div className="space-y-5">
                   {job.subtiers.map((tier, ti) => (
                     <div key={ti}>
