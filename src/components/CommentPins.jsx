@@ -824,7 +824,7 @@ export default function CommentPins({ page, activeTab }) {
     const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
     const x_pct = ((e.clientX - m.left) / m.width) * 100;
     if (x_pct < minX || x_pct > maxX) return;
-    const y_pct = m.height > 0 ? ((e.pageY - m.absTop) / m.height) * 100 : 0;
+    const y_pct = (e.pageY / document.documentElement.scrollHeight) * 100;
     setDraft({ x_pct, y_pct });
     const savedRealName = isOwner ? 'Wahab' : (() => { try { return localStorage.getItem('wahab_visitor_name') || ''; } catch { return ''; } })();
     setDraftAuthor(savedRealName); setDraftBody('');
@@ -909,8 +909,8 @@ export default function CommentPins({ page, activeTab }) {
     return isMobile ? Math.max(-1, Math.min(1, deg)) : deg;
   };
 
-  const onCardEnter = (id) => { if (!isTouchDevice() && !editingId) setExpandedId(id); };
-  const onCardLeave = (id) => { if (!isTouchDevice() && !editingId) { setExpandedId(null); } };
+  const onCardEnter = (id) => { if (!isTouchDevice()) setExpandedId(id); };
+  const onCardLeave = (id) => { if (!isTouchDevice()) setExpandedId(null); };
   const onCardClick = (e, id) => {
     e.stopPropagation();
     const start = dragStartRef.current;
@@ -946,7 +946,7 @@ export default function CommentPins({ page, activeTab }) {
     const canEdit    = isOwner || isOwnCard;
 
     const wrapperStyle = {
-      ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, cAbsTop, cHeight),
+      ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, 0, document.documentElement.scrollHeight),
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
@@ -1096,7 +1096,7 @@ export default function CommentPins({ page, activeTab }) {
         const draftY = (draggingId === '__draft__' && dragPos) ? dragPos.y_pct : draft.y_pct;
         return (
         <div style={{
-          ...cardWrapperStyle(draftX, draftY, 0, cLeft, cWidth, cAbsTop, cHeight),
+          ...cardWrapperStyle(draftX, draftY, 0, cLeft, cWidth, 0, document.documentElement.scrollHeight),
           cursor: draggingId === '__draft__' ? 'grabbing' : 'default', zIndex: 40,
         }}>
           <div className="cc-card cc-draft" onClick={(e) => e.stopPropagation()}>
