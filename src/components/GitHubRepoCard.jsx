@@ -91,21 +91,16 @@ function GitHubCardIcon() {
   );
 }
 
-function JavaScriptIcon() {
-  return (
-    <svg width={IC} height={IC} viewBox="0 0 24 24">
-      <rect width="24" height="24" rx="2" fill="#F7DF1E"/>
-      <path fill="#323330" d="M7 17c.4.8.9 1.4 2.1 1.4 1 0 1.6-.5 1.6-1.2 0-.9-.6-1.2-1.7-1.6l-.7-.3C6.6 14.6 5.5 13.7 5.5 11.8c0-1.8 1.3-3.1 3.3-3.1 1.4 0 2.4.5 3.1 1.8l-1.7 1.1c-.4-.6-.8-.9-1.4-.9-.6 0-1 .4-1 .9 0 .6.4.9 1.3 1.3l.7.3c2 .8 3.1 1.8 3.1 3.8 0 2.2-1.7 3.3-3.9 3.3-2.2 0-3.6-1-4.2-2.4L7 17zm6.1.3c.3.6.7 1.2 1.6 1.2.7 0 1.2-.3 1.2-1.5V9h2.1v8c0 2.5-1.5 3.7-3.6 3.7-1.9 0-3-1-3.6-2.1l2.3-1.3z"/>
-    </svg>
-  );
-}
-
 // Brand logos sourced from devicons CDN
 const CDN = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons';
 
+function JavaScriptIcon() {
+  return <img src={`${CDN}/javascript/javascript-original.svg`} width={IC} height={IC} alt="" style={{ display: 'block' }} />;
+}
+
 function PHPIcon()           { return <img src={`${CDN}/php/php-original.svg`}                     width={IC} height={IC} alt="" style={{ display: 'block' }} />; }
 function MySQLIcon()         { return <img src={`${CDN}/mysql/mysql-original.svg`}                 width={IC} height={IC} alt="" style={{ display: 'block' }} />; }
-function XAMPPIcon()         { return <img src={`${CDN}/xampp/xampp-original.svg`}                 width={IC} height={IC} alt="" style={{ display: 'block' }} />; }
+function XAMPPIcon()         { return <img src="https://cdn.simpleicons.org/xampp"                             width={IC} height={IC} alt="" style={{ display: 'block' }} />; }
 function JavaIcon()          { return <img src={`${CDN}/java/java-original.svg`}                   width={IC} height={IC} alt="" style={{ display: 'block' }} />; }
 function IntelliJIcon()      { return <img src={`${CDN}/intellij/intellij-original.svg`}           width={IC} height={IC} alt="" style={{ display: 'block' }} />; }
 function StackOverflowIcon() { return <img src={`${CDN}/stackoverflow/stackoverflow-original.svg`} width={IC} height={IC} alt="" style={{ display: 'block' }} />; }
@@ -166,7 +161,7 @@ export default function GitHubRepoCard({ name, description, language, langColor:
       {description && <p className="gh-description">{description}</p>}
 
       {topics.length > 0 && (
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', marginTop: '8px' }}>
           {topics.map((key) => {
             const tool = TOOL_ICON_MAP[key];
             if (!tool) return null;
@@ -180,16 +175,6 @@ export default function GitHubRepoCard({ name, description, language, langColor:
           })}
         </div>
       )}
-
-      <div className="gh-footer">
-        {language && (
-          <span className="gh-lang">
-            <span className="gh-lang-dot" style={{ backgroundColor: langColor }} />
-            {language}
-          </span>
-        )}
-        {updatedText && <span className="gh-updated">{updatedText}</span>}
-      </div>
 
       <div style={{ paddingTop: '0.25rem' }}>
         <span className="gh-view-link">View on GitHub ↗</span>

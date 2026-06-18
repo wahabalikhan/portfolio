@@ -28,7 +28,7 @@ export default function DesignSystemsBlogPage() {
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          Good documentation isn't just about listing props and variants. It's about capturing the why behind design decisions. When should you use a modal versus a drawer? What's the difference between primary and secondary buttons in context? These aren't just technical questions—they're about design intent.
+          Good documentation isn't just about listing props and variants. It's about capturing the why behind design decisions. When should you use a modal versus a drawer? What's the difference between primary and secondary buttons in context? These aren't just technical questions. They're about design intent.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
