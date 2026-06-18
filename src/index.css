@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
 
 * {
   margin: 0;
@@ -17,6 +16,7 @@ html.dark {
 }
 
 body {
+  position: relative;
   background-color: #F8FAFD;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -721,9 +721,9 @@ html.dark .theme-toggle-button:hover {
 /* Default: appears above (for bottom toolbar) */
 .ftip {
   position: absolute;
-  bottom: calc(100% + 14px);
+  bottom: calc(100% + 10px);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(4px);
   background: #111827;
   color: #fff;
   font-size: 12px;
@@ -737,7 +737,7 @@ html.dark .theme-toggle-button:hover {
   align-items: center;
   gap: 6px;
   opacity: 0;
-  transition: opacity 0.12s ease, bottom 0.12s ease;
+  transition: opacity 0.12s ease, transform 0.12s ease;
   z-index: 200;
 }
 
@@ -754,15 +754,14 @@ html.dark .theme-toggle-button:hover {
 
 .ftip-wrap:hover .ftip {
   opacity: 1;
-  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Variant: appears below (for top nav / theme toggle) */
 .ftip-below {
   bottom: auto;
-  top: calc(100% + 14px);
-  transform: translateX(-50%);
-  transition: opacity 0.12s ease, top 0.12s ease;
+  top: calc(100% + 10px);
+  transform: translateX(-50%) translateY(-4px);
 }
 
 .ftip-below::after {
@@ -773,7 +772,7 @@ html.dark .theme-toggle-button:hover {
 }
 
 .ftip-wrap:hover .ftip-below {
-  top: calc(100% + 10px);
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Keyboard key badge */
@@ -1226,8 +1225,14 @@ html.dark .bg-blue-50 .text-gray-700 {
 
 /* Keyframe animations */
 @keyframes fadeInUp {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes liftOnHover {
@@ -1247,8 +1252,6 @@ html.dark .bg-blue-50 .text-gray-700 {
 .dev-tile {
   animation: fadeInUp 0.6s ease-out forwards;
   opacity: 0;
-  position: relative;
-  top: 0;
 }
 
 /* Home page only: toolbar clearance below footer */
@@ -1334,9 +1337,8 @@ html.dark .mobile-toast-close { color: #6b7280; }
 /* Card hover lift effect */
 .case-study-link:hover,
 .dev-tile:hover {
-  top: -8px;
-  transition: top 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 20px 12px -8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  transition: transform 0.3s ease;
 }
 
 /* Image Modal Styles */
