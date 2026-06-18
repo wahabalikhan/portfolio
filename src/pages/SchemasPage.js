@@ -21,9 +21,9 @@ export default function SchemasPage() {
         Sometimes the most important design work happens before design. This project is about pushing back with purpose, validating a feature request nobody had questioned, and reshaping a roadmap based on what users actually needed.
       </p>
 
-      <p className="text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> August 2024 - September 2024 ~ 1 month</p>
-      <p className="text-gray-600 mb-1"><span className="font-semibold">Team:</span> Designer working with Product Manager, Product Owner, and 1 additional Product Designer</p>
-      <p className="text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer. Research, strategy, metrics, stakeholder playback.</p>
+      <p className="text-sm text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> August 2024 - September 2024 ~ 1 month</p>
+      <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Team:</span> Designer working with Product Manager, Product Owner, and 1 additional Product Designer</p>
+      <p className="text-sm text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer. Research, strategy, metrics, stakeholder playback.</p>
 
 
       <img
