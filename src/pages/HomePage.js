@@ -19,7 +19,7 @@ const HARDCODED_REPOS = [
     url: 'https://github.com/wahabalikhan/portfolio',
   },
   {
-    name: 'Insurance Brokerage System',
+    name: 'insurance-brokerage-management-system',
     description: 'Final year CS project. I designed the UI in Figma first, then built the whole thing: a PHP and MySQL insurance platform with role-based access for admins, brokers, and consumers. Policy management, bookings, and quotes all in one system. Building it end-to-end taught me how design decisions become engineering constraints, which shapes how I work with engineers now.',
     language: 'PHP',
     langColor: '#4F5D95',
@@ -71,7 +71,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
       }, 1500);
     };
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 relative home-page">
+    <div className="max-w-3xl mx-auto px-6 py-16 relative home-page" role="main">
       <CommentPins page="home" activeTab={activeTab} />
       <div className="flex items-stretch gap-4 mb-6">
         <img
