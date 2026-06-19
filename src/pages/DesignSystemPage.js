@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
+import CaseStudyMeta from '../components/CaseStudyMeta';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -10,7 +11,7 @@ export default function DesignSystemPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   usePageTitle('From Framework to Design System');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel">
+    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
@@ -21,10 +22,12 @@ export default function DesignSystemPage() {
         36.1% reduction in design task completion time, achieved by building Matillion's ETL design system from scratch: components, patterns, and documentation, while embedding UX practice into how the engineering team worked.
       </p>
 
-      <p className="text-sm text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> February 2022 - June 2022 ~ 5 months</p>
-      <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Team:</span> Solo. Designed, built, tested, and documented end-to-end.</p>
-      <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Role:</span> Product Designer. Design system architecture, component design, UX education, engineering enablement.</p>
-      <p className="text-sm text-gray-600 mb-4"><span className="font-semibold">Stack:</span> Figma (Auto Layout, Variants, Component Properties), Sencha GXT (Java/ExtJS)</p>
+      <CaseStudyMeta items={[
+        { label: 'Timeline', value: 'February 2022 – June 2022 · 5 months' },
+        { label: 'Team', value: 'Solo. Designed, built, tested, and documented end-to-end.' },
+        { label: 'Role', value: 'Product Designer. Design system architecture, component design, UX education, engineering enablement.' },
+        { label: 'Stack', value: 'Figma (Auto Layout, Variants, Component Properties), Sencha GXT (Java/ExtJS)' },
+      ]} />
 
       <img
         src="/images/ds.png"
