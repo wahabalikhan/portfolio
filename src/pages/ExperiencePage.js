@@ -78,7 +78,7 @@ const testimonials = [
 export default function ExperiencePage() {
   usePageTitle('Experience');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 relative experience-page">
+    <div className="max-w-3xl mx-auto px-6 py-16 relative experience-page tab-panel" role="main">
       <CommentPins page="experience" showPresets={false} />
       <h1 className="text-3xl font-bold mb-10 text-gray-900">Experience</h1>
 

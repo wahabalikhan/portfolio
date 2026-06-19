@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
+import BlogMeta from '../components/BlogMeta';
 import { blogPosts } from '../data/blogPosts';
 import Footer from '../components/Footer';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -9,14 +10,14 @@ export default function DesignSystemsBlogPage() {
   const navigate = useNavigate();
   usePageTitle('Design systems and the importance of documentation');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel">
+    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
       <BackButton onClick={() => navigate(-1)} />
       
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
         Design systems and the importance of documentation
       </h1>
       
-      <p className="text-gray-600 mb-12">March 11, 2024</p>
+      <BlogMeta date="March 11, 2024" />
 
       <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">

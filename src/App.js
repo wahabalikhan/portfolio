@@ -16,7 +16,6 @@ import PageNav from './components/PageNav';
 import NavBrand from './components/NavBrand';
 
 export default function App() {
-  // For tab state on homepage only
   const [activeTab, setActiveTab] = useState('Design');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -40,7 +39,7 @@ export default function App() {
     setIsDarkMode(shouldBeDark);
     applyTheme(shouldBeDark);
   }, []);
-  
+
   const applyTheme = (dark) => {
     if (dark) {
       document.documentElement.classList.add('dark');
@@ -50,17 +49,16 @@ export default function App() {
       localStorage.setItem('theme', 'light');
     }
   };
-  
+
   const toggleTheme = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
     applyTheme(newMode);
   };
-  
-  // ScrollToTop component handles scrolling on route change
+
   return (
     <Router>
-      <div 
+      <div
         className="transition-colors app-root"
         style={{
           backgroundColor: isDarkMode ? '#050f1b' : '#F8FAFD',
