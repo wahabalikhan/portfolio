@@ -26,7 +26,7 @@ export const devProjectMeta = {
   'final-FYP-Insurance_Brokerage_and_Management_System-19001546': {
     icon: IconShieldCheck,
     accent: 'sky',
-    title: 'Insurance Brokerage System',
+    title: 'insurance-brokerage-management-system',
     description: 'A PHP/MySQL platform streamlining policy management, bookings, and quotes between admins, brokers, and customers.',
     tech: ['PHP', 'MySQL', 'SQL'],
   },

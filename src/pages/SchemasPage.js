@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
+import CaseStudyMeta from '../components/CaseStudyMeta';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -10,7 +11,7 @@ export default function SchemasPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   usePageTitle('Reframing a quick-win request into a user-validated strategy');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel">
+    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
@@ -21,9 +22,11 @@ export default function SchemasPage() {
         Sometimes the most important design work happens before design. This project is about pushing back with purpose, validating a feature request nobody had questioned, and reshaping a roadmap based on what users actually needed.
       </p>
 
-      <p className="text-sm text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> August 2024 - September 2024 ~ 1 month</p>
-      <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Team:</span> Designer working with Product Manager, Product Owner, and 1 additional Product Designer</p>
-      <p className="text-sm text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer. Research, strategy, metrics, stakeholder playback.</p>
+      <CaseStudyMeta items={[
+        { label: 'Timeline', value: 'August 2024 – September 2024 · 1 month' },
+        { label: 'Team', value: 'Designer working with Product Manager, Product Owner, and 1 additional Product Designer' },
+        { label: 'Role', value: 'Product Designer. Research, strategy, metrics, stakeholder playback.' },
+      ]} />
 
 
       <img

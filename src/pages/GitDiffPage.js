@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
+import CaseStudyMeta from '../components/CaseStudyMeta';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -10,16 +11,18 @@ export default function GitDiffPage() {
     const [selectedImage, setSelectedImage] = useState(null);
     usePageTitle('How user-centric design improved visibility of user changes');
     return (
-        <div className="max-w-3xl mx-auto px-6 py-16 tab-panel">
+        <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
             <BackButton onClick={() => navigate(-1)} />
 
             <h1 className="text-4xl font-bold mb-2 text-gray-900">
                 Designing confidence into a high-risk engineering workflow
             </h1>
 
-            <p className="text-sm text-gray-600 mt-4"><span className="font-semibold">Timeline:</span> January 2025 - March 2025 ~ 3 months</p>
-            <p className="text-sm text-gray-600 mb-1"><span className="font-semibold">Team:</span> DataOps (PO, Engineers), 1 additional Product Designer</p>
-            <p className="text-sm text-gray-600 mb-4"><span className="font-semibold">Role:</span> Product Designer. Research, strategy, design, testing, metrics.</p>
+            <CaseStudyMeta items={[
+              { label: 'Timeline', value: 'January 2025 – March 2025 · 3 months' },
+              { label: 'Team', value: 'DataOps (PO, Engineers), 1 additional Product Designer' },
+              { label: 'Role', value: 'Product Designer. Research, strategy, design, testing, metrics.' },
+            ]} />
 
             <img
                 src="/images/matillion-bg.png"
