@@ -22,7 +22,7 @@ export default function BuildingPortfolioPage() {
         Building this portfolio, or: what happens when a designer gets too deep into a codebase at 2am
       </h1>
 
-      <BlogMeta date="October 19, 2025" />
+      <BlogMeta date="June 20, 2026" />
       </FadeUp>
 
       <FadeUp delay={100}>
@@ -53,11 +53,15 @@ export default function BuildingPortfolioPage() {
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
+          Since writing this the portfolio has kept evolving. Moved from Vite to Next.js 15. Moved from GoDaddy cPanel to Cloudflare Pages with auto-deploys on every push to main. Debugged a cross-browser positioning issue that cost me a day and taught me more about getBoundingClientRect than I ever wanted to know. The full story is in the Extras tab if you want the unfiltered version.
+        </p>
+
+        <p className="text-gray-700 leading-relaxed mb-6">
           Claude Code did a lot of the implementation heavy lifting. I'd describe what I wanted, review what came back, push back when it wasn't right, and iterate. It felt less like coding and more like designing with a very fast implementation partner. The decisions were mine. The 2am hours were entirely my fault.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          The honest version of vibe coding isn't magic. It's knowing enough to ask the right questions, recognising when the output is wrong, and caring enough about the details to keep going until it feels right. That's not so different from design, really. Just with more terminal errors.
+          The honest version of building with AI isn't magic. It's knowing enough to ask the right questions, recognising when the output is wrong, and caring enough about the details to keep going until it feels right. That's not so different from design, really. Just with more terminal errors.
         </p>
       </div>
 
