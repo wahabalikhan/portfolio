@@ -314,8 +314,8 @@ export default function GitDiffPage() {
 
                 </p>
             </section>
-            <Footer />
             </FadeUp>
+            <Footer />
             <ImageModal
                 isOpen={!!selectedImage}
                 src={selectedImage?.src}

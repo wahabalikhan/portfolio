@@ -267,6 +267,7 @@ export default function DesignSystemPage() {
         </p>
       </section>
 
+      </FadeUp>
       <Footer />
       <ImageModal
         isOpen={!!selectedImage}
@@ -274,7 +275,6 @@ export default function DesignSystemPage() {
         alt={selectedImage?.alt}
         onClose={() => setSelectedImage(null)}
       />
-      </FadeUp>
     </div>
   );
 }

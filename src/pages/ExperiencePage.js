@@ -178,8 +178,8 @@ export default function ExperiencePage() {
         ))}
       </div>
 
-      <Footer />
       </FadeUp>
+      <Footer />
     </div>
   );
 }
