@@ -268,8 +268,8 @@ export default function SchemasPage() {
         </p>
       </section>
 
-      <Footer />
       </FadeUp>
+      <Footer />
       <ImageModal
         isOpen={!!selectedImage}
         src={selectedImage?.src}
