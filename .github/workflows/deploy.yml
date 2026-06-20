@@ -65,7 +65,7 @@ jobs:
       - name: Deploy to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftp.wahabalikhan.com
+          server: 92.205.171.236
           username: dj6u56zxa5lc
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
