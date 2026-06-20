@@ -59,7 +59,8 @@ function GitHubMark() {
   );
 }
 
-export default function HomePage({ activeTab, setActiveTab }) {
+export default function HomePage() {
+    const [activeTab, setActiveTab] = useState('Design');
     usePageTitle();
 
     const [activeTooltip, setActiveTooltip] = useState(null);
@@ -253,7 +254,7 @@ export default function HomePage({ activeTab, setActiveTab }) {
         <section className="border-t border-gray-200 pt-8 pb-0" />
         <h2 className="text-2xl font-bold mb-8 text-gray-900">What's in my head!</h2>
 
-        <div className="space-y-12">
+        <div className="space-y-12" role="feed" aria-label="Blog posts">
           {blogPosts.map((post) => (
             <Link
               key={post.id}
