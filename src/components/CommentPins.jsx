@@ -600,7 +600,7 @@ export default function CommentPins({ page, activeTab }) {
       ch.send({ type: 'broadcast', event: 'cursor', payload: {
         id: sessionId,
         x_pct: ((e.clientX - m.left) / m.width) * 100,
-        y_pct: m.height > 0 ? ((e.pageY - m.absTop) / m.height) * 100 : 0,
+        y_pct: (e.pageY / Y_REFERENCE_HEIGHT) * 100,
         color: cursorColor,
         name: displayNameRef.current,
       }});
@@ -1294,7 +1294,7 @@ export default function CommentPins({ page, activeTab }) {
       })()}
 
       {Object.entries(cursors).map(([id, c]) => (
-        <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, cAbsTop, cHeight)}>
+        <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT)}>
           <MousePointer2 size={20} fill={c.color} fillOpacity={0.25} />
           {c.name && (
             <div style={{

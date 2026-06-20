@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import CaseStudyMeta from '../components/CaseStudyMeta';
+import FadeUp from '../components/FadeUp';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -11,13 +12,16 @@ export default function SchemasPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   usePageTitle('Reframing a quick-win request into a user-validated strategy');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
+    <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+      <FadeUp delay={100}>
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
         Reframing a quick-win request into a user-validated strategy
       </h1>
+      </FadeUp>
 
+      <FadeUp delay={100}>
       <p className="text-lg text-gray-700 mt-4 mb-4 leading-relaxed">
         Sometimes the most important design work happens before design. This project is about pushing back with purpose, validating a feature request nobody had questioned, and reshaping a roadmap based on what users actually needed.
       </p>
@@ -28,14 +32,15 @@ export default function SchemasPage() {
         { label: 'Role', value: 'Product Designer. Research, strategy, metrics, stakeholder playback.' },
       ]} />
 
-
       <img
         src="/images/schema_bg.png"
         alt="Schemas"
         className="w-full rounded-lg mb-8 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
         onClick={() => setSelectedImage({ src: '/images/schema_bg.png', alt: 'Schemas' })}
       />
+      </FadeUp>
 
+      <FadeUp delay={100}>
       <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
 
         <div>
@@ -264,6 +269,7 @@ export default function SchemasPage() {
       </section>
 
       <Footer />
+      </FadeUp>
       <ImageModal
         isOpen={!!selectedImage}
         src={selectedImage?.src}
