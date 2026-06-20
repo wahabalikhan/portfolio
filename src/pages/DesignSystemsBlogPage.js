@@ -89,8 +89,8 @@ export default function DesignSystemsBlogPage() {
           </div>
         </div>
       </div>
-      <Footer />
       </FadeUp>
+      <Footer />
     </div>
   );
 }
