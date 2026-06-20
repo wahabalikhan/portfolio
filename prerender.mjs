@@ -58,9 +58,15 @@ async function prerender() {
     await new Promise(r => setTimeout(r, 1000));
 
     let html = await page.content();
-    html = html.replace(/display:\s*none;?\s*/g, (match, offset) => {
-      const before = html.substring(Math.max(0, offset - 200), offset);
-      return before.includes('role="application"') ? '' : match;
+    // Remove the pre-JS skeleton shell — pre-rendered HTML already has full content in #root
+    html = html.replace(/<div role="application"[^>]*>[\s\S]*?<\/div>\s*(?=<div id="root">)/i, '');
+    // Remove the MutationObserver script — no shell to hide
+    html = html.replace(/<script>\s*document\.addEventListener\('DOMContentLoaded'[\s\S]*?<\/script>/i, '');
+    // Strip opacity:0 from FadeUp inline styles so pre-rendered content is immediately visible
+    html = html.replace(/animation:\s*[^;"]*fadeInSlideUp[^;"]*;\s*/g, '');
+    html = html.replace(/opacity:\s*0;?\s*/g, (match, offset) => {
+      const before = html.substring(Math.max(0, offset - 100), offset);
+      return before.includes('style="') ? '' : match;
     });
     const dir = route === '/' ? DIST : join(DIST, route);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
