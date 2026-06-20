@@ -14,10 +14,10 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 const HARDCODED_REPOS = [
   {
     name: 'portfolio',
-    description: 'The codebase behind this portfolio. Built in React and Vite with a real-time Figma-style comment system, live cursors, and multiplayer presence powered by Supabase. Every design decision on this site was made by a designer who then built it. This repo is the proof.',
+    description: 'The codebase behind this portfolio. Built in React and Next.js with a real-time Figma-style comment system, live cursors, and multiplayer presence powered by Supabase. Hosted on Cloudflare Pages. Every design decision on this site was made by a designer who then built it. This repo is the proof.',
     language: 'JavaScript',
     langColor: '#f1e05a',
-    topics: ['react', 'vite', 'supabase', 'claude', 'vscode', 'git', 'github', 'figma'],
+    topics: ['react', 'nextjs', 'supabase', 'claude', 'vscode', 'git', 'github', 'figma', 'cloudflare'],
     updatedLabel: '16 hours ago',
     url: 'https://github.com/wahabalikhan/portfolio',
   },
