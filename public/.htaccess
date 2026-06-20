@@ -1,6 +1,31 @@
-RewriteEngine On
-RewriteBase /
-RewriteRule ^index\.html$ - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.html [L]
+# Allow access to _next static assets
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Explicitly allow _next directory
+  RewriteRule ^_next/(.*)$ _next/$1 [L]
+
+  # SPA routing - serve index.html for all routes
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Prevent Apache from blocking underscore directories
+<DirectoryMatch "^(.*)/_next">
+  Allow from all
+  Satisfy Any
+</DirectoryMatch>
+
+# Allow all files in _next
+<FilesMatch ".*">
+  Order Allow,Deny
+  Allow from all
+</FilesMatch>
+
+# Remove cache headers that might interfere
+<FilesMatch "\.(js|css)$">
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
