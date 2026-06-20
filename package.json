@@ -36,5 +36,8 @@
   "bugs": {
     "url": "https://github.com/wahabalikhan/portfolio/issues"
   },
-  "homepage": "https://github.com/wahabalikhan/portfolio#readme"
+  "homepage": "https://github.com/wahabalikhan/portfolio#readme",
+  "overrides": {
+    "caniuse-lite": "^1.0.30001620"
+  }
 }
