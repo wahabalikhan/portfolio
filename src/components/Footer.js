@@ -1,4 +1,5 @@
 import React from 'react';
+import FadeUp from './FadeUp';
 
 const S = 16;
 
@@ -94,6 +95,7 @@ const STACK = [
 
 export default function Footer() {
   return (
+    <FadeUp>
     <footer className="border-t border-gray-200 pt-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-wrap">
@@ -119,5 +121,6 @@ export default function Footer() {
         </a>
       </div>
     </footer>
+    </FadeUp>
   );
 }

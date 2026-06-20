@@ -1,4 +1,5 @@
 import React from 'react';
+import FadeUp from '../components/FadeUp';
 import Footer from '../components/Footer';
 import CommentPins from '../components/CommentPins';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -78,8 +79,9 @@ const testimonials = [
 export default function ExperiencePage() {
   usePageTitle('Experience');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 relative experience-page tab-panel" role="main">
+    <div className="max-w-3xl mx-auto px-6 py-16 relative experience-page" role="main">
       <CommentPins page="experience" showPresets={false} />
+      <FadeUp delay={100}>
       <h1 className="text-3xl font-bold mb-10 text-gray-900">Experience</h1>
 
       <div className="space-y-12 mb-16">
@@ -177,6 +179,7 @@ export default function ExperiencePage() {
       </div>
 
       <Footer />
+      </FadeUp>
     </div>
   );
 }

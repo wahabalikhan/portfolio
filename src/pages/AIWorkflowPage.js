@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import CaseStudyMeta from '../components/CaseStudyMeta';
+import FadeUp from '../components/FadeUp';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -11,13 +12,16 @@ export default function AIWorkflowPage() {
     const [selectedImage, setSelectedImage] = useState(null);
     usePageTitle('The Designer Who Ships Code');
     return (
-        <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
+        <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+            <FadeUp delay={100}>
             <BackButton onClick={() => navigate(-1)} />
 
             <h1 className="text-4xl font-bold mb-2 text-gray-900">
                 The Designer Who Ships Code
             </h1>
+            </FadeUp>
 
+            <FadeUp delay={100}>
             <CaseStudyMeta items={[
               { label: 'Timeline', value: 'April 2026 – June 2026' },
               { label: 'Team', value: '2 Product Designers, 2 Engineers' },
@@ -31,7 +35,9 @@ export default function AIWorkflowPage() {
                 className="w-full rounded-lg mb-8 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => setSelectedImage({ src: '/images/ai_thumbnail.png', alt: 'AI Workflow' })}
             />
+            </FadeUp>
 
+            <FadeUp delay={100}>
             <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">The Problem</h3>
@@ -195,6 +201,7 @@ export default function AIWorkflowPage() {
             </section>
 
             <Footer />
+            </FadeUp>
             <ImageModal
                 isOpen={!!selectedImage}
                 src={selectedImage?.src}
