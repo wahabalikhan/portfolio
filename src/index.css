@@ -261,6 +261,7 @@ html.dark .cs-thumb { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 2px
   color: #666;
   line-height: 1.3;
   white-space: nowrap;
+  animation: fadeInSlideUp 0.6s ease-out;
 }
 
 .floating-annotation svg path {
@@ -287,6 +288,7 @@ html.dark .floating-annotation svg path { stroke: #aaa; }
   max-width: 220px;
   min-width: 140px;
   transition: box-shadow 0.15s ease, max-width 0.15s ease;
+  animation: fadeInSlideUp 0.6s ease-out;
 }
 
 .cc-card:hover {
@@ -794,6 +796,11 @@ html.dark .theme-toggle-button:hover {
   display: none;
 }
 
+@keyframes fadeInSlideUp {
+  from { translate: 0 20px; opacity: 0; }
+  to   { translate: 0 0;    opacity: 1; }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1245,7 +1252,7 @@ html.dark .bg-blue-50 .text-gray-700 {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -1260,13 +1267,6 @@ html.dark .bg-blue-50 .text-gray-700 {
   }
 }
 
-/* Fade-in sections with stagger */
-.case-study-link,
-.blog-post-link,
-.dev-tile {
-  animation: fadeInUp 0.6s ease-out forwards;
-  opacity: 0;
-}
 
 /* Toolbar clearance below footer on pages with the comment toolbar */
 .home-page footer,
@@ -1334,20 +1334,6 @@ html.dark .mobile-toast {
 }
 html.dark .mobile-toast-close { color: #6b7280; }
 
-.case-study-link:nth-child(1) { animation-delay: 0ms; }
-.case-study-link:nth-child(2) { animation-delay: 100ms; }
-.case-study-link:nth-child(3) { animation-delay: 200ms; }
-
-.blog-post-link:nth-child(1) { animation-delay: 0ms; }
-.blog-post-link:nth-child(2) { animation-delay: 100ms; }
-.blog-post-link:nth-child(3) { animation-delay: 200ms; }
-.blog-post-link:nth-child(4) { animation-delay: 300ms; }
-.blog-post-link:nth-child(5) { animation-delay: 400ms; }
-
-.dev-tile:nth-child(1) { animation-delay: 0ms; }
-.dev-tile:nth-child(2) { animation-delay: 100ms; }
-.dev-tile:nth-child(3) { animation-delay: 200ms; }
-.dev-tile:nth-child(4) { animation-delay: 300ms; }
 
 /* Card hover lift effect */
 .case-study-link:hover,
