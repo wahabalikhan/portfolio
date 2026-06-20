@@ -200,8 +200,8 @@ export default function AIWorkflowPage() {
                 </p>
             </section>
 
-            <Footer />
             </FadeUp>
+            <Footer />
             <ImageModal
                 isOpen={!!selectedImage}
                 src={selectedImage?.src}

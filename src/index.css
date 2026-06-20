@@ -737,7 +737,7 @@ html.dark .theme-toggle-button:hover {
   position: absolute;
   bottom: calc(100% + 10px);
   left: 50%;
-  transform: translateX(-50%) translateY(4px);
+  transform: translateX(-50%);
   background: #111827;
   color: #fff;
   font-size: 12px;
@@ -751,7 +751,7 @@ html.dark .theme-toggle-button:hover {
   align-items: center;
   gap: 6px;
   opacity: 0;
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition: opacity 0.12s ease;
   z-index: 200;
 }
 
@@ -768,14 +768,12 @@ html.dark .theme-toggle-button:hover {
 
 .ftip-wrap:hover .ftip {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
 }
 
 /* Variant: appears below (for top nav / theme toggle) */
 .ftip-below {
   bottom: auto;
   top: calc(100% + 10px);
-  transform: translateX(-50%) translateY(-4px);
 }
 
 .ftip-below::after {
@@ -786,7 +784,7 @@ html.dark .theme-toggle-button:hover {
 }
 
 .ftip-wrap:hover .ftip-below {
-  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }
 
 /* Keyboard key badge */
@@ -806,13 +804,13 @@ html.dark .theme-toggle-button:hover {
 
 @keyframes fadeInSlideUp {
   from { translate: 0 20px; opacity: 0; }
-  to   { translate: 0 0;    opacity: 1; }
+  to   { translate: none;   opacity: 1; }
 }
 
 @keyframes float {
-  0%   { translate: 0 0; }
+  0%   { translate: none; }
   50%  { translate: 0 -6px; }
-  100% { translate: 0 0; }
+  100% { translate: none; }
 }
 
 @keyframes fadeIn {
@@ -1283,6 +1281,10 @@ html.dark .bg-blue-50 .text-gray-700 {
 
 
 /* Toolbar clearance below footer on pages with the comment toolbar */
+.footer-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
 .home-page footer,
 .experience-page footer { margin-bottom: 4.5rem; }
 /* Blog/case study pages: match footer bottom gap to pt-8 (2rem) */

@@ -66,8 +66,8 @@ export default function DesignersCode() {
         </div>
       </div>
 
-      <Footer />
       </FadeUp>
+      <Footer />
     </div>
   );
 }

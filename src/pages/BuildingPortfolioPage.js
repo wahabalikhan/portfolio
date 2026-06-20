@@ -79,8 +79,8 @@ export default function BuildingPortfolioPage() {
         </div>
       </div>
 
-      <Footer />
       </FadeUp>
+      <Footer />
     </div>
   );
 }
