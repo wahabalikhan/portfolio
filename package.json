@@ -1,23 +1,30 @@
 {
   "name": "wahab-portfolio",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node prerender.mjs",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "vite:dev": "vite",
+    "vite:build": "vite build && node prerender.mjs",
+    "vite:preview": "vite preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
     "@tabler/icons-react": "^3.44.0",
     "lucide-react": "^0.263.1",
+    "next": "^14.2.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.30.1"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.1",
     "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15",
     "puppeteer": "^25.1.0",
+    "tailwindcss": "^4.3.1",
     "vite": "^7.2.2"
   },
   "repository": {
