@@ -58,11 +58,16 @@ async function prerender() {
     await new Promise(r => setTimeout(r, 1000));
 
     let html = await page.content();
-    // Remove the pre-JS skeleton shell — pre-rendered HTML already has full content in #root
+    // Remove the pre-JS skeleton shell
     html = html.replace(/<div role="application"[^>]*>[\s\S]*?<\/div>\s*(?=<div id="root">)/i, '');
-    // Remove the MutationObserver script — no shell to hide
+    // Remove the MutationObserver script
     html = html.replace(/<script>\s*document\.addEventListener\('DOMContentLoaded'[\s\S]*?<\/script>/i, '');
-    // Strip opacity:0 from FadeUp inline styles so pre-rendered content is immediately visible
+    // Strip dynamic comment/cursor elements — React re-renders these from Supabase on mount
+    html = html.replace(/<div class="cc-card-wrapper"[^>]*>[\s\S]*?<\/div><\/div>/g, '');
+    html = html.replace(/<div class="floating-annotation"[^>]*>[\s\S]*?<\/div>/g, '');
+    // Remove the portal overlay div (comment system renders via portal to body)
+    html = html.replace(/<div style="position: fixed; top: 0px; left: 0px; width: 100%; height: 0px; overflow: visible; pointer-events: none;">[\s\S]*?(?=<\/body>)/i, '');
+    // Strip FadeUp animation/opacity so pre-rendered content is immediately visible
     html = html.replace(/animation:\s*[^;"]*fadeInSlideUp[^;"]*;\s*/g, '');
     html = html.replace(/opacity:\s*0;?\s*/g, (match, offset) => {
       const before = html.substring(Math.max(0, offset - 100), offset);
