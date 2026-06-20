@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import Footer from '../components/Footer';
 import CommentPins from '../components/CommentPins';
+import FadeUp from '../components/FadeUp';
 import LinkedInPostCard from '../components/LinkedInPostCard';
 import GitHubRepoCard from '../components/GitHubRepoCard';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -73,7 +74,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16 relative home-page" role="main">
       <CommentPins page="home" activeTab={activeTab} />
-      <div className="flex items-stretch gap-4 mb-6">
+      <FadeUp delay={0} className="flex items-stretch gap-4 mb-6">
         <img
           src="/images/profile.png"
           alt="Wahab"
@@ -100,12 +101,13 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
           </p>
 
         </div>
-      </div>
+      </FadeUp>
 
       <div id="case-studies" className="mt-10 mb-10">
+        <FadeUp delay={0}>
         <section className="border-t border-gray-200 pt-8 pb-0" />
         <h2 className="text-2xl font-bold mb-8 text-gray-900">Case studies</h2>
-        
+
         {/* Tabs */}
         <div className="flex gap-2 mb-10">
           <button
@@ -130,10 +132,11 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
             ✨ Extras
           </button>
         </div>
+        </FadeUp>
 
         {/* Designer Tab Content */}
         {activeTab === 'Design' && (
-          <div className="tab-panel space-y-12">
+          <FadeUp className="space-y-12">
             {[
               {
                 id: 'ai-workflow',
@@ -204,12 +207,12 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
                 </div>
               </Link>
             ))}
-          </div>
+          </FadeUp>
         )}
 
         {/* Development Tab Content */}
         {activeTab === 'Development' && (
-          <div className="tab-panel">
+          <FadeUp>
             <div className="gh-from">
               <GitHubMark />
               <span>from GitHub</span>
@@ -233,18 +236,18 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
                 />
               ))}
             </div>
-          </div>
+          </FadeUp>
         )}
 
         {/* Extras Tab Content */}
         {activeTab === 'Extras' && (
-          <div className="tab-panel flex flex-col gap-8 items-center">
+          <FadeUp className="flex flex-col gap-8 items-center">
             <LinkedInPostCard />
-          </div>
+          </FadeUp>
         )}
       </div>
 
-      <div className="mb-10">
+      <FadeUp className="mb-10">
         <section className="border-t border-gray-200 pt-8 pb-0" />
         <h2 className="text-2xl font-bold mb-8 text-gray-900">What's in my head!</h2>
 
@@ -265,7 +268,7 @@ export default function HomePage({ setCurrentPage, activeTab, setActiveTab }) {
             </Link>
           ))}
         </div>
-      </div>
+      </FadeUp>
 
       <Footer />
     </div>

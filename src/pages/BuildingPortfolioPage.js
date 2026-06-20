@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import BlogMeta from '../components/BlogMeta';
 import { blogPosts } from '../data/blogPosts';
+import FadeUp from '../components/FadeUp';
 import Footer from '../components/Footer';
 import { usePageTitle } from '../hooks/usePageTitle';
 
@@ -10,7 +11,8 @@ export default function BuildingPortfolioPage() {
   const navigate = useNavigate();
   usePageTitle('Building this portfolio');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
+    <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+      <FadeUp delay={100}>
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
@@ -18,7 +20,9 @@ export default function BuildingPortfolioPage() {
       </h1>
 
       <BlogMeta date="October 19, 2025" />
+      </FadeUp>
 
+      <FadeUp delay={100}>
       <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">
           I've always found portfolio sites uncomfortable to build. Too polished and they feel like a brochure. Too casual and they undersell the work. So I took the only logical approach: spent several weeks building mine from scratch while simultaneously questioning every decision I've ever made.
@@ -76,6 +80,7 @@ export default function BuildingPortfolioPage() {
       </div>
 
       <Footer />
+      </FadeUp>
     </div>
   );
 }

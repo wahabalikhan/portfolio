@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import BlogMeta from '../components/BlogMeta';
 import { blogPosts } from '../data/blogPosts';
+import FadeUp from '../components/FadeUp';
 import Footer from '../components/Footer';
 import { usePageTitle } from '../hooks/usePageTitle';
 
@@ -10,7 +11,8 @@ export default function DesignersCode() {
   const navigate = useNavigate();
   usePageTitle('Do designers need to code? Wrong question.');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
+    <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+      <FadeUp delay={100}>
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
@@ -18,7 +20,9 @@ export default function DesignersCode() {
       </h1>
 
       <BlogMeta date="October 20, 2025" />
+      </FadeUp>
 
+      <FadeUp delay={100}>
       <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">
           Every few months this debate resurfaces, usually as a LinkedIn hot take or a quiet anxiety in a design team Slack. After a few years designing with one hand in Figma and the other occasionally in VS Code, I've stopped trying to answer it directly. Because the question isn't really about code. It's about curiosity.
@@ -63,6 +67,7 @@ export default function DesignersCode() {
       </div>
 
       <Footer />
+      </FadeUp>
     </div>
   );
 }

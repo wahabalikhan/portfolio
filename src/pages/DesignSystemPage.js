@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import CaseStudyMeta from '../components/CaseStudyMeta';
+import FadeUp from '../components/FadeUp';
 import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -11,13 +12,16 @@ export default function DesignSystemPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   usePageTitle('From Framework to Design System');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
+    <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+      <FadeUp delay={100}>
       <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
         From Framework to Design System
       </h1>
+      </FadeUp>
 
+      <FadeUp delay={100}>
       <p className="text-lg text-gray-700 mt-4 mb-4 leading-relaxed">
         36.1% reduction in design task completion time, achieved by building Matillion's ETL design system from scratch: components, patterns, and documentation, while embedding UX practice into how the engineering team worked.
       </p>
@@ -35,7 +39,9 @@ export default function DesignSystemPage() {
         className="w-full rounded-lg mb-8 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
         onClick={() => setSelectedImage({ src: '/images/ds.png', alt: 'Design System' })}
       />
+      </FadeUp>
 
+      <FadeUp delay={100}>
       <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
         <div>
           <h3 className="font-bold text-gray-900 mb-2">The Problem</h3>
@@ -268,6 +274,7 @@ export default function DesignSystemPage() {
         alt={selectedImage?.alt}
         onClose={() => setSelectedImage(null)}
       />
+      </FadeUp>
     </div>
   );
 }

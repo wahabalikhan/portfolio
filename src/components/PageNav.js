@@ -55,14 +55,14 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
         <Link to="/experience" className={linkClass(isExperience)}>Experience</Link>
         <a
           href="mailto:wahab-ali-khan@hotmail.com"
-          className="nav-link text-gray-500 transition-colors hover:text-gray-900"
+          className="nav-link text-gray-500 transition-colors"
         >
           Contact ↗
         </a>
         <a
           href="/cv_wahab_ali_khan.pdf"
           download="CV_Wahab_Ali_Khan.pdf"
-          className="nav-link text-gray-500 transition-colors hover:text-gray-900"
+          className="nav-link text-gray-500 transition-colors"
         >
           Resume ↓
         </a>

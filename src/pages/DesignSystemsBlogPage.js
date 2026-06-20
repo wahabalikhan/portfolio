@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import BlogMeta from '../components/BlogMeta';
 import { blogPosts } from '../data/blogPosts';
+import FadeUp from '../components/FadeUp';
 import Footer from '../components/Footer';
 import { usePageTitle } from '../hooks/usePageTitle';
 
@@ -10,15 +11,18 @@ export default function DesignSystemsBlogPage() {
   const navigate = useNavigate();
   usePageTitle('Design systems and the importance of documentation');
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 tab-panel" role="main">
+    <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+      <FadeUp delay={100}>
       <BackButton onClick={() => navigate(-1)} />
-      
+
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
         Design systems and the importance of documentation
       </h1>
-      
-      <BlogMeta date="March 11, 2024" />
 
+      <BlogMeta date="March 11, 2024" />
+      </FadeUp>
+
+      <FadeUp delay={100}>
       <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">
           A design system without documentation is just a collection of components. It's the documentation that transforms it into a shared language, a source of truth, and a foundation for collaboration.
@@ -86,6 +90,7 @@ export default function DesignSystemsBlogPage() {
         </div>
       </div>
       <Footer />
+      </FadeUp>
     </div>
   );
 }
