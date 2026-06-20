@@ -44,14 +44,18 @@ async function prerender() {
   await new Promise(r => server.listen(PORT, r));
 
   console.log('Launching browser...');
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
 
   for (const route of ROUTES) {
     console.log(`Pre-rendering ${route}...`);
     const page = await browser.newPage();
-    await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle0', timeout: 15000 });
-    await page.waitForSelector('#root > *', { timeout: 10000 });
-    await new Promise(r => setTimeout(r, 500));
+    await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle0', timeout: 30000 });
+    try {
+      await page.waitForSelector('#root > *', { timeout: 15000 });
+    } catch {
+      console.log(`  ⚠ React did not mount for ${route}, using page as-is`);
+    }
+    await new Promise(r => setTimeout(r, 1000));
 
     let html = await page.content();
     html = html.replace(/display:\s*none;?\s*/g, (match, offset) => {
