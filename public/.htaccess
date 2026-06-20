@@ -1,10 +1,4 @@
 RewriteEngine On
-
-# Allow _next directory to be accessed
-RewriteCond %{REQUEST_URI} ^/_next/
-RewriteRule ^ - [L]
-
-# SPA routing
 RewriteBase /
 RewriteRule ^index\.html$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
