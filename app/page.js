@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import CommentPins from '@/components/CommentPins';
 import FadeUp from '@/components/FadeUp';
 import LinkedInPostCard from '@/components/LinkedInPostCard';
+import BuildLogCard from '@/components/BuildLogCard';
 import GitHubRepoCard from '@/components/GitHubRepoCard';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
@@ -246,6 +247,7 @@ export default function HomePage() {
         {activeTab === 'Extras' && (
           <FadeUp className="flex flex-col gap-8 items-center">
             <LinkedInPostCard />
+            <BuildLogCard />
           </FadeUp>
         )}
       </div>

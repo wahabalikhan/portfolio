@@ -8,7 +8,7 @@ export const blogPosts = [
   {
     id: 'building-portfolio',
     title: 'Building this portfolio, or: what happens when a designer gets too deep into a codebase at 2am',
-    date: 'October 19, 2025',
+    date: 'June 20, 2026',
     preview: "I've always found portfolio sites uncomfortable to build. Too polished and they feel like a brochure. Too casual and they undersell the work. So I took the only logical approach: spent several weeks building mine from scratch while simultaneously questioning every decision I've ever made.",
   },
 ];
