@@ -222,7 +222,7 @@ export default function HomePage() {
               <span>from GitHub</span>
             </div>
 
-            <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+            <p className="text-gray-700 leading-relaxed mb-6">
               These repos span university projects and personal work. They're here because building things, even imperfect things, is how I learned to think like an engineer while designing like one.
             </p>
 
