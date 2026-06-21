@@ -9,7 +9,7 @@ import { smoothScrollToElement } from '@/utils/smoothScroll';
 export default function PageNav({ isDarkMode, pastCaseStudies }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isExperience = pathname === '/experience';
+  const isExperience = pathname === '/experience' || pathname === '/experience/';
   const isWorkActive = !isExperience && (pathname !== '/' || pastCaseStudies);
 
   const scrollToCaseStudies = () => smoothScrollToElement('case-studies');
