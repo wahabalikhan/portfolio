@@ -100,8 +100,12 @@ export default function HomePage() {
             {' '}them.
           </h1>
 
+          <p className="text-gray-500 leading-relaxed mt-2 mb-3" style={{ fontSize: '14px' }}>
+            Five years designing enterprise SaaS for technical users. I use AI to move faster on implementation so I can spend more time on the work that actually matters: aligning teams around the right problem.
+          </p>
+
           <p className="text-base text-gray-700 leading-relaxed mb-3" style={{ fontSize: '15.6px' }}>
-            Product Designer <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> AI-first Coder <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> Metrics-driven
+            Product Designer and AI-first Coder <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> Enterprise B2B SaaS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified
           </p>
 
         </div>
@@ -110,6 +114,9 @@ export default function HomePage() {
       <div id="case-studies" className="mt-10 mb-10">
         <FadeUp delay={0}>
         <section className="border-t border-gray-200 pt-8 pb-0" />
+        <p className="text-gray-400 leading-relaxed mb-8" style={{ fontSize: '15px' }}>
+          I design for enterprise products where the users are experts and the stakes are high. I use AI to handle the implementation heavy lifting so I can focus on what AI cannot do: understanding the real problem, aligning stakeholders around it, and making sure the right thing gets built.
+        </p>
         <h2 className="text-2xl font-bold mb-8 text-gray-900">Case studies</h2>
 
         {/* Tabs */}
