@@ -7,6 +7,7 @@ import CaseStudyMeta from '@/components/CaseStudyMeta';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import ImageModal from '@/components/ImageModal';
+import OtherCaseStudies from '@/components/OtherCaseStudies';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function DesignSystemPage() {
@@ -270,6 +271,7 @@ export default function DesignSystemPage() {
       </section>
 
       </FadeUp>
+      <OtherCaseStudies currentId="design-system" />
       <Footer />
       <ImageModal
         isOpen={!!selectedImage}

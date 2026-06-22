@@ -7,6 +7,7 @@ import CaseStudyMeta from '@/components/CaseStudyMeta';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import ImageModal from '@/components/ImageModal';
+import OtherCaseStudies from '@/components/OtherCaseStudies';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function SchemasPage() {
@@ -271,6 +272,7 @@ export default function SchemasPage() {
       </section>
 
       </FadeUp>
+      <OtherCaseStudies currentId="schemas" />
       <Footer />
       <ImageModal
         isOpen={!!selectedImage}
