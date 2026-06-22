@@ -7,6 +7,7 @@ import CaseStudyMeta from '@/components/CaseStudyMeta';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import ImageModal from '@/components/ImageModal';
+import OtherCaseStudies from '@/components/OtherCaseStudies';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function AIWorkflowPage() {
@@ -203,6 +204,7 @@ export default function AIWorkflowPage() {
             </section>
 
             </FadeUp>
+            <OtherCaseStudies currentId="ai-workflow" />
             <Footer />
             <ImageModal
                 isOpen={!!selectedImage}
