@@ -26,9 +26,9 @@ export default function AIWorkflowPage() {
             <FadeUp delay={100}>
             <CaseStudyMeta items={[
               { label: 'Timeline', value: 'April 2026 – June 2026' },
-              { label: 'Team', value: '2 Product Designers, 2 Engineers' },
+              { label: 'Team', value: '3 Product Designers, Engineering pod' },
               { label: 'Role', value: 'Designer and contributor. Workflow adoption, tooling setup, code changes, engineering collaboration.' },
-              { label: 'Stack', value: 'Figma, VS Code, Claude Code, Git, GitHub, Node.js, npm, React, HTML and CSS' },
+              { label: 'Stack', value: 'Figma, VS Code, Claude Code, Git, GitHub, Node.js, npm' },
             ]} />
 
             <img
