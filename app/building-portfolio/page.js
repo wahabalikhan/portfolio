@@ -51,10 +51,46 @@ export default function BuildingPortfolioPage() {
         <p className="text-gray-700 leading-relaxed mb-6">
           The bit I'm most proud of is the comment system. It's built on Supabase with real-time presence. Visitors can drop Figma-style comment pins anywhere on the page, see live cursors of other people browsing at the same time, and leave notes that persist. I built it because I wanted the portfolio itself to be a proof of concept, not just a container for them.
         </p>
+        <div style={{
+          width: '100%', borderRadius: 8, overflow: 'hidden',
+          marginTop: '0.5rem', marginBottom: '1.5rem',
+          border: '1px solid rgba(0,0,0,0.09)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+        }}>
+          <img
+            src="/images/supabase.png"
+            alt="Portfolio screenshot"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </div>
 
         <p className="text-gray-700 leading-relaxed mb-6">
           Since writing this the portfolio has kept evolving. Moved from Vite to Next.js 15. Moved from GoDaddy cPanel to Cloudflare Pages with auto-deploys on every push to main. Debugged a cross-browser positioning issue that cost me a day and taught me more about getBoundingClientRect than I ever wanted to know. The full story is in the Extras tab if you want the unfiltered version.
         </p>
+        <div style={{
+          width: '100%', borderRadius: 8, overflow: 'hidden',
+          marginTop: '0.5rem', marginBottom: '1.5rem',
+          border: '1px solid rgba(0,0,0,0.09)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+        }}>
+          <img
+            src="/images/deploy1.png"
+            alt="Portfolio screenshot"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </div>
+        <div style={{
+          width: '100%', borderRadius: 8, overflow: 'hidden',
+          marginTop: '0.5rem', marginBottom: '1.5rem',
+          border: '1px solid rgba(0,0,0,0.09)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+        }}>
+          <img
+            src="/images/deploy2.png"
+            alt="Portfolio screenshot"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </div>
 
         <p className="text-gray-700 leading-relaxed mb-6">
           Claude Code did a lot of the implementation heavy lifting. I'd describe what I wanted, review what came back, push back when it wasn't right, and iterate. It felt less like coding and more like designing with a very fast implementation partner. The decisions were mine. The 2am hours were entirely my fault.

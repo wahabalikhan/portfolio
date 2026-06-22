@@ -1124,6 +1124,7 @@ export default function CommentPins({ page, activeTab }) {
   };
 
   const { left: cLeft, width: cWidth, absTop: cAbsTop, height: cHeight } = contentMetrics;
+  const annotationReady = cHeight > 0 && cAbsTop > 0;
 
 
 
@@ -1261,6 +1262,8 @@ export default function CommentPins({ page, activeTab }) {
                 pointerEvents: isOwner ? 'auto' : 'none',
                 cursor: isOwner ? (annotationDragging ? 'grabbing' : 'grab') : 'default',
                 userSelect: 'none',
+                opacity: annotationReady ? 1 : 0,
+                transition: 'opacity 300ms ease',
               }}
               onMouseDown={isOwner ? startAnnotationDrag : undefined}
               onTouchStart={isOwner ? startAnnotationDrag : undefined}
@@ -1280,6 +1283,8 @@ export default function CommentPins({ page, activeTab }) {
                 pointerEvents: isOwner ? 'auto' : 'none',
                 cursor: isOwner ? (annotation2Dragging ? 'grabbing' : 'grab') : 'default',
                 userSelect: 'none',
+                opacity: annotationReady ? 1 : 0,
+                transition: 'opacity 300ms ease',
               }}
               onMouseDown={isOwner ? startAnnotation2Drag : undefined}
               onTouchStart={isOwner ? startAnnotation2Drag : undefined}
