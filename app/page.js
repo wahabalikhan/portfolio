@@ -97,15 +97,15 @@ export default function HomePage() {
               {activeTooltip === 'ship' && <span className="hero-word-tooltip">Claude Code helped 🤝</span>}
               ship
 </span>
-            {' '}them.
+            {''}them.
           </h1>
 
           <p className="text-gray-500 leading-relaxed mt-3 mb-3" style={{ fontSize: '15.6px' }}>
-            5 years designing enterprise SaaS for technical users. I use AI to move faster on implementation so I can spend more time on the work that actually matters: aligning teams around the right problem.
+            4+ years designing enterprise SaaS for technical users. I use AI to move faster on implementation so I can spend more time on the work that actually matters: aligning teams around the right problem.
           </p>
 
           <p className="text-base text-gray-700 leading-relaxed" style={{ fontSize: '15.6px' }}>
-            Product Designer & <span className="font-bold">AI-first Coder</span> <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> <span className="font-bold">Enterprise B2B SaaS</span> <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified
+            Product Designer & <span className="font-bold">AI-first Coder</span> <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> <span className="font-bold">Enterprise B2B SaaS</span> <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified (ID: 1081116)
           </p>
 
         </div>
