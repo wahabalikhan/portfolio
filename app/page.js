@@ -82,7 +82,7 @@ export default function HomePage() {
         <img
           src="/images/profile.png"
           alt="Wahab"
-          className="h-[105px] w-[105px] aspect-square rounded-full object-cover flex-shrink-0"
+          className="h-[100px] w-[100px] aspect-square rounded-full object-cover flex-shrink-0"
         />
 
         <div>
@@ -100,12 +100,12 @@ export default function HomePage() {
             {' '}them.
           </h1>
 
-          <p className="text-gray-500 leading-relaxed mt-2 mb-3" style={{ fontSize: '14px' }}>
-            Five years designing enterprise SaaS for technical users. I use AI to move faster on implementation so I can spend more time on the work that actually matters: aligning teams around the right problem.
+          <p className="text-gray-500 leading-relaxed mt-3 mb-3" style={{ fontSize: '15.6px' }}>
+            5 years designing enterprise SaaS for technical users. I use AI to move faster on implementation so I can spend more time on the work that actually matters: aligning teams around the right problem.
           </p>
 
-          <p className="text-base text-gray-700 leading-relaxed mb-3" style={{ fontSize: '15.6px' }}>
-            Product Designer and AI-first Coder <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> Enterprise B2B SaaS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified
+          <p className="text-base text-gray-700 leading-relaxed" style={{ fontSize: '15.6px' }}>
+            Product Designer & <span className="font-bold">AI-first Coder</span> <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> <span className="font-bold">Enterprise B2B SaaS</span> <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified
           </p>
 
         </div>
@@ -114,9 +114,6 @@ export default function HomePage() {
       <div id="case-studies" className="mt-10 mb-10">
         <FadeUp delay={0}>
         <section className="border-t border-gray-200 pt-8 pb-0" />
-        <p className="text-gray-400 leading-relaxed mb-8" style={{ fontSize: '15px' }}>
-          I design for enterprise products where the users are experts and the stakes are high. I use AI to handle the implementation heavy lifting so I can focus on what AI cannot do: understanding the real problem, aligning stakeholders around it, and making sure the right thing gets built.
-        </p>
         <h2 className="text-2xl font-bold mb-8 text-gray-900">Case studies</h2>
 
         {/* Tabs */}
