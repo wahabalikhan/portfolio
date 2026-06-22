@@ -137,7 +137,7 @@ export default function BuildLogCard() {
       {/* Footer */}
       <div className="build-log-divider" style={{ marginTop: '1.5rem' }} />
       <p className="text-gray-400" style={{ fontSize: '0.75rem', marginTop: '0.75rem', fontStyle: 'italic' }}>
-        Still being updated as the portfolio evolves.
+        Still evolving. UI polish and final touches ongoing post-launch.
       </p>
     </div>
   );
