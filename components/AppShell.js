@@ -5,6 +5,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import PageNav from '@/components/PageNav';
 import NavBrand from '@/components/NavBrand';
 import ScrollToTop from '@/components/ScrollToTop';
+import ScrollToTopButton from '@/components/ScrollToTopButton';
 
 export default function AppShell({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -68,6 +69,7 @@ export default function AppShell({ children }) {
         </div>
       </div>
       {children}
+      <ScrollToTopButton />
     </div>
   );
 }
