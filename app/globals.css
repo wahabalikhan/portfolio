@@ -258,6 +258,20 @@ html.dark .cs-thumb { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 2px
 
 .cc-card-wrapper:hover { z-index: 1000 !important; }
 
+.cc-pin {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+  padding: 0;
+}
+html.dark .cc-pin {
+  border-color: #1e1e2e;
+}
+
 /* ─── Handwritten Annotation (floating/draggable) ─────────────────────────── */
 .floating-annotation {
   font-family: 'Caveat', cursive;
@@ -295,8 +309,8 @@ html.dark .floating-annotation svg path { stroke: #aaa; }
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   max-width: 220px;
   min-width: 140px;
-  transition: box-shadow 0.15s ease, max-width 0.15s ease;
-  animation: fadeInSlideUp 0.6s ease-out, float 4s ease-in-out 0.6s infinite;
+  transition: none;
+  animation: none;
 }
 .cc-card-wrapper:nth-child(2) .cc-card { animation-delay: 0s, 1.4s; }
 .cc-card-wrapper:nth-child(3) .cc-card { animation-delay: 0s, 2.2s; }
@@ -356,11 +370,8 @@ html.dark .floating-annotation svg path { stroke: #aaa; }
   font-size: 0.8125rem;
   line-height: 1.5;
   color: #374151;
-  max-height: 0;
-  opacity: 0;
   overflow: hidden;
   margin: 0;
-  transition: max-height 180ms ease, opacity 160ms ease, margin 160ms ease;
 }
 
 .cc-body-visible {
