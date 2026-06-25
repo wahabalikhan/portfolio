@@ -1176,7 +1176,7 @@ export default function CommentPins({ page, activeTab }) {
       >
         <div className="cc-pin" style={{ backgroundColor: color }} />
         {isExpanded && (
-          <div className={cardClass} style={{ position: 'absolute', top: '22px', left: '50%', transform: 'translateX(-50%)', zIndex: 40 }} onClick={(e) => e.stopPropagation()}>
+          <div className={cardClass} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 40 }} onClick={(e) => e.stopPropagation()}>
             <div className="cc-header">
               <span className="cc-dot" style={{ backgroundColor: color }} />
               <span className="cc-author">{author}</span>
