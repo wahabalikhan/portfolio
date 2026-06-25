@@ -19,7 +19,7 @@ export default function BuildingPortfolioPage() {
       <BackButton onClick={() => router.back()} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
-        Building this portfolio, or: what happens when a designer gets too deep into a codebase at 2am
+        Building this portfolio: what I learned from designing and shipping my own product in five days
       </h1>
 
       <BlogMeta date="June 20, 2026" />
@@ -28,7 +28,7 @@ export default function BuildingPortfolioPage() {
       <FadeUp delay={100}>
       <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">
-          I've always found portfolio sites uncomfortable to build. Too polished and they feel like a brochure. Too casual and they undersell the work. So I took the only logical approach: spent several weeks building mine from scratch while simultaneously questioning every decision I've ever made.
+          Building a portfolio is a design problem like any other. The constraint: represent five years of work honestly, without it feeling like a brochure or a CV. The approach: build it from scratch, make every decision deliberately, and document what I learned along the way.
         </p>
 
         <div style={{
