@@ -1174,63 +1174,58 @@ export default function CommentPins({ page, activeTab }) {
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={() => onCardLeave(id)}
       >
-        <div className={cardClass}>
-          <div className="cc-header">
-            <span className="cc-dot" style={{ backgroundColor: color }} />
-            <span className="cc-author">{author}</span>
-            <span className={`cc-preview${isExpanded ? ' cc-preview-hidden' : ''}`}>{truncate(body)}</span>
-          </div>
-          {editingId === id ? (
-            <div className="cc-edit-form" onClick={(e) => e.stopPropagation()}>
-              <textarea
-                value={editBody}
-                onChange={(e) => setEditBody(e.target.value)}
-                rows={3}
-                autoFocus
-                style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.375rem' }}
-              />
-              <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
-                <button type="button" className="cc-btn-cancel" onClick={(e) => { e.stopPropagation(); setEditingId(null); }}>Cancel</button>
-                <button
-                  type="button"
-                  className="cc-btn-save"
-                  onClick={(e) => { e.stopPropagation(); isOwner ? handleEdit(id, editBody) : handleVisitorEdit(id, editBody); }}
-                  disabled={!editBody.trim()}
-                  style={{ opacity: !editBody.trim() ? 0.6 : 1 }}
-                >Save</button>
-              </div>
+        <div className="cc-pin" style={{ backgroundColor: color }} />
+        {isExpanded && (
+          <div className={cardClass} style={{ position: 'absolute', top: '22px', left: '50%', transform: 'translateX(-50%)', zIndex: 40 }} onClick={(e) => e.stopPropagation()}>
+            <div className="cc-header">
+              <span className="cc-dot" style={{ backgroundColor: color }} />
+              <span className="cc-author">{author}</span>
             </div>
-          ) : (
-            <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
-          )}
-          {isExpanded && editingId !== id && canEdit && (
-            <button
-              type="button"
-              className="cc-edit-btn"
-              onClick={(e) => { e.stopPropagation(); setEditBody(body); setEditingId(id); }}
-              aria-label="Edit comment"
-            >
-              <Pencil size={12} />
-            </button>
-          )}
-          {isExpanded && editingId !== id && canDelete && (
-            <button
-              type="button"
-              className="cc-delete"
-              onClick={(e) => { e.stopPropagation(); isOwner ? handleDelete(id) : handleVisitorDelete(id); }}
-              aria-label="Delete comment"
-            >
-              <Trash2 size={12} />
-            </button>
-          )}
-          {cardErrors[id] && (
-            <div style={{
-              position: 'absolute', top: -4, right: -4,
-              width: 8, height: 8, borderRadius: '50%',
-              backgroundColor: '#ef4444', border: '1.5px solid white',
-            }} />
-          )}
-        </div>
+            {editingId === id ? (
+              <div className="cc-edit-form">
+                <textarea
+                  value={editBody}
+                  onChange={(e) => setEditBody(e.target.value)}
+                  rows={3}
+                  autoFocus
+                  style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.375rem' }}
+                />
+                <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
+                  <button type="button" className="cc-btn-cancel" onClick={(e) => { e.stopPropagation(); setEditingId(null); }}>Cancel</button>
+                  <button
+                    type="button"
+                    className="cc-btn-save"
+                    onClick={(e) => { e.stopPropagation(); isOwner ? handleEdit(id, editBody) : handleVisitorEdit(id, editBody); }}
+                    disabled={!editBody.trim()}
+                    style={{ opacity: !editBody.trim() ? 0.6 : 1 }}
+                  >Save</button>
+                </div>
+              </div>
+            ) : (
+              <p className="cc-body cc-body-visible">{body}</p>
+            )}
+            {editingId !== id && canEdit && (
+              <button
+                type="button"
+                className="cc-edit-btn"
+                onClick={(e) => { e.stopPropagation(); setEditBody(body); setEditingId(id); }}
+                aria-label="Edit comment"
+              >
+                <Pencil size={12} />
+              </button>
+            )}
+            {editingId !== id && canDelete && (
+              <button
+                type="button"
+                className="cc-delete"
+                onClick={(e) => { e.stopPropagation(); isOwner ? handleDelete(id) : handleVisitorDelete(id); }}
+                aria-label="Delete comment"
+              >
+                <Trash2 size={12} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -1247,58 +1242,6 @@ export default function CommentPins({ page, activeTab }) {
         const y = cached ? cached.y_pct : pin.y_pct;
         return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token);
       })}
-
-      {page === 'home' && !hidden && cWidth > 0 && (() => {
-        const annX = (annotationDragging && annotationDragPos) ? annotationDragPos.x_pct : annotationPos.x_pct;
-        const annY = (annotationDragging && annotationDragPos) ? annotationDragPos.y_pct : annotationPos.y_pct;
-        const ann2X = (annotation2Dragging && annotation2DragPos) ? annotation2DragPos.x_pct : annotation2Pos.x_pct;
-        const ann2Y = (annotation2Dragging && annotation2DragPos) ? annotation2DragPos.y_pct : annotation2Pos.y_pct;
-        return (
-          <>
-            <div
-              className="floating-annotation"
-              style={{
-                ...cardWrapperStyle(annX, annY, -2, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
-                pointerEvents: isOwner ? 'auto' : 'none',
-                cursor: isOwner ? (annotationDragging ? 'grabbing' : 'grab') : 'default',
-                userSelect: 'none',
-                opacity: annotationReady ? 1 : 0,
-                transition: 'opacity 300ms ease',
-              }}
-              onMouseDown={isOwner ? startAnnotationDrag : undefined}
-              onTouchStart={isOwner ? startAnnotationDrag : undefined}
-            >
-              <div>got thoughts?</div>
-              <div>drop a comment</div>
-              <div>anywhere on the page ↓</div>
-              <svg width="40" height="52" viewBox="0 0 40 52" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '2px 0 0 8px' }}>
-                <path d="M 8 4 C 2 20 2 36 14 48" strokeWidth="2" strokeLinecap="round" fill="none" stroke="currentColor" />
-                <path d="M 6 38 L 14 48 L 22 38" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" stroke="currentColor" />
-              </svg>
-            </div>
-            <div
-              className="floating-annotation"
-              style={{
-                ...cardWrapperStyle(ann2X, ann2Y, 2, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
-                pointerEvents: isOwner ? 'auto' : 'none',
-                cursor: isOwner ? (annotation2Dragging ? 'grabbing' : 'grab') : 'default',
-                userSelect: 'none',
-                opacity: annotationReady ? 1 : 0,
-                transition: 'opacity 300ms ease',
-              }}
-              onMouseDown={isOwner ? startAnnotation2Drag : undefined}
-              onTouchStart={isOwner ? startAnnotation2Drag : undefined}
-            >
-              <div>That's</div>
-              <div>me!</div>
-              <svg width="48" height="44" viewBox="0 0 48 44" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '2px 0 0 0', transform: 'scaleX(-1)' }}>
-                <path d="M 40 6 C 44 18 24 36 8 28" strokeWidth="2" strokeLinecap="round" fill="none" stroke="currentColor" />
-                <path d="M 16 22 L 8 28 L 16 34" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" stroke="currentColor" />
-              </svg>
-            </div>
-          </>
-        );
-      })()}
 
       {Object.entries(cursors).map(([id, c]) => (
         <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT)}>

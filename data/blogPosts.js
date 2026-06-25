@@ -1,9 +1,9 @@
 export const blogPosts = [
   {
     id: 'building-portfolio',
-    title: 'Building this portfolio, or: what happens when a designer gets too deep into a codebase at 2am',
+    title: 'Building this portfolio: what I learned from designing and shipping my own product in five days',
     date: 'June 20, 2026',
-    preview: "I've always found portfolio sites uncomfortable to build. Too polished and they feel like a brochure. Too casual and they undersell the work. So I took the only logical approach: spent several weeks building mine from scratch while simultaneously questioning every decision I've ever made.",
+    preview: "Building a portfolio is a design problem like any other. The constraint: represent five years of work honestly, without it feeling like a brochure or a CV. The approach: build it from scratch, make every decision deliberately, and document what I learned along the way.",
   },
   {
     id: 'designers-code',
