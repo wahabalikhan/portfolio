@@ -370,9 +370,6 @@ html.dark .floating-annotation svg path { stroke: #aaa; }
 }
 
 .cc-delete {
-  position: absolute;
-  top: 0.3rem;
-  right: 0.3rem;
   background: none;
   border: none;
   color: #9ca3af;
@@ -382,14 +379,12 @@ html.dark .floating-annotation svg path { stroke: #aaa; }
   display: flex;
   align-items: center;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .cc-delete:hover { color: #ef4444; }
 
 .cc-edit-btn {
-  position: absolute;
-  top: 0.3rem;
-  right: 1.6rem;
   background: none;
   border: none;
   color: #9ca3af;
@@ -399,6 +394,7 @@ html.dark .floating-annotation svg path { stroke: #aaa; }
   display: flex;
   align-items: center;
   line-height: 1;
+  flex-shrink: 0;
 }
 .cc-edit-btn:hover { color: #3b82f6; }
 
@@ -451,6 +447,39 @@ html.dark .cc-author  { color: #f3f4f6; }
 html.dark .cc-preview { color: #6b7280; }
 html.dark .cc-body    { color: #d1d5db; }
 html.dark .cc-dot     { box-shadow: 0 0 0 2px rgba(30,30,46,0.9); }
+
+.cc-like-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.cc-like-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 120ms ease;
+}
+.cc-like-btn:hover { color: #f43f5e; }
+.cc-like-btn.cc-like-active { color: #f43f5e; }
+.cc-like-count {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  line-height: 1;
+  user-select: none;
+}
+html.dark .cc-like-btn         { color: #6b7280; }
+html.dark .cc-like-btn:hover   { color: #f43f5e; }
+html.dark .cc-like-btn.cc-like-active { color: #f43f5e; }
+html.dark .cc-like-count       { color: #6b7280; }
 
 /* Animations */
 @keyframes cc-pulse {
