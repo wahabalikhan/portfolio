@@ -105,7 +105,7 @@ export default function HomePage() {
           </p>
 
           <p className="text-base text-gray-700 leading-relaxed" style={{ fontSize: '15.6px' }}>
-            Product Designer & <span className="font-bold">AI-first Coder</span> <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> <span className="font-bold">Enterprise B2B SaaS</span> <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> BSc CS <span style={{ fontSize: '1.1em', verticalAlign: 'middle' }}>·</span> NN/g Certified (ID: 1081116)
+            <span className="font-bold">Product Designer</span> & AI-first Coder <span style={{ margin: '0 4px' }}>·</span> <span className="font-bold">Enterprise B2B SaaS</span> <span style={{ margin: '0 4px' }}>·</span> BSc CS <span style={{ margin: '0 4px' }}>·</span> NN/g Certified (ID: 1081116)
           </p>
 
         </div>
