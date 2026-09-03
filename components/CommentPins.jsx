@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X, Pencil, GripHorizontal } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
-const VISITOR_COLORS = ['#1D9E75', '#D85A30', '#D4537E', '#378ADD', '#BA7517'];
+const VISITOR_COLORS = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '#6366F1', '#8B5CF6'];
 const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#8B5CF6', '#EF4444', '#06B6D4'];
 
 
@@ -61,9 +61,10 @@ const visitorColor = (id) => {
   return VISITOR_COLORS[hash % VISITOR_COLORS.length];
 };
 
+const ROTATIONS = [0, 2, -3, 0, 3, -2, 4, 0, -4, 2, -3, 3];
 const cardRotation = (id) => {
   const hash = String(id).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  return (hash % 7) - 3;
+  return ROTATIONS[hash % ROTATIONS.length];
 };
 
 const truncate = (text, words = 7) => {
@@ -1174,58 +1175,56 @@ export default function CommentPins({ page, activeTab }) {
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={() => onCardLeave(id)}
       >
-        <div className="cc-pin" style={{ backgroundColor: color }} />
-        {isExpanded && (
-          <div className={cardClass} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 40 }} onClick={(e) => e.stopPropagation()}>
-            <div className="cc-header">
-              <span className="cc-dot" style={{ backgroundColor: color }} />
-              <span className="cc-author">{author}</span>
-            </div>
-            {editingId === id ? (
-              <div className="cc-edit-form">
-                <textarea
-                  value={editBody}
-                  onChange={(e) => setEditBody(e.target.value)}
-                  rows={3}
-                  autoFocus
-                  style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.375rem' }}
-                />
-                <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
-                  <button type="button" className="cc-btn-cancel" onClick={(e) => { e.stopPropagation(); setEditingId(null); }}>Cancel</button>
-                  <button
-                    type="button"
-                    className="cc-btn-save"
-                    onClick={(e) => { e.stopPropagation(); isOwner ? handleEdit(id, editBody) : handleVisitorEdit(id, editBody); }}
-                    disabled={!editBody.trim()}
-                    style={{ opacity: !editBody.trim() ? 0.6 : 1 }}
-                  >Save</button>
-                </div>
-              </div>
-            ) : (
-              <p className="cc-body cc-body-visible">{body}</p>
-            )}
-            {editingId !== id && canEdit && (
-              <button
-                type="button"
-                className="cc-edit-btn"
-                onClick={(e) => { e.stopPropagation(); setEditBody(body); setEditingId(id); }}
-                aria-label="Edit comment"
-              >
-                <Pencil size={12} />
-              </button>
-            )}
-            {editingId !== id && canDelete && (
-              <button
-                type="button"
-                className="cc-delete"
-                onClick={(e) => { e.stopPropagation(); isOwner ? handleDelete(id) : handleVisitorDelete(id); }}
-                aria-label="Delete comment"
-              >
-                <Trash2 size={12} />
-              </button>
-            )}
+        <div className={cardClass}>
+          <div className="cc-header">
+            <span className="cc-dot" style={{ backgroundColor: color }} />
+            <span className="cc-author">{author}</span>
+            <span className={`cc-preview${isExpanded ? ' cc-preview-hidden' : ''}`}>{truncate(body)}</span>
           </div>
-        )}
+          {editingId === id ? (
+            <div className="cc-edit-form">
+              <textarea
+                value={editBody}
+                onChange={(e) => setEditBody(e.target.value)}
+                rows={3}
+                autoFocus
+                style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.375rem' }}
+              />
+              <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
+                <button type="button" className="cc-btn-cancel" onClick={(e) => { e.stopPropagation(); setEditingId(null); }}>Cancel</button>
+                <button
+                  type="button"
+                  className="cc-btn-save"
+                  onClick={(e) => { e.stopPropagation(); isOwner ? handleEdit(id, editBody) : handleVisitorEdit(id, editBody); }}
+                  disabled={!editBody.trim()}
+                  style={{ opacity: !editBody.trim() ? 0.6 : 1 }}
+                >Save</button>
+              </div>
+            </div>
+          ) : (
+            <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
+          )}
+          {editingId !== id && canEdit && isExpanded && (
+            <button
+              type="button"
+              className="cc-edit-btn"
+              onClick={(e) => { e.stopPropagation(); setEditBody(body); setEditingId(id); }}
+              aria-label="Edit comment"
+            >
+              <Pencil size={12} />
+            </button>
+          )}
+          {editingId !== id && canDelete && isExpanded && (
+            <button
+              type="button"
+              className="cc-delete"
+              onClick={(e) => { e.stopPropagation(); isOwner ? handleDelete(id) : handleVisitorDelete(id); }}
+              aria-label="Delete comment"
+            >
+              <Trash2 size={12} />
+            </button>
+          )}
+        </div>
       </div>
     );
   };
