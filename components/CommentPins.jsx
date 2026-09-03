@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X, Pencil, GripHorizontal } from 'lucide-react';
+import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X, Pencil, GripHorizontal, Heart } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 const VISITOR_COLORS = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '#6366F1', '#8B5CF6'];
@@ -200,6 +200,7 @@ export default function CommentPins({ page, activeTab }) {
   const justDraggedRef  = useRef(false);
   const preDragPosRef   = useRef(null);
   const dbWriteTimerRef = useRef(null);
+  const likeInFlight   = useRef({});
 
   const annotationDragMetaRef = useRef(null);
   const annotationDragPosRef  = useRef(null);
@@ -242,6 +243,7 @@ export default function CommentPins({ page, activeTab }) {
   const [viewerCount, setViewerCount] = useState(0);
   const [isMobile, setIsMobile]   = useState(() => typeof window !== 'undefined' && window.innerWidth <= 767);
   const [isOwner, setIsOwner]         = useState(false);
+  const [likes, setLikes]             = useState({});
   const [showLogin, setShowLogin]     = useState(false);
   const [loginEmail, setLoginEmail]   = useState('');
   const [loginPw, setLoginPw]         = useState('');
@@ -446,6 +448,20 @@ export default function CommentPins({ page, activeTab }) {
           try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
           return n;
         });
+        if (data.length > 0) {
+          const ids = data.map(c => c.id);
+          supabase.from('comment_likes').select('comment_id, session_token').in('comment_id', ids).then(({ data: likesData }) => {
+            if (!likesData) return;
+            const token = localSessionToken.current;
+            const map = {};
+            likesData.forEach(({ comment_id, session_token }) => {
+              if (!map[comment_id]) map[comment_id] = { count: 0, liked: false };
+              map[comment_id].count++;
+              if (session_token === token) map[comment_id].liked = true;
+            });
+            setLikes(map);
+          });
+        }
       }
     });
   }, [page, isMobile]);
@@ -532,6 +548,21 @@ export default function CommentPins({ page, activeTab }) {
           delete remoteMoveTimers.current[row.id];
         }
       )
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comment_likes' }, ({ new: row }) => {
+        if (row.session_token === localSessionToken.current) return;
+        setLikes(prev => {
+          const cur = prev[row.comment_id] || { count: 0, liked: false };
+          return { ...prev, [row.comment_id]: { count: cur.count + 1, liked: cur.liked } };
+        });
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'comment_likes' }, ({ old: row }) => {
+        if (row.session_token === localSessionToken.current) return;
+        setLikes(prev => {
+          const cur = prev[row.comment_id];
+          if (!cur) return prev;
+          return { ...prev, [row.comment_id]: { count: Math.max(0, cur.count - 1), liked: cur.liked } };
+        });
+      })
       .subscribe(status => { if (status === 'SUBSCRIBED') channel.track({ color: cursorColor }); });
 
     channelRef.current = channel;
@@ -999,6 +1030,32 @@ export default function CommentPins({ page, activeTab }) {
     await supabase.from('comments').update({ body: trimmed }).eq('id', id).eq('session_token', token);
   };
 
+  const handleToggleLike = async (e, id) => {
+    e.stopPropagation();
+    if (likeInFlight.current[id]) return;
+    const token = getOrCreateSessionToken();
+    if (!token) return;
+    localSessionToken.current = token;
+    likeInFlight.current[id] = true;
+    const current = likes[id] || { count: 0, liked: false };
+    const isLiked = current.liked;
+    setLikes(prev => ({
+      ...prev,
+      [id]: { count: Math.max(0, (prev[id]?.count || 0) + (isLiked ? -1 : 1)), liked: !isLiked },
+    }));
+    try {
+      const { error } = isLiked
+        ? await supabase.from('comment_likes').delete().eq('comment_id', id).eq('session_token', token)
+        : await supabase.from('comment_likes').insert({ comment_id: id, session_token: token });
+      if (error) {
+        console.error('[likes] DB error:', error);
+        setLikes(prev => ({ ...prev, [id]: current }));
+      }
+    } finally {
+      likeInFlight.current[id] = false;
+    }
+  };
+
   const startDrag = (e, id, x_pct, y_pct) => {
     if (!isOwner && !localSessionToken.current) return;
     if (e.stopPropagation) e.stopPropagation();
@@ -1169,8 +1226,8 @@ export default function CommentPins({ page, activeTab }) {
         key={id}
         className="cc-card-wrapper"
         style={wrapperStyle}
-        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
-        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
+        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
+        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
         onClick={(e) => onCardClick(e, id)}
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={() => onCardLeave(id)}
@@ -1180,6 +1237,37 @@ export default function CommentPins({ page, activeTab }) {
             <span className="cc-dot" style={{ backgroundColor: color }} />
             <span className="cc-author">{author}</span>
             <span className={`cc-preview${isExpanded ? ' cc-preview-hidden' : ''}`}>{truncate(body)}</span>
+            <div className="cc-like-row">
+              <span className="cc-like-count">{likes[id]?.count || 0}</span>
+              <button
+                type="button"
+                className={`cc-like-btn${likes[id]?.liked ? ' cc-like-active' : ''}`}
+                onClick={(e) => handleToggleLike(e, id)}
+                aria-label={likes[id]?.liked ? 'Unlike' : 'Like'}
+              >
+                <Heart size={12} strokeWidth={2} fill={likes[id]?.liked ? 'currentColor' : 'none'} />
+              </button>
+              {editingId !== id && canEdit && isExpanded && (
+                <button
+                  type="button"
+                  className="cc-edit-btn"
+                  onClick={(e) => { e.stopPropagation(); setEditBody(body); setEditingId(id); }}
+                  aria-label="Edit comment"
+                >
+                  <Pencil size={12} />
+                </button>
+              )}
+              {editingId !== id && canDelete && isExpanded && (
+                <button
+                  type="button"
+                  className="cc-delete"
+                  onClick={(e) => { e.stopPropagation(); isOwner ? handleDelete(id) : handleVisitorDelete(id); }}
+                  aria-label="Delete comment"
+                >
+                  <Trash2 size={12} />
+                </button>
+              )}
+            </div>
           </div>
           {editingId === id ? (
             <div className="cc-edit-form">
@@ -1203,26 +1291,6 @@ export default function CommentPins({ page, activeTab }) {
             </div>
           ) : (
             <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
-          )}
-          {editingId !== id && canEdit && isExpanded && (
-            <button
-              type="button"
-              className="cc-edit-btn"
-              onClick={(e) => { e.stopPropagation(); setEditBody(body); setEditingId(id); }}
-              aria-label="Edit comment"
-            >
-              <Pencil size={12} />
-            </button>
-          )}
-          {editingId !== id && canDelete && isExpanded && (
-            <button
-              type="button"
-              className="cc-delete"
-              onClick={(e) => { e.stopPropagation(); isOwner ? handleDelete(id) : handleVisitorDelete(id); }}
-              aria-label="Delete comment"
-            >
-              <Trash2 size={12} />
-            </button>
           )}
         </div>
       </div>
