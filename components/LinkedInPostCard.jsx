@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Lightbox from '@/components/Lightbox';
 
 const POST_TEXT = `Well well well... another offsite in Vienna 🇦🇹😉
 
@@ -37,6 +38,7 @@ function GlobeIcon() {
 
 export default function LinkedInPostCard() {
   const [expanded, setExpanded] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   return (
     <div className="li-card">
@@ -85,13 +87,23 @@ export default function LinkedInPostCard() {
 
       {/* Post image */}
       <div className="li-image-wrap">
-        {/* REPLACE THIS SRC with the actual Vienna offsite photo once saved to public folder */}
         <img
           src="/images/vienna_trip.jpeg"
           alt="Vienna offsite"
           className="li-image"
+          style={{ cursor: 'zoom-in' }}
+          onClick={() => setLightboxOpen(true)}
         />
       </div>
+
+      {lightboxOpen && (
+        <Lightbox
+          images={['/images/vienna_trip.jpeg']}
+          index={0}
+          onChange={() => {}}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
 
       {/* Footer */}
       <div className="li-footer">
