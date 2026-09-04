@@ -1850,6 +1850,145 @@ html.dark .li-reaction-count { color: #9ca3af; }
 html.dark .li-divider { background: #374151; }
 html.dark .li-image-wrap { background: #2a2a3c; }
 
+/* ─── Just for Fun Slideshow ─────────────────────────────────────────────── */
+.jff-slideshow {
+  position: relative;
+  width: 100%;
+  height: 700px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+.jff-slideshow .li-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.jff-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.88);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #374151;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  transition: background 120ms ease;
+}
+.jff-arrow:hover { background: #ffffff; }
+.jff-arrow-left  { left: 10px; }
+.jff-arrow-right { right: 10px; }
+.jff-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+}
+.jff-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.55);
+  cursor: pointer;
+  padding: 0;
+  transition: background 150ms ease;
+}
+.jff-dot-active { background: #ffffff; }
+.jff-counter {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 11px;
+  color: #ffffff;
+  background: rgba(0,0,0,0.38);
+  border-radius: 10px;
+  padding: 2px 7px;
+  line-height: 1.5;
+  pointer-events: none;
+}
+html.dark .jff-slideshow { background: #1e1e2e; }
+html.dark .jff-arrow { background: rgba(30,30,46,0.88); color: #d1d5db; }
+html.dark .jff-arrow:hover { background: rgba(30,30,46,1); }
+
+/* ─── Lightbox ────────────────────────────────────────────────────────────── */
+.lb-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lb-img-wrap {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lb-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 4px;
+  display: block;
+}
+.lb-close {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  background: rgba(255,255,255,0.12);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+.lb-close:hover { background: rgba(255,255,255,0.22); }
+.lb-counter {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  pointer-events: none;
+}
+.lb-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.12);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+.lb-arrow:hover { background: rgba(255,255,255,0.22); }
+.lb-arrow-left  { left: 20px; }
+.lb-arrow-right { right: 20px; }
+
 /* ─── Build Log Card ──────────────────────────────────────────────────────── */
 .build-log-card {
   background: #fff;

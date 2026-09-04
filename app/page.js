@@ -9,6 +9,7 @@ import CommentPins from '@/components/CommentPins';
 import FadeUp from '@/components/FadeUp';
 import LinkedInPostCard from '@/components/LinkedInPostCard';
 import BuildLogCard from '@/components/BuildLogCard';
+import JustForFunCard from '@/components/JustForFunCard';
 import GitHubRepoCard from '@/components/GitHubRepoCard';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
@@ -139,6 +140,13 @@ export default function HomePage() {
           >
             ✨ Extras
           </button>
+          <button
+            onClick={() => setActiveTab('JustForFun')}
+            style={{ cursor: 'pointer' }}
+            className={`tab-pill transition-all ${activeTab === 'JustForFun' ? 'tab-pill-active' : 'tab-pill-inactive'}`}
+          >
+            🌈 Just for fun
+          </button>
         </div>
         </FadeUp>
 
@@ -252,6 +260,13 @@ export default function HomePage() {
           <FadeUp className="flex flex-col gap-8 items-center">
             <LinkedInPostCard />
             <BuildLogCard />
+          </FadeUp>
+        )}
+
+        {/* Just for Fun Tab Content */}
+        {activeTab === 'JustForFun' && (
+          <FadeUp className="flex flex-col gap-8 items-center">
+            <JustForFunCard />
           </FadeUp>
         )}
       </div>
