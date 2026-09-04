@@ -182,6 +182,132 @@ const inputStyle = {
   color: '#111827', backgroundColor: '#ffffff', boxSizing: 'border-box',
 };
 
+function ReplyCarousel({ replies, centredIndex, onCycle, likes, onLike, editingId, editBody, onEditBodyChange, onStartEdit, onSaveEdit, onCancelEdit, onDelete, isOwner, ownToken }) {
+  const containerRef = useRef(null);
+  const onCycleRef = useRef(onCycle);
+  onCycleRef.current = onCycle;
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    let lastFire = 0;
+    const handler = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const now = Date.now();
+      if (now - lastFire < 180) return;
+      lastFire = now;
+      const dir = (e.deltaY || e.deltaX) > 0 ? 1 : -1;
+      onCycleRef.current(dir);
+    };
+    el.addEventListener('wheel', handler, { passive: false });
+    return () => el.removeEventListener('wheel', handler);
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="cc-carousel"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      {replies.map((reply, i) => {
+        const offset = i - centredIndex;
+        const abs = Math.abs(offset);
+        if (abs > 2) return null;
+
+        const absPxMap = [0, 38, 65];
+        const offsetPx = offset >= 0 ? absPxMap[abs] : -absPxMap[abs];
+        const rotateX = -offset * 28;
+        const scale = abs === 0 ? 1 : abs === 1 ? 0.72 : 0.5;
+        const opacity = abs === 0 ? 1 : abs === 1 ? 0.7 : 0.35;
+        const zIndex = 10 - abs * 2;
+        const isCenter = abs === 0;
+        const isOwnReply = !!reply.session_token && reply.session_token === ownToken;
+        const canEdit   = isCenter && (isOwner || isOwnReply);
+        const canDelete = isCenter && (isOwner || isOwnReply);
+        const isEditing = isCenter && editingId === reply.id;
+        const replyLikes = likes?.[reply.id] || { count: 0, liked: false };
+
+        return (
+          <div
+            key={reply.id}
+            className={`cc-carousel-item${isCenter ? ' cc-carousel-item-centre' : ''}`}
+            style={{ transform: `translateY(${offsetPx}px)`, opacity, zIndex }}
+            onClick={isCenter ? undefined : (e) => { e.stopPropagation(); onCycleRef.current(offset > 0 ? 1 : -1); }}
+          >
+            <div
+              className="cc-carousel-card"
+              style={{ transform: `perspective(600px) rotateX(${rotateX}deg) scale(${scale})` }}
+            >
+              <div className="cc-carousel-header">
+                <span className="cc-dot" style={{ backgroundColor: visitorColor(reply.id) }} />
+                <span className="cc-author">{reply.author || 'Anonymous'}</span>
+                {isCenter && (
+                  <div className="cc-like-row">
+                    <span className="cc-like-count">{replyLikes.count || 0}</span>
+                    <button
+                      type="button"
+                      className={`cc-like-btn${replyLikes.liked ? ' cc-like-active' : ''}`}
+                      onClick={(e) => onLike(e, reply.id)}
+                      aria-label={replyLikes.liked ? 'Unlike' : 'Like'}
+                    >
+                      <Heart size={12} strokeWidth={2} fill={replyLikes.liked ? 'currentColor' : 'none'} />
+                    </button>
+                    {!isEditing && canEdit && (
+                      <button
+                        type="button"
+                        className="cc-edit-btn"
+                        onClick={(e) => { e.stopPropagation(); onStartEdit(reply.id, reply.body); }}
+                        aria-label="Edit reply"
+                      >
+                        <Pencil size={12} />
+                      </button>
+                    )}
+                    {!isEditing && canDelete && (
+                      <button
+                        type="button"
+                        className="cc-delete"
+                        onClick={(e) => { e.stopPropagation(); onDelete(reply.id, reply.session_token); }}
+                        aria-label="Delete reply"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              {isEditing ? (
+                <div className="cc-edit-form">
+                  <textarea
+                    value={editBody}
+                    onChange={(e) => onEditBodyChange(e.target.value)}
+                    rows={3}
+                    autoFocus
+                    style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.375rem' }}
+                  />
+                  <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
+                    <button type="button" className="cc-btn-cancel" onClick={(e) => { e.stopPropagation(); onCancelEdit(); }}>Cancel</button>
+                    <button
+                      type="button"
+                      className="cc-btn-save"
+                      onClick={(e) => { e.stopPropagation(); onSaveEdit(reply.id, editBody); }}
+                      disabled={!editBody.trim()}
+                      style={{ opacity: !editBody.trim() ? 0.6 : 1 }}
+                    >Save</button>
+                  </div>
+                </div>
+              ) : (
+                <p className={`cc-carousel-body${isCenter ? ' cc-carousel-body-full' : ''}`}>{reply.body}</p>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function CommentPins({ page, activeTab }) {
   // contentAnchorRef — zero-height div inside the content container.
   // Its getBoundingClientRect() tells us the content column's left, width,
@@ -244,6 +370,12 @@ export default function CommentPins({ page, activeTab }) {
   const [isMobile, setIsMobile]   = useState(() => typeof window !== 'undefined' && window.innerWidth <= 767);
   const [isOwner, setIsOwner]         = useState(false);
   const [likes, setLikes]             = useState({});
+  const [replyingToId, setReplyingToId] = useState(null);
+  const [openCarouselId, setOpenCarouselId] = useState(null);
+  const [centredReplyIndex, setCentredReplyIndex] = useState(0);
+  const [replyAuthor, setReplyAuthor]   = useState('');
+  const [replyBody, setReplyBody]       = useState('');
+  const [replySaving, setReplySaving]   = useState(false);
   const [showLogin, setShowLogin]     = useState(false);
   const [loginEmail, setLoginEmail]   = useState('');
   const [loginPw, setLoginPw]         = useState('');
@@ -430,7 +562,7 @@ export default function CommentPins({ page, activeTab }) {
 
   useEffect(() => {
     if (isMobile) return;
-    supabase.from('comments').select('*').eq('page', page).then(({ data, error }) => {
+    supabase.from('comments').select('*').eq('page', page).order('created_at', { ascending: true }).then(({ data, error }) => {
       if (!error && data) {
         setComments(data);
         // Seed cache for any comment not yet in it; clean up deleted ones.
@@ -672,6 +804,16 @@ export default function CommentPins({ page, activeTab }) {
     document.addEventListener('click', close);
     return () => document.removeEventListener('click', close);
   }, [expandedId, editingId]);
+
+  useEffect(() => {
+    if (!openCarouselId) return;
+    const closeCarousel = (e) => {
+      if (e.target.closest('.cc-locked-active')) return;
+      setOpenCarouselId(null);
+    };
+    const timer = setTimeout(() => document.addEventListener('click', closeCarousel), 0);
+    return () => { clearTimeout(timer); document.removeEventListener('click', closeCarousel); };
+  }, [openCarouselId]);
 
   // Main drag effect.
   // Uses contentMetricsRef for fresh content position values without stale closures.
@@ -1056,6 +1198,43 @@ export default function CommentPins({ page, activeTab }) {
     }
   };
 
+  const openReply = (e, id) => {
+    e.stopPropagation();
+    setOpenCarouselId(null);
+    setReplyingToId(id);
+    setReplyAuthor(getDisplayName(isOwner));
+    setReplyBody('');
+  };
+
+  const saveReply = async () => {
+    if (!replyBody.trim() || !replyingToId) return;
+    setReplySaving(true);
+    const token = getOrCreateSessionToken();
+    localSessionToken.current = token;
+    const enteredName = replyAuthor.trim();
+    const parent = comments.find(c => c.id === replyingToId);
+    const { data, error } = await supabase.from('comments').insert({
+      page,
+      x_pct: parent?.x_pct ?? 50,
+      y_pct: parent?.y_pct ?? 50,
+      author: enteredName || 'Anonymous',
+      body: replyBody.trim(),
+      session_token: token,
+      parent_id: replyingToId,
+    }).select().single();
+    setReplySaving(false);
+    if (!error && data) {
+      setComments(prev => prev.some(c => c.id === data.id) ? prev : [...prev, data]);
+      if (enteredName && enteredName !== 'Anonymous') {
+        try { localStorage.setItem('wahab_visitor_name', enteredName); } catch {}
+      }
+      setReplyingToId(null);
+      setReplyAuthor('');
+      setReplyBody('');
+      setExpandedId(null);
+    }
+  };
+
   const startDrag = (e, id, x_pct, y_pct) => {
     if (!isOwner && !localSessionToken.current) return;
     if (e.stopPropagation) e.stopPropagation();
@@ -1079,6 +1258,7 @@ export default function CommentPins({ page, activeTab }) {
   const handleOverlayClick = (e) => {
     if (justDraggedRef.current) { justDraggedRef.current = false; return; }
     setExpandedId(null);
+    setOpenCarouselId(null);
     if (mode !== 'comment' || draft) return;
     const m = contentMetricsRef.current;
     if (m.width === 0) return;
@@ -1171,8 +1351,19 @@ export default function CommentPins({ page, activeTab }) {
     return isMobile ? Math.max(-1, Math.min(1, deg)) : deg;
   };
 
-  const onCardEnter = (id) => { if (!isTouchDevice()) setExpandedId(id); };
-  const onCardLeave = (id) => { if (!isTouchDevice()) setExpandedId(null); };
+  const onCardEnter = (id) => {
+    if (isTouchDevice()) return;
+    if (openCarouselId !== null && openCarouselId !== id) {
+      setOpenCarouselId(null);
+      if (replyingToId === null) setExpandedId(id);
+      return;
+    }
+    if (replyingToId === null && openCarouselId === null) setExpandedId(id);
+  };
+  const onCardLeave = (id) => {
+    if (isTouchDevice()) return;
+    if (replyingToId === null && openCarouselId === null) setExpandedId(null);
+  };
   const onCardClick = (e, id) => {
     e.stopPropagation();
     const start = dragStartRef.current;
@@ -1201,8 +1392,9 @@ export default function CommentPins({ page, activeTab }) {
       isRemotelyMoving = true;
     }
 
-    const isExpanded = expandedId === id;
-    const deg        = getDeg(id);
+    const isExpanded     = expandedId === id;
+    const isLockedActive = id === replyingToId || id === openCarouselId;
+    const deg            = getDeg(id);
     const isOwnCard  = !!sessionToken && sessionToken === localSessionToken.current;
     const canDrag    = isOwner || isOwnCard;
     const canDelete  = isOwner || isOwnCard;
@@ -1213,6 +1405,7 @@ export default function CommentPins({ page, activeTab }) {
       cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
+      ...(isLockedActive ? { zIndex: 1001 } : {}),
     };
 
     const cardClass = [
@@ -1224,10 +1417,10 @@ export default function CommentPins({ page, activeTab }) {
     return (
       <div
         key={id}
-        className="cc-card-wrapper"
+        className={`cc-card-wrapper${isLockedActive ? ' cc-locked-active' : ''}`}
         style={wrapperStyle}
-        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
-        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
+        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
+        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
         onClick={(e) => onCardClick(e, id)}
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={() => onCardLeave(id)}
@@ -1267,6 +1460,16 @@ export default function CommentPins({ page, activeTab }) {
                   <Trash2 size={12} />
                 </button>
               )}
+              {editingId !== id && isExpanded && (
+                <button
+                  type="button"
+                  className="cc-reply-btn"
+                  onClick={(e) => openReply(e, id)}
+                  aria-label="Reply"
+                >
+                  <MessageCircle size={12} />
+                </button>
+              )}
             </div>
           </div>
           {editingId === id ? (
@@ -1293,6 +1496,88 @@ export default function CommentPins({ page, activeTab }) {
             <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
           )}
         </div>
+        {id === replyingToId && (
+          <div
+            style={{ position: 'absolute', top: '100%', left: 0, marginTop: '26px', width: '100%', zIndex: 1 }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="cc-card cc-draft" style={{ width: '100%', minWidth: 0, maxWidth: 'none', boxSizing: 'border-box' }}>
+              <input
+                type="text"
+                placeholder="Your name (or leave anonymous)"
+                value={replyAuthor}
+                onChange={(e) => setReplyAuthor(e.target.value)}
+                style={inputStyle}
+              />
+              <textarea
+                placeholder="Write a reply…"
+                value={replyBody}
+                onChange={(e) => setReplyBody(e.target.value)}
+                rows={3}
+                autoFocus
+                style={{ ...inputStyle, resize: 'vertical', marginBottom: '0.625rem' }}
+              />
+              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                <button type="button" className="cc-btn-cancel" onClick={(e) => { e.stopPropagation(); setReplyingToId(null); setExpandedId(null); }}>Cancel</button>
+                <button
+                  type="button"
+                  className="cc-btn-save"
+                  onClick={(e) => { e.stopPropagation(); saveReply(); }}
+                  disabled={replySaving || !replyBody.trim()}
+                  style={{ opacity: replySaving || !replyBody.trim() ? 0.6 : 1 }}
+                >{replySaving ? 'Saving…' : 'Reply'}</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {(() => {
+          const replies = comments
+            .filter(c => c.parent_id === id)
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+          if (replies.length === 0) return null;
+          const isOpen = openCarouselId === id;
+          const safeIndex = Math.min(centredReplyIndex, replies.length - 1);
+          return (
+            <>
+              <button
+                type="button"
+                className={`cc-reply-count${isOpen ? ' cc-reply-count-open' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (replyingToId === id) return;
+                  if (isOpen) {
+                    setOpenCarouselId(null);
+                  } else {
+                    setOpenCarouselId(id);
+                    setCentredReplyIndex(0);
+                    setExpandedId(id);
+                  }
+                }}
+              >
+                {replies.length === 1 ? '1 reply' : `${replies.length} replies`}
+              </button>
+              {isOpen && (
+                <ReplyCarousel
+                  replies={replies}
+                  centredIndex={safeIndex}
+                  onCycle={(dir) => setCentredReplyIndex(prev => Math.max(0, Math.min(prev + dir, replies.length - 1)))}
+                  likes={likes}
+                  onLike={handleToggleLike}
+                  editingId={editingId}
+                  editBody={editBody}
+                  onEditBodyChange={setEditBody}
+                  onStartEdit={(rid, body) => { setEditBody(body); setEditingId(rid); }}
+                  onSaveEdit={(rid) => isOwner ? handleEdit(rid, editBody) : handleVisitorEdit(rid, editBody)}
+                  onCancelEdit={() => setEditingId(null)}
+                  onDelete={(rid) => isOwner ? handleDelete(rid) : handleVisitorDelete(rid)}
+                  isOwner={isOwner}
+                  ownToken={localSessionToken.current}
+                />
+              )}
+            </>
+          );
+        })()}
       </div>
     );
   };
@@ -1302,8 +1587,9 @@ export default function CommentPins({ page, activeTab }) {
       ref={overlayRef}
       style={overlayStyle(mode, overlayHeight)}
       onClick={handleOverlayClick}
+      data-locked={!!replyingToId || undefined}
     >
-      {!hidden && comments.map((pin, i) => {
+      {!hidden && comments.filter(c => !c.parent_id).map((pin, i) => {
         const cached = commentPosCache[pin.id];
         const x = cached ? cached.x_pct : pin.x_pct;
         const y = cached ? cached.y_pct : pin.y_pct;
@@ -1383,6 +1669,7 @@ export default function CommentPins({ page, activeTab }) {
         </div>
         );
       })()}
+
     </div>
   );
 
