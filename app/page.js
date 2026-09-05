@@ -134,13 +134,6 @@ export default function HomePage() {
             💻 Development
           </button>
           <button
-            onClick={() => setActiveTab('Extras')}
-            style={{ cursor: 'pointer' }}
-            className={`tab-pill transition-all ${activeTab === 'Extras' ? 'tab-pill-active' : 'tab-pill-inactive'}`}
-          >
-            ✨ Extras
-          </button>
-          <button
             onClick={() => setActiveTab('JustForFun')}
             style={{ cursor: 'pointer' }}
             className={`tab-pill transition-all ${activeTab === 'JustForFun' ? 'tab-pill-active' : 'tab-pill-inactive'}`}
@@ -252,20 +245,17 @@ export default function HomePage() {
                 />
               ))}
             </div>
-          </FadeUp>
-        )}
 
-        {/* Extras Tab Content */}
-        {activeTab === 'Extras' && (
-          <FadeUp className="flex flex-col gap-8 items-center">
-            <LinkedInPostCard />
-            <BuildLogCard />
+            <div className="mt-8">
+              <BuildLogCard />
+            </div>
           </FadeUp>
         )}
 
         {/* Just for Fun Tab Content */}
         {activeTab === 'JustForFun' && (
           <FadeUp className="flex flex-col gap-8 items-center">
+            <LinkedInPostCard />
             <JustForFunCard />
           </FadeUp>
         )}
