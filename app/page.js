@@ -88,17 +88,17 @@ export default function HomePage() {
 
         <div>
           <h1 className="font-bold mb-2 text-gray-900" style={{ fontSize: '2.75rem', lineHeight: '1.12' }}>
-            I{' '}
-            <span className="hero-accent-word hero-accent-design" onClick={() => showTooltip('design')}>
+            Hey <span className="nav-wave">👋</span>, I{' '}
+            <span className="hero-accent-word hero-accent-design" onClick={() => showTooltip('designing')}>
               {activeTooltip === 'design' && <span className="hero-word-tooltip">Figma, mostly 👀</span>}
               design
             </span>
-            {' '}products. Then I help{' '}
+            {' '}products then help{' '}
             <span className="hero-accent-word hero-accent-ship" onClick={() => showTooltip('ship')}>
               {activeTooltip === 'ship' && <span className="hero-word-tooltip">Claude Code helped 🤝</span>}
               ship
-</span>
-            {''}them.
+            </span>
+            {' '}them.
           </h1>
 
           <p className="text-gray-500 leading-relaxed mt-3 mb-3" style={{ fontSize: '15.6px' }}>
