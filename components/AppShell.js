@@ -65,7 +65,7 @@ export default function AppShell({ children }) {
         <NavBrand pastCaseStudies={pastCaseStudies} />
         <div className="flex items-center nav-right">
           <PageNav isDarkMode={isDarkMode} pastCaseStudies={pastCaseStudies} />
-          <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+          {/* <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} /> */}
         </div>
       </div>
       {children}

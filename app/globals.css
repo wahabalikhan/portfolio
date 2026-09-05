@@ -791,6 +791,22 @@ html.dark .hover\:border-gray-400:hover {
   align-items: center;
 }
 
+.nav-wave {
+  display: inline-block;
+  transform-origin: 70% 80%;
+  animation: nav-wave-hand 5.5s linear infinite;
+}
+
+@keyframes nav-wave-hand {
+  /* wave occupies the first ~1s (first 18% of 5.5s), then rests */
+  0%   { transform: rotate(0deg); }
+  5%   { transform: rotate(22deg); }
+  9%   { transform: rotate(-12deg); }
+  13%  { transform: rotate(18deg); }
+  18%  { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
 /* Page Nav Styling */
 .page-nav-container {
   display: flex;
