@@ -23,7 +23,7 @@ export default function NavBrand({ pastCaseStudies }) {
         className={`nav-link ${isActive ? 'nav-link-active' : 'text-gray-500'}`}
         style={{ textDecoration: 'none', fontWeight: 500 }}
       >
-        Hey, I'm Wahab 👋
+        Wahab
       </Link>
     </div>
   );
