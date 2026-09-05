@@ -2147,3 +2147,92 @@ html.dark .build-log-line { background: #374151; }
 html.dark .build-log-divider { background: #374151; }
 html.dark .build-log-stack-name { color: #f0f0f0; }
 html.dark .build-log-stack-reason { color: #6b7280; }
+
+/* ─── GitHub Contribution Graph ─────────────────────────────────────────── */
+.gh-contrib-wrap {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem 1.25rem 0.875rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+
+.gh-contrib-header {
+  margin-bottom: 0.75rem;
+}
+
+.gh-contrib-total {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.gh-contrib-months {
+  display: grid;
+  margin-bottom: 4px;
+  min-width: 600px;
+}
+
+.gh-contrib-month-label {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+
+.gh-contrib-grid {
+  display: grid;
+  grid-auto-rows: 11px;
+  gap: 2px;
+  min-width: 600px;
+}
+
+.gh-contrib-cell {
+  width: 100%;
+  height: 11px;
+  border-radius: 2px;
+}
+
+.gh-contrib-legend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 0.625rem;
+  justify-content: flex-end;
+}
+
+.gh-contrib-legend-label {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin: 0 2px;
+}
+
+/* Skeleton shimmer */
+.gh-contrib-skeleton-text {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: gh-shimmer 1.4s infinite;
+}
+
+.gh-contrib-skeleton-cell {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: gh-shimmer 1.4s infinite;
+}
+
+@keyframes gh-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Error state */
+.gh-contrib-error {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.gh-contrib-error-text {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
