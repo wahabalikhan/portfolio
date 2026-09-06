@@ -81,11 +81,19 @@ export default function HomePage() {
     <div className="max-w-3xl mx-auto px-6 py-16 relative home-page" role="application">
       <CommentPins page="home" activeTab={activeTab} />
       <FadeUp delay={0} className="flex items-stretch gap-4 mb-6">
-        <img
-          src="/images/profile.png"
-          alt="Wahab"
-          className="h-[100px] w-[100px] aspect-square rounded-full object-cover flex-shrink-0"
-        />
+        <div style={{ position: 'relative', width: 100, height: 100, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+          <img
+            src="/images/profile.png"
+            alt=""
+            aria-hidden="true"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(10px)', transform: 'scale(1.15)' }}
+          />
+          <img
+            src="/images/profile.png"
+            alt="Wahab"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+          />
+        </div>
 
         <div>
           <h1 className="font-bold mb-2 text-gray-900" style={{ fontSize: '2.75rem', lineHeight: '1.12' }}>
