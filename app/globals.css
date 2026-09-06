@@ -205,12 +205,12 @@ html.dark .tab-pill-inactive:hover { background: rgba(255,255,255,0.1); color: #
 
 /* Hero gradient — scoped to hero section only. Center at 80px, radius 220px → fades to 0 at 300px (before case studies). */
 .app-root {
-  background-image: radial-gradient(ellipse 50% 220px at 18% 80px, rgba(37, 99, 235, 0.28) 0%, transparent 100%);
+  background-image: radial-gradient(ellipse 50% 220px at 18% 80px, rgba(37, 99, 235, 0.50) 0%, transparent 100%);
   background-size: 100% 300px;
   background-repeat: no-repeat;
 }
 html.dark .app-root {
-  background-image: radial-gradient(ellipse 50% 220px at 18% 80px, rgba(37, 99, 235, 0.35) 0%, transparent 100%);
+  background-image: radial-gradient(ellipse 50% 220px at 18% 80px, rgba(37, 99, 235, 0.60) 0%, transparent 100%);
   background-size: 100% 300px;
   background-repeat: no-repeat;
 }
@@ -1471,7 +1471,7 @@ html.dark .bg-blue-50 .text-gray-700 {
 }
 
 .home-page footer,
-.experience-page footer { margin-bottom: 1.5rem; }
+.experience-page footer { margin-bottom: 4.5rem; }
 /* Blog/case study pages: match footer bottom gap to pt-8 (2rem) */
 .max-w-3xl.mx-auto:not(.home-page) { padding-bottom: 3rem; }
 
@@ -2236,4 +2236,10 @@ html.dark .build-log-stack-reason { color: #6b7280; }
 .gh-contrib-error-text {
   font-size: 0.875rem;
   color: #9ca3af;
+}
+
+@keyframes orbDrift {
+  0%, 100% { transform: scale(1)    rotate(0deg);  }
+  40%       { transform: scale(1.04) rotate(6deg);  }
+  75%       { transform: scale(0.97) rotate(-4deg); }
 }
