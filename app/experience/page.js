@@ -11,7 +11,8 @@ const EXPERIENCE = [
   {
     company: 'Adverity',
     role: 'AI Product Designer',
-    years: '2026',
+    years: '2026 → 2026',
+    note: 'Role ended due to redundancy from organisational restructures.',
     logo: '/images/adverity.jpg',
     bullets: [
       'Joined an in-progress AI-assisted design workflow initiative and contributed to getting it from a half-built process to a documented, team-wide workflow, working through setup, debugging, and refining the step-by-step guide collaboratively with another designer.',
@@ -104,7 +105,13 @@ function ExperienceItem({ job }) {
       </div>
 
       {open && (
-        <ul style={{ margin: '0.25rem 0 0.75rem 2.75rem' }}>
+        <>
+        {job.note && (
+          <p style={{ margin: '0.125rem 0 0.5rem 2.75rem', color: '#6b7280', fontSize: '1rem', fontStyle: 'italic' }}>
+            {job.note}
+          </p>
+        )}
+        <ul style={{ margin: '0 0 0.75rem 2.75rem' }}>
           {job.bullets.map((bullet, i) => (
             <li key={i} className="flex items-start gap-2.5" style={{ color: '#374151', lineHeight: '1.6', fontSize: '1rem', marginBottom: '0.4rem' }}>
               <span style={{ color: '#374151', flexShrink: 0, userSelect: 'none' }}>•</span>
@@ -112,6 +119,7 @@ function ExperienceItem({ job }) {
             </li>
           ))}
         </ul>
+        </>
       )}
     </div>
   );
