@@ -18,6 +18,7 @@ export default function LoadingOverlay({ onExiting }) {
     try {
       if (sessionStorage.getItem('splash_shown')) {
         onExiting?.();
+        setPhase('done');
         return;
       }
       const idx = Math.floor(Math.random() * QUOTES.length);
@@ -33,8 +34,8 @@ export default function LoadingOverlay({ onExiting }) {
 
     // Timeline: 800ms entrance → 3000ms hold → 700ms exit
     const t1 = setTimeout(() => setPhase('holding'), 800);
-    const t2 = setTimeout(() => { setPhase('exiting'); onExiting?.(); }, 3800);
-    const t3 = setTimeout(() => setPhase('done'), 4500);
+    const t2 = setTimeout(() => { setPhase('exiting'); onExiting?.(); }, 3300);
+    const t3 = setTimeout(() => setPhase('done'), 4000);
 
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
