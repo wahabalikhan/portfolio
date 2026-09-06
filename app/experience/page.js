@@ -97,16 +97,16 @@ function ExperienceItem({ job }) {
         ) : (
           <div style={{ width: 32, height: 32, borderRadius: 4, flexShrink: 0, background: job.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.5rem', fontWeight: 700 }}>{job.initials}</div>
         )}
-        <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.9375rem', whiteSpace: 'nowrap' }}>{job.company}</span>
-        <span style={{ color: '#6b7280', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>{job.role}</span>
+        <span style={{ fontWeight: 600, color: '#111827', fontSize: '1rem', whiteSpace: 'nowrap' }}>{job.company}</span>
+        <span style={{ color: '#6b7280', fontSize: '1rem', whiteSpace: 'nowrap' }}>{job.role}</span>
         <div style={{ flex: 1, borderBottom: '1px solid #d1d5db' }} />
-        <span style={{ color: '#9ca3af', fontSize: '0.8125rem', whiteSpace: 'nowrap', flexShrink: 0 }}>{job.years}</span>
+        <span style={{ color: '#9ca3af', fontSize: '1rem', whiteSpace: 'nowrap', flexShrink: 0 }}>{job.years}</span>
       </div>
 
       {open && (
         <ul style={{ margin: '0.25rem 0 0.75rem 2.75rem' }}>
           {job.bullets.map((bullet, i) => (
-            <li key={i} className="flex items-start gap-2.5" style={{ color: '#374151', lineHeight: '1.6', fontSize: '0.9375rem', marginBottom: '0.4rem' }}>
+            <li key={i} className="flex items-start gap-2.5" style={{ color: '#374151', lineHeight: '1.6', fontSize: '1rem', marginBottom: '0.4rem' }}>
               <span style={{ color: '#374151', flexShrink: 0, userSelect: 'none' }}>•</span>
               <span>{bullet}</span>
             </li>
