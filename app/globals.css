@@ -1471,7 +1471,7 @@ html.dark .bg-blue-50 .text-gray-700 {
 }
 
 .home-page footer,
-.experience-page footer { margin-bottom: 4.5rem; }
+.experience-page footer { margin-bottom: 1.5rem; }
 /* Blog/case study pages: match footer bottom gap to pt-8 (2rem) */
 .max-w-3xl.mx-auto:not(.home-page) { padding-bottom: 3rem; }
 
