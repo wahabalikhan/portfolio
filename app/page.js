@@ -13,6 +13,7 @@ import JustForFunCard from '@/components/JustForFunCard';
 import GitHubRepoCard from '@/components/GitHubRepoCard';
 import GitHubContributions from '@/components/GitHubContributions';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 const HARDCODED_REPOS = [
   {
@@ -69,6 +70,11 @@ export default function HomePage() {
     const [activeTooltip, setActiveTooltip] = useState(null);
     const tooltipTimerRef = useRef(null);
 
+    const [splashDone, setSplashDone] = useState(() => {
+      if (typeof window === 'undefined') return false;
+      try { return !!sessionStorage.getItem('splash_shown'); } catch { return true; }
+    });
+
     const showTooltip = (word) => {
       if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current);
       setActiveTooltip(word);
@@ -80,6 +86,16 @@ export default function HomePage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16 relative home-page" role="application">
       <CommentPins page="home" activeTab={activeTab} />
+      <div
+        suppressHydrationWarning
+        style={{
+          opacity: splashDone ? 1 : 0,
+          transform: splashDone ? 'translateY(0)' : 'translateY(10px)',
+          transition: splashDone
+            ? 'opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)'
+            : 'none',
+        }}
+      >
       <FadeUp delay={0} className="flex items-stretch gap-4 mb-6">
         <div style={{ position: 'relative', width: 100, height: 100, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
           <img
@@ -296,6 +312,8 @@ export default function HomePage() {
       </FadeUp>
 
       <Footer />
+      </div>
+      <LoadingOverlay onExiting={() => setSplashDone(true)} />
     </div>
   );
 }

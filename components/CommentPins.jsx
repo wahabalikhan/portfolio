@@ -352,8 +352,6 @@ export default function CommentPins({ page, activeTab }) {
 
   // Portal root: a div appended to document.body that hosts the full-page overlay.
   const [portalRoot, setPortalRoot] = useState(null);
-  const [toolbarExpanded, setToolbarExpanded] = useState(false);
-  const toolbarLeaveTimer = useRef(null);
   const [mode, setMode]           = useState('cursor');
   const [comments, setComments]   = useState([]);
   const [draft, setDraft]         = useState(null);
@@ -1731,97 +1729,52 @@ export default function CommentPins({ page, activeTab }) {
 
       {portalRoot && createPortal(overlay, portalRoot)}
 
-      {/* Full toolbar — independently positioned so it never causes layout shifts */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: 'calc(2rem + 3px + 1rem)',
-          left: 0,
-          right: 0,
-          margin: '0 auto',
-          width: 'fit-content',
-          zIndex: 100,
-          opacity: toolbarExpanded ? 1 : 0,
-          transform: toolbarExpanded ? 'translateY(0) scale(1)' : 'translateY(6px) scale(0.96)',
-          transition: 'opacity 0.22s cubic-bezier(0.16,1,0.3,1), transform 0.22s cubic-bezier(0.16,1,0.3,1)',
-          pointerEvents: toolbarExpanded ? 'auto' : 'none',
-        }}
-        onMouseEnter={() => { clearTimeout(toolbarLeaveTimer.current); setToolbarExpanded(true); }}
-        onMouseLeave={() => { toolbarLeaveTimer.current = setTimeout(() => setToolbarExpanded(false), 200); }}
-      >
-        <div style={{
-          display: 'flex',
-          gap: '0.375rem',
-          backgroundColor: '#ffffff',
-          border: '1px solid #e5e7eb',
-          borderRadius: '9999px',
-          padding: '0.375rem',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', padding: '0 0.625rem', fontSize: '0.75rem', fontWeight: 500, color: '#374151', whiteSpace: 'nowrap' }}>
-            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', backgroundColor: '#22c55e' }} />
-            {viewerCount} viewing
-          </div>
-          <div style={toolbarDivider} />
-          <div className="ftip-wrap">
-            <button type="button" aria-label="Cursor mode" style={toolbarBtnStyle(mode === 'cursor')}
-              onClick={() => { setMode('cursor'); cancelDraft(); }}>
-              <MousePointer2 size={18} />
-            </button>
-            <div className="ftip">Cursor</div>
-          </div>
-          <div className="ftip-wrap">
-            <button type="button" aria-label="Comment mode" style={toolbarBtnStyle(mode === 'comment')}
-              onClick={() => setMode('comment')}>
-              <MessageCircle size={18} />
-            </button>
-            <div className="ftip">Comment</div>
-          </div>
-          <div className="ftip-wrap">
-            <button type="button" aria-label={hidden ? 'Show comments' : 'Hide comments'} style={toolbarBtnStyle(hidden)}
-              onClick={() => setHidden(h => {
-                const next = !h;
-                try { localStorage.setItem('wahab_comments_hidden', next); } catch {}
-                window.dispatchEvent(new CustomEvent('wahab:comments:hidden:change', { detail: next }));
-                return next;
-              })}>
-              {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-            <div className="ftip">{hidden ? 'Show' : 'Hide'} comments</div>
-          </div>
-          {isOwner && (
-            <>
-              <div style={toolbarDivider} />
-              <div className="ftip-wrap">
-                <button type="button" aria-label="Log out" style={toolbarBtnStyle(false)}
-                  onClick={() => supabase.auth.signOut()}>
-                  <LogOut size={18} />
-                </button>
-                <div className="ftip">Log out</div>
-              </div>
-            </>
-          )}
+      {/* Toolbar */}
+      <div style={toolbarStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', padding: '0 0.625rem', fontSize: '0.75rem', fontWeight: 500, color: '#374151', whiteSpace: 'nowrap' }}>
+          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', backgroundColor: '#22c55e' }} />
+          {viewerCount} viewing
         </div>
+        <div style={toolbarDivider} />
+        <div className="ftip-wrap">
+          <button type="button" aria-label="Cursor mode" style={toolbarBtnStyle(mode === 'cursor')}
+            onClick={() => { setMode('cursor'); cancelDraft(); }}>
+            <MousePointer2 size={18} />
+          </button>
+          <div className="ftip">Cursor</div>
+        </div>
+        <div className="ftip-wrap">
+          <button type="button" aria-label="Comment mode" style={toolbarBtnStyle(mode === 'comment')}
+            onClick={() => setMode('comment')}>
+            <MessageCircle size={18} />
+          </button>
+          <div className="ftip">Comment</div>
+        </div>
+        <div className="ftip-wrap">
+          <button type="button" aria-label={hidden ? 'Show comments' : 'Hide comments'} style={toolbarBtnStyle(hidden)}
+            onClick={() => setHidden(h => {
+              const next = !h;
+              try { localStorage.setItem('wahab_comments_hidden', next); } catch {}
+              window.dispatchEvent(new CustomEvent('wahab:comments:hidden:change', { detail: next }));
+              return next;
+            })}>
+            {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+          <div className="ftip">{hidden ? 'Show' : 'Hide'} comments</div>
+        </div>
+        {isOwner && (
+          <>
+            <div style={toolbarDivider} />
+            <div className="ftip-wrap">
+              <button type="button" aria-label="Log out" style={toolbarBtnStyle(false)}
+                onClick={() => supabase.auth.signOut()}>
+                <LogOut size={18} />
+              </button>
+              <div className="ftip">Log out</div>
+            </div>
+          </>
+        )}
       </div>
-
-      {/* iPhone-style pill indicator — independently positioned */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '2rem',
-          left: 0,
-          right: 0,
-          margin: '0 auto',
-          width: 120,
-          height: 3,
-          borderRadius: 9999,
-          backgroundColor: '#4b5563',
-          cursor: 'default',
-          zIndex: 100,
-        }}
-        onMouseEnter={() => { clearTimeout(toolbarLeaveTimer.current); setToolbarExpanded(true); }}
-        onMouseLeave={() => { toolbarLeaveTimer.current = setTimeout(() => setToolbarExpanded(false), 200); }}
-      />
 
       {/* Login form */}
       {showLogin && !isOwner && (
