@@ -1,4 +1,4 @@
-const CACHE_KEY = new Request('https://internal-cache.local/github-contributions');
+const CACHE_KEY = new Request('https://internal-cache.local/github-contributions-v2');
 const CACHE_TTL = 21600; // 6 hours
 
 const QUERY = `{
