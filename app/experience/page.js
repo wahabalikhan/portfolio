@@ -93,9 +93,9 @@ function ExperienceItem({ job }) {
           }}
         />
         {job.logo ? (
-          <img src={job.logo} alt={job.company} style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} />
+          <img src={job.logo} alt={job.company} className="w-8 h-8 rounded flex-shrink-0" />
         ) : (
-          <div style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, background: job.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.5rem', fontWeight: 700 }}>{job.initials}</div>
+          <div style={{ width: 32, height: 32, borderRadius: 4, flexShrink: 0, background: job.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.5rem', fontWeight: 700 }}>{job.initials}</div>
         )}
         <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.9375rem', whiteSpace: 'nowrap' }}>{job.company}</span>
         <span style={{ color: '#6b7280', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>{job.role}</span>
