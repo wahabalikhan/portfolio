@@ -34,7 +34,16 @@ const TOOL_ICONS = [
 ];
 
 export default function LoadingOverlay({ onExiting }) {
-  const [phase, setPhase] = useState('idle');
+  // Check sessionStorage synchronously so the overlay returns null from the
+  // very first client render on returning visits, rather than waiting for useEffect.
+  // SSR gets 'idle' (no window); the hydration mismatch is recovered by React.
+  const [phase, setPhase] = useState(() => {
+    if (typeof window === 'undefined') return 'idle';
+    try {
+      if (sessionStorage.getItem('splash_shown')) return 'done';
+    } catch {}
+    return 'idle';
+  });
   const [quote, setQuote] = useState('');
   // Guards against React Strict Mode's double-invocation of useEffect in dev.
   // Refs persist across the cleanup→reinvoke cycle, so the second invocation
@@ -42,7 +51,6 @@ export default function LoadingOverlay({ onExiting }) {
   const initDoneRef = useRef(false);
 
   useEffect(() => {
-    // Returning visitor: overlay already completed this session.
     try {
       if (sessionStorage.getItem('splash_shown')) {
         onExiting?.();
