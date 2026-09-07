@@ -17,12 +17,12 @@ const TOOL_ICONS = [
   { name: 'Figma',       src: '/images/icons/figma.png',       alt: 'Figma',       group: 'unstyled',  top: '7%',  left: '8%',  rotate: '-14deg', opacity: 0.17 },
   { name: 'React',       src: '/images/icons/react.svg',       alt: 'React',       group: 'container', top: '12%', left: '55%', rotate:  '11deg', opacity: 0.15 },
   { name: 'Slack',       src: '/images/icons/slack.svg',       alt: 'Slack',       group: 'unstyled',  top: '6%',  left: '38%', rotate:  '-7deg', opacity: 0.14 },
-  { name: 'VSCode',      src: '/images/icons/vs-code.svg',     alt: 'VS Code',     group: 'container', top: '15%', left: '78%', rotate:  '15deg', opacity: 0.16 },
+  { name: 'VSCode',      src: '/images/icons/vs-code.png',     alt: 'VS Code',     group: 'unstyled',  top: '15%', left: '78%', rotate:  '15deg', opacity: 0.16 },
   { name: 'GitHub',      src: '/images/icons/github.png',      alt: 'GitHub',      group: 'unstyled',  top: '8%',  left: '88%', rotate:  '-9deg', opacity: 0.18 },
   { name: 'Claude',      src: '/images/icons/claude.svg',      alt: 'Claude',      group: 'unstyled',  top: '28%', left: '5%',  rotate:   '8deg', opacity: 0.15 },
   { name: 'Git',         src: '/images/icons/git.png',         alt: 'Git',         group: 'unstyled',  top: '33%', left: '72%', rotate: '-12deg', opacity: 0.16 },
   { name: 'Jira',        src: '/images/icons/jira.webp',       alt: 'Jira',        group: 'unstyled',  top: '45%', left: '14%', rotate:  '14deg', opacity: 0.14 },
-  { name: 'Supabase',    src: '/images/icons/supabase.jpeg',   alt: 'Supabase',    group: 'unstyled',  top: '52%', left: '85%', rotate: '-10deg', opacity: 0.17 },
+  { name: 'Supabase',    src: '/images/icons/supabase.jpeg',   alt: 'Supabase',    group: 'rounded',   top: '52%', left: '85%', rotate: '-10deg', opacity: 0.17 },
   { name: 'Notion',      src: '/images/icons/notion.png',      alt: 'Notion',      group: 'unstyled',  top: '40%', left: '48%', rotate: '-13deg', opacity: 0.15 },
   { name: 'Confluence',  src: '/images/icons/confluence.png',  alt: 'Confluence',  group: 'unstyled',  top: '62%', left: '7%',  rotate:   '9deg', opacity: 0.13 },
   { name: 'Miro',        src: '/images/icons/miro.png',        alt: 'Miro',        group: 'unstyled',  top: '58%', left: '65%', rotate:  '-8deg', opacity: 0.16 },
@@ -51,6 +51,7 @@ export default function LoadingOverlay({ onExiting }) {
       }
     } catch {
       onExiting?.();
+      setPhase('done');
       return;
     }
 
