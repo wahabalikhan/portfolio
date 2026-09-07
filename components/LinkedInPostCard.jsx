@@ -53,7 +53,7 @@ export default function LinkedInPostCard() {
           <span className="li-name">Wahab Khan</span>
           <span className="li-title">Product Designer · NN/g UX Certified</span>
           <span className="li-meta">
-            <span>1mo</span>
+            <span>June 2026</span>
             <span className="li-meta-dot">•</span>
             <GlobeIcon />
           </span>

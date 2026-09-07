@@ -1481,6 +1481,15 @@ html.dark .bg-blue-50 .text-gray-700 {
   .max-w-3xl.mx-auto { padding-bottom: 2rem; }
   footer { margin-bottom: 0 !important; }
   .linkedin-label { display: none; }
+
+  /* Experience entries: role moves to its own line below company */
+  .exp-item-header { flex-wrap: wrap; row-gap: 0; }
+  .exp-role {
+    order: 10;
+    flex-basis: 100%;
+    /* align left edge with company name: chevron(14px) + logo(32px) + two gaps(2×0.75rem) */
+    margin-left: calc(46px + 1.5rem);
+  }
 }
 
 /* Mobile toast */

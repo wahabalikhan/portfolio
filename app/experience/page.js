@@ -81,7 +81,8 @@ function ExperienceItem({ job }) {
   return (
     <div>
       <div
-        style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0', cursor: 'pointer' }}
+        className="exp-item-header"
+        style={{ display: 'flex', alignItems: 'center', columnGap: '0.75rem', padding: '0.625rem 0', cursor: 'pointer' }}
         onClick={() => setOpen(o => !o)}
       >
         <ChevronRight
@@ -98,10 +99,10 @@ function ExperienceItem({ job }) {
         ) : (
           <div style={{ width: 32, height: 32, borderRadius: 4, flexShrink: 0, background: job.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.5rem', fontWeight: 700 }}>{job.initials}</div>
         )}
-        <span style={{ fontWeight: 600, color: '#111827', fontSize: '1rem', whiteSpace: 'nowrap' }}>{job.company}</span>
-        <span style={{ color: '#6b7280', fontSize: '1rem', whiteSpace: 'nowrap' }}>{job.role}</span>
-        <div style={{ flex: 1, borderBottom: '1px solid #d1d5db' }} />
-        <span style={{ color: '#9ca3af', fontSize: '1rem', whiteSpace: 'nowrap', flexShrink: 0 }}>{job.years}</span>
+        <span className="exp-company" style={{ fontWeight: 600, color: '#111827', fontSize: '1rem', whiteSpace: 'nowrap' }}>{job.company}</span>
+        <span className="exp-role" style={{ color: '#6b7280', fontSize: '1rem', whiteSpace: 'nowrap' }}>{job.role}</span>
+        <div className="exp-divider" style={{ flex: 1, borderBottom: '1px solid #d1d5db' }} />
+        <span className="exp-years" style={{ color: '#9ca3af', fontSize: '1rem', whiteSpace: 'nowrap', flexShrink: 0 }}>{job.years}</span>
       </div>
 
       {open && (

@@ -77,7 +77,7 @@ export default function JustForFunCard() {
           <span className="li-name">Wahab Khan</span>
           <span className="li-title">Product Designer · NN/g UX Certified</span>
           <span className="li-meta">
-            <span>2y</span>
+            <span>April 2026</span>
             <span className="li-meta-dot">•</span>
             <GlobeIcon />
           </span>
