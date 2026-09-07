@@ -1496,7 +1496,6 @@ export default function CommentPins({ page, activeTab }) {
           ) : (
             <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
           )}
-        </div>
         {id === replyingToId && (
           <div
             style={{ position: 'absolute', top: '100%', left: 0, marginTop: '26px', width: '100%', zIndex: 1 }}
@@ -1579,6 +1578,7 @@ export default function CommentPins({ page, activeTab }) {
             </>
           );
         })()}
+        </div>
       </div>
     );
   };
