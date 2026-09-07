@@ -400,10 +400,9 @@ export default function CommentPins({ page, activeTab }) {
   const [annotationDragging, setAnnotationDragging] = useState(false);
   const [annotationDragPos, setAnnotationDragPos]   = useState(null);
 
-  const [annotation2Pos, setAnnotation2Pos]         = useState({ x_pct: 22, y_pct: 3.5 });
+  const [annotation2Pos, setAnnotation2Pos]         = useState(null); // null = not yet loaded from Supabase
   const [annotation2Dragging, setAnnotation2Dragging] = useState(false);
   const [annotation2DragPos, setAnnotation2DragPos]   = useState(null);
-  const [annotation2Loaded, setAnnotation2Loaded]     = useState(false);
 
   const displayNameRef = useRef(''); // synced to getDisplayName(isOwner) on every render
 
@@ -441,8 +440,7 @@ export default function CommentPins({ page, activeTab }) {
     supabase.from('pin_positions').select('*')
       .eq('id', 'annotation2').eq('page', page).single()
       .then(({ data }) => {
-        if (data) setAnnotation2Pos({ x_pct: data.x_pct, y_pct: data.y_pct });
-        setAnnotation2Loaded(true);
+        setAnnotation2Pos(data ? { x_pct: data.x_pct, y_pct: data.y_pct } : { x_pct: 22, y_pct: 3.5 });
       });
   }, [page]);
 
@@ -1145,11 +1143,12 @@ export default function CommentPins({ page, activeTab }) {
     const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
     const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
     const pageY   = e.pageY   ?? e.touches?.[0]?.pageY   ?? (clientY + window.scrollY);
+    const ann2 = annotation2Pos ?? { x_pct: 22, y_pct: 3.5 };
     annotation2DragMetaRef.current = {
-      offsetX_px: (clientX - m.left) - (annotation2Pos.x_pct / 100) * m.width,
-      offsetY_px: pageY - (annotation2Pos.y_pct / 100) * Y_REFERENCE_HEIGHT,
+      offsetX_px: (clientX - m.left) - (ann2.x_pct / 100) * m.width,
+      offsetY_px: pageY - (ann2.y_pct / 100) * Y_REFERENCE_HEIGHT,
     };
-    annotation2DragPosRef.current = { x_pct: annotation2Pos.x_pct, y_pct: annotation2Pos.y_pct };
+    annotation2DragPosRef.current = { x_pct: ann2.x_pct, y_pct: ann2.y_pct };
     setAnnotation2Dragging(true);
   };
 
@@ -1598,7 +1597,7 @@ export default function CommentPins({ page, activeTab }) {
         return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token);
       })}
 
-      {page === 'home' && !hidden && cWidth > 0 && (() => {
+      {page === 'home' && !hidden && annotationReady && annotation2Pos !== null && (() => {
         const ann2X = (annotation2Dragging && annotation2DragPos) ? annotation2DragPos.x_pct : annotation2Pos.x_pct;
         const ann2Y = (annotation2Dragging && annotation2DragPos) ? annotation2DragPos.y_pct : annotation2Pos.y_pct;
         return (
@@ -1609,8 +1608,6 @@ export default function CommentPins({ page, activeTab }) {
               pointerEvents: isOwner ? 'auto' : 'none',
               cursor: isOwner ? (annotation2Dragging ? 'grabbing' : 'grab') : 'default',
               userSelect: 'none',
-              opacity: (annotationReady && annotation2Loaded) ? 1 : 0,
-              transition: 'opacity 300ms ease',
             }}
             onMouseDown={isOwner ? startAnnotation2Drag : undefined}
             onTouchStart={isOwner ? startAnnotation2Drag : undefined}
