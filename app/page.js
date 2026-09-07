@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { blogPosts } from '@/data/blogPosts';
 import Footer from '@/components/Footer';
@@ -70,10 +70,16 @@ export default function HomePage() {
     const [activeTooltip, setActiveTooltip] = useState(null);
     const tooltipTimerRef = useRef(null);
 
-    const [splashDone, setSplashDone] = useState(() => {
-      if (typeof window === 'undefined') return false;
-      try { return !!sessionStorage.getItem('splash_shown'); } catch { return true; }
-    });
+    // Always start false so the server and client agree at hydration time.
+    // suppressHydrationWarning keeps the server DOM value, so initialising from
+    // sessionStorage in the lazy init produces opacity:0 that never gets updated.
+    const [splashDone, setSplashDone] = useState(false);
+
+    useEffect(() => {
+      try {
+        if (sessionStorage.getItem('splash_shown')) setSplashDone(true);
+      } catch {}
+    }, []);
 
     const showTooltip = (word) => {
       if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current);
