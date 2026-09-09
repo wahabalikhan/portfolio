@@ -199,7 +199,7 @@ export default function HomePage() {
               {
                 id: 'design-system',
                 title: 'From Framework to Design System',
-                description: <>36.1% reduction in design task completion time, achieved by building Matillion's ETL design system from scratch: components, patterns, and documentation, while embedding UX practice into how the engineering team worked.</>,
+                description: <><strong>36.1% reduction in design task completion time</strong>, achieved by building Matillion's ETL design system from scratch: components, patterns, and documentation, while embedding UX practice into how the engineering team worked.</>,
                 logo_src: '/images/matillion-logo.svg',
                 company: 'Matillion',
                 bg_src: '/images/ds.png',

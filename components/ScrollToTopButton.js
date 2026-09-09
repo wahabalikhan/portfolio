@@ -16,15 +16,18 @@ export default function ScrollToTopButton() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  if (!visible) return null;
-
   return (
     <button
       onClick={() => smoothScrollTo(0, 800)}
       className="scroll-to-top-btn"
       aria-label="Scroll to top"
+      style={{
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? 'auto' : 'none',
+        transition: 'opacity 0.25s ease, color 0.2s ease, filter 0.2s ease',
+      }}
     >
-      <ChevronUp size={18} />
+      <ChevronUp size={28} />
     </button>
   );
 }

@@ -890,7 +890,7 @@ html.dark .theme-toggle-button:hover {
   border: none;
   color: #6b7280;
   cursor: pointer;
-  z-index: 50;
+  z-index: 210;
   transition: color 0.2s ease, filter 0.2s ease;
 }
 .scroll-to-top-btn:hover {
@@ -1479,7 +1479,7 @@ html.dark .bg-blue-50 .text-gray-700 {
   .linkedin-label { display: none; }
 
   /* Match top padding to References section spacing (pt-10 = 2.5rem total) */
-  .max-w-3xl.mx-auto { padding-top: 0 !important; }
+  .max-w-3xl.mx-auto { padding-top: 10px !important; }
 
   /* Hero: picture centered on top, text below left-aligned */
   .hero-intro { flex-direction: column; align-items: center; }
@@ -1500,6 +1500,11 @@ html.dark .bg-blue-50 .text-gray-700 {
     white-space: normal;
   }
 
+  /* Hero h1: reduce size so it wraps to ~3 lines on iPhone 14 Pro (393px viewport) */
+  .hero-body h1 { font-size: 2.25rem !important; }
+
+  /* Scroll-to-top: mirror hamburger — bottom-left, larger icon, backdrop for contrast */
+  .scroll-to-top-btn { bottom: 1.5rem; right: 1.5rem; left: auto; }
 
 }
 
