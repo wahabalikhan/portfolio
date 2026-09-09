@@ -886,27 +886,23 @@ html.dark .theme-toggle-button:hover {
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  border-radius: 9999px;
-  border: 1px solid #e5e7eb;
-  background-color: #ffffff;
+  background: none;
+  border: none;
   color: #6b7280;
   cursor: pointer;
   z-index: 50;
-  transition: background-color 0.3s ease, color 0.5s ease, border-color 0.5s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: color 0.2s ease, filter 0.2s ease;
 }
 .scroll-to-top-btn:hover {
-  background-color: rgba(0, 0, 0, 0.06);
-  color: #111827;
+  color: #374151;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.28));
 }
 html.dark .scroll-to-top-btn {
-  background-color: #1e1e2e;
   color: #9ca3af;
-  border-color: #374151;
 }
 html.dark .scroll-to-top-btn:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #f0f0f0;
+  color: #d1d5db;
+  filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.18));
 }
 
 /* ─── Figma-style tooltips ──────────────────────────────────────────────────── */
@@ -1482,14 +1478,29 @@ html.dark .bg-blue-50 .text-gray-700 {
   footer { margin-bottom: 0 !important; }
   .linkedin-label { display: none; }
 
-  /* Experience entries: role moves to its own line below company */
-  .exp-item-header { flex-wrap: wrap; row-gap: 0; }
+  /* Match top padding to References section spacing (pt-10 = 2.5rem total) */
+  .max-w-3xl.mx-auto { padding-top: 0 !important; }
+
+  /* Hero: picture centered on top, text below left-aligned */
+  .hero-intro { flex-direction: column; align-items: center; }
+  .hero-body { width: 100%; }
+
+  /* Case study tabs: fill full width, equal size */
+  .tab-pill { flex: 1; text-align: center; }
+
+  /* Experience entries: [company truncated] [divider] [date] on line 1, role on line 2 */
+  .exp-item-header { flex-wrap: wrap; align-items: center; row-gap: 0.125rem; }
+  /* flex: 2 1 0 gives company a definite computed width (2/3 of available space) so ellipsis works */
+  .exp-company { flex: 2 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .exp-role {
     order: 10;
     flex-basis: 100%;
     /* align left edge with company name: chevron(14px) + logo(32px) + two gaps(2×0.75rem) */
     margin-left: calc(46px + 1.5rem);
+    white-space: normal;
   }
+
+
 }
 
 /* Mobile toast */
@@ -1813,7 +1824,7 @@ html.dark .image-modal-close:hover {
   align-items: baseline;
   gap: 0.35rem;
   padding: 0.2rem 0.65rem;
-  border-radius: 9999px;
+  border-radius: 0.625rem;
   font-size: 0.78rem;
   line-height: 1.5;
   border: 1px solid #E5E7EB;

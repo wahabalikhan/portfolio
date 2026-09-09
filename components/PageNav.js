@@ -75,16 +75,14 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '2.25rem',
-            height: '2.25rem',
-            borderRadius: '9999px',
-            border: `1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`,
             backgroundColor: 'transparent',
             color: isDarkMode ? '#9ca3af' : '#6b7280',
             cursor: 'pointer',
+            padding: 0,
+            border: 'none',
           }}
         >
-          {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
 
         {menuOpen && (
