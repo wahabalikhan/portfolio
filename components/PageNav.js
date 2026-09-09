@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { smoothScrollToElement } from '@/utils/smoothScroll';
+import { OVERLAY_BG_STYLE, OverlayIcons } from './OverlayBackground';
 
 export default function PageNav({ isDarkMode, pastCaseStudies }) {
   const pathname = usePathname();
@@ -25,22 +26,27 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
     }
   };
   const [menuOpen, setMenuOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [overlayVisible, setOverlayVisible] = useState(false);
+
+  const openMenu = () => {
+    setMenuOpen(true);
+    // double-rAF so the element mounts at opacity:0 before we flip to 1
+    requestAnimationFrame(() => requestAnimationFrame(() => setOverlayVisible(true)));
+  };
+  const closeMenu = () => {
+    setOverlayVisible(false);
+    setTimeout(() => setMenuOpen(false), 380);
+  };
 
   useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') setMenuOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') closeMenu(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   useEffect(() => {
-    const onOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
-    };
-    if (menuOpen) document.addEventListener('mousedown', onOutside);
-    return () => document.removeEventListener('mousedown', onOutside);
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
   const linkClass = (active) =>
@@ -66,11 +72,10 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
         </a>
       </div>
 
-      <div className="nav-mobile" ref={dropdownRef}>
+      <div className="nav-mobile">
         <button
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((o) => !o)}
+          aria-label="Open menu"
+          onClick={openMenu}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -82,95 +87,129 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
             border: 'none',
           }}
         >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          <Menu size={22} />
         </button>
 
         {menuOpen && (
           <div
             style={{
               position: 'fixed',
-              top: '4.25rem',
-              right: '2.5rem',
-              minWidth: '160px',
-              backgroundColor: isDarkMode ? '#1c1c1c' : '#ffffff',
-              border: `1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`,
-              borderRadius: '0.75rem',
-              padding: '0.375rem',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-              zIndex: 99,
+              inset: 0,
+              zIndex: 9998,
+              ...OVERLAY_BG_STYLE,
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.125rem',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              opacity: overlayVisible ? 1 : 0,
+              transition: 'opacity 0.38s cubic-bezier(0.4,0,0.2,1)',
             }}
           >
+            <OverlayIcons visible={overlayVisible} />
+
+            {/* X sits exactly where the hamburger is: nav-bar padding-right + vertically centred in 4rem bar */}
             <button
-              onClick={handleWorkClick}
+              aria-label="Close menu"
+              onClick={closeMenu}
               style={{
-                display: 'block', width: '100%', textAlign: 'left',
-                padding: '0.5rem 0.75rem',
-                borderRadius: '0.5rem',
-                fontWeight: 400,
-                fontSize: '0.9375rem',
-                color: isDarkMode ? (isWorkActive ? '#ffffff' : '#9ca3af') : (isWorkActive ? '#111827' : '#6b7280'),
-                textDecoration: isWorkActive ? 'underline' : 'none',
-                textDecorationThickness: '1.5px',
-                textUnderlineOffset: '3px',
-                backgroundColor: 'transparent',
+                position: 'absolute',
+                top: 'calc(2rem - 11px)',
+                right: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'none',
                 border: 'none',
+                color: '#374151',
                 cursor: 'pointer',
+                padding: 0,
               }}
             >
-              Work
+              <X size={22} />
             </button>
-            <Link
-              href="/experience"
-              onClick={() => setMenuOpen(false)}
+
+            {/* Menu items — evenly spaced, active in blue matching desktop nav */}
+            <nav
               style={{
-                display: 'block',
-                padding: '0.5rem 0.75rem',
-                borderRadius: '0.5rem',
-                fontWeight: 400,
-                fontSize: '0.9375rem',
-                color: isDarkMode ? (isExperience ? '#ffffff' : '#9ca3af') : (isExperience ? '#111827' : '#6b7280'),
-                textDecoration: isExperience ? 'underline' : 'none',
-                textDecorationThickness: '1.5px',
-                textUnderlineOffset: '3px',
-                backgroundColor: 'transparent',
+                position: 'relative',
+                zIndex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: '3.5rem',
+                padding: '0 2.5rem',
               }}
             >
-              Experience
-            </Link>
-            <a
-              href="mailto:wahab-ali-khan@hotmail.com"
-              onClick={() => setMenuOpen(false)}
-              style={{
-                display: 'block',
-                padding: '0.5rem 0.75rem',
-                borderRadius: '0.5rem',
-                fontWeight: 400,
-                fontSize: '0.875rem',
-                color: isDarkMode ? '#9ca3af' : '#6b7280',
-                textDecoration: 'none',
-              }}
-            >
-              Contact
-            </a>
-            <a
-              href="/cv_wahab_ali_khan.pdf"
-              download="CV_Wahab_Ali_Khan.pdf"
-              onClick={() => setMenuOpen(false)}
-              style={{
-                display: 'block',
-                padding: '0.5rem 0.75rem',
-                borderRadius: '0.5rem',
-                fontWeight: 400,
-                fontSize: '0.875rem',
-                color: isDarkMode ? '#9ca3af' : '#6b7280',
-                textDecoration: 'none',
-              }}
-            >
-              Resume ↓
-            </a>
+              <button
+                onClick={() => {
+                  closeMenu();
+                  setTimeout(() => {
+                    if (pathname === '/') { scrollToCaseStudies(); }
+                    else { router.push('/'); requestAnimationFrame(() => requestAnimationFrame(scrollToCaseStudies)); }
+                  }, 400);
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: '2.75rem',
+                  fontWeight: 700,
+                  lineHeight: 1.12,
+                  color: isWorkActive ? '#2563eb' : '#111827',
+                  textDecoration: isWorkActive ? 'underline' : 'none',
+                  textDecorationThickness: '2px',
+                  textUnderlineOffset: '5px',
+                }}
+              >
+                Work
+              </button>
+              <Link
+                href="/experience"
+                onClick={closeMenu}
+                style={{
+                  padding: 0,
+                  fontSize: '2.75rem',
+                  fontWeight: 700,
+                  lineHeight: 1.12,
+                  color: isExperience ? '#2563eb' : '#111827',
+                  textDecoration: isExperience ? 'underline' : 'none',
+                  textDecorationThickness: '2px',
+                  textUnderlineOffset: '5px',
+                }}
+              >
+                Experience
+              </Link>
+              <a
+                href="mailto:wahab-ali-khan@hotmail.com"
+                onClick={closeMenu}
+                style={{
+                  padding: 0,
+                  fontSize: '2.75rem',
+                  fontWeight: 700,
+                  lineHeight: 1.12,
+                  color: '#111827',
+                  textDecoration: 'none',
+                }}
+              >
+                Contact ↗
+              </a>
+              <a
+                href="/cv_wahab_ali_khan.pdf"
+                download="CV_Wahab_Ali_Khan.pdf"
+                onClick={closeMenu}
+                style={{
+                  padding: 0,
+                  fontSize: '2.75rem',
+                  fontWeight: 700,
+                  lineHeight: 1.12,
+                  color: '#111827',
+                  textDecoration: 'none',
+                }}
+              >
+                Resume ↓
+              </a>
+            </nav>
           </div>
         )}
       </div>
