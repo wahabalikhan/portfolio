@@ -14,6 +14,7 @@ import GitHubRepoCard from '@/components/GitHubRepoCard';
 import GitHubContributions from '@/components/GitHubContributions';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import LoadingOverlay from '@/components/LoadingOverlay';
+import { smoothScrollToElement } from '@/utils/smoothScroll';
 
 const HARDCODED_REPOS = [
   {
@@ -78,6 +79,16 @@ export default function HomePage() {
     useEffect(() => {
       try {
         if (sessionStorage.getItem('splash_shown')) setSplashDone(true);
+      } catch {}
+    }, []);
+
+    useEffect(() => {
+      try {
+        const section = sessionStorage.getItem('scrollToSection');
+        if (section) {
+          sessionStorage.removeItem('scrollToSection');
+          requestAnimationFrame(() => requestAnimationFrame(() => smoothScrollToElement(section)));
+        }
       } catch {}
     }, []);
 
