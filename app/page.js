@@ -102,8 +102,8 @@ export default function HomePage() {
             : 'none',
         }}
       >
-      <FadeUp delay={0} className="flex items-stretch gap-4 mb-6">
-        <div style={{ position: 'relative', width: 100, height: 100, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+      <FadeUp delay={0} className="flex items-stretch gap-4 mb-6 hero-intro">
+        <div className="hero-pic" style={{ position: 'relative', width: 100, height: 100, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
           <img
             src="/images/profile.png"
             alt=""
@@ -117,7 +117,7 @@ export default function HomePage() {
           />
         </div>
 
-        <div>
+        <div className="hero-body">
           <h1 className="font-bold mb-2 text-gray-900" style={{ fontSize: '2.75rem', lineHeight: '1.12' }}>
             Hey <span className="nav-wave">👋</span>, I{' '}
             <span className="hero-accent-word hero-accent-design" onClick={() => showTooltip('designing')}>

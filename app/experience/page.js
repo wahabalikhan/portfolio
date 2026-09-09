@@ -132,7 +132,7 @@ export default function ExperiencePage() {
     <div className="max-w-3xl mx-auto px-6 py-16 relative experience-page" role="main">
       <CommentPins page="experience" showPresets={false} />
       <FadeUp delay={100}>
-        <h1 className="text-3xl font-bold mb-10 text-gray-900">Experience</h1>
+        <h1 className="text-3xl font-bold mb-6 text-gray-900">Experience</h1>
 
         <div className="mb-10">
           {EXPERIENCE.map((job, i) => (
