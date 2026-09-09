@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
-import { smoothScrollToElement } from '@/utils/smoothScroll';
+import { smoothScrollToElement, cancelSmoothScroll } from '@/utils/smoothScroll';
 import { OVERLAY_BG_STYLE, OverlayIcons } from './OverlayBackground';
 
 export default function PageNav({ isDarkMode, pastCaseStudies }) {
@@ -29,6 +29,7 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
   const [overlayVisible, setOverlayVisible] = useState(false);
 
   const openMenu = () => {
+    cancelSmoothScroll();
     setMenuOpen(true);
     // double-rAF so the element mounts at opacity:0 before we flip to 1
     requestAnimationFrame(() => requestAnimationFrame(() => setOverlayVisible(true)));
@@ -145,7 +146,10 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
                   closeMenu();
                   setTimeout(() => {
                     if (pathname === '/') { scrollToCaseStudies(); }
-                    else { router.push('/'); requestAnimationFrame(() => requestAnimationFrame(scrollToCaseStudies)); }
+                    else {
+                      try { sessionStorage.setItem('scrollToSection', 'case-studies'); } catch {}
+                      router.push('/');
+                    }
                   }, 400);
                 }}
                 style={{
@@ -158,28 +162,35 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
                   lineHeight: 1.12,
                   color: isWorkActive ? '#2563eb' : '#111827',
                   textDecoration: isWorkActive ? 'underline' : 'none',
-                  textDecorationThickness: '2px',
-                  textUnderlineOffset: '5px',
+                  textDecorationColor: '#2563eb',
+                  textDecorationThickness: '4px',
+                  textUnderlineOffset: '12px',
                 }}
               >
                 Work
               </button>
-              <Link
-                href="/experience"
-                onClick={closeMenu}
+              <button
+                onClick={() => {
+                  closeMenu();
+                  setTimeout(() => router.push('/experience'), 380);
+                }}
                 style={{
+                  background: 'none',
+                  border: 'none',
                   padding: 0,
+                  cursor: 'pointer',
                   fontSize: '2.75rem',
                   fontWeight: 700,
                   lineHeight: 1.12,
                   color: isExperience ? '#2563eb' : '#111827',
                   textDecoration: isExperience ? 'underline' : 'none',
-                  textDecorationThickness: '2px',
-                  textUnderlineOffset: '5px',
+                  textDecorationColor: '#2563eb',
+                  textDecorationThickness: '4px',
+                  textUnderlineOffset: '12px',
                 }}
               >
                 Experience
-              </Link>
+              </button>
               <a
                 href="mailto:wahab-ali-khan@hotmail.com"
                 onClick={closeMenu}
