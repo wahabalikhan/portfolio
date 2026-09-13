@@ -110,14 +110,14 @@ const getDisplayName = (ownerFlag) => {
 // Full-page overlay portaled to document.body so pins can exist anywhere on the page.
 // cursor is managed imperatively via overlayRef (see cursor-style effect) so it updates
 // instantly on mousemove without triggering React re-renders.
-const overlayStyle = (mode, height) => ({
+const overlayStyle = (mode, height, finePointer) => ({
   position: 'absolute',
   top: 0, left: 0,
   width: '100%',
   height: height > 0 ? `${height}px` : '100%',
   zIndex: 30,
   pointerEvents: mode === 'comment' ? 'auto' : 'none',
-  cursor: mode === 'comment' ? 'copy' : 'default',
+  cursor: mode === 'comment' ? (finePointer ? "url('/cursors/add.svg') 5 3, copy" : 'copy') : 'inherit',
 });
 
 // Converts content-relative x_pct and page-relative y_pct to absolute pixel positions
@@ -317,6 +317,7 @@ export default function CommentPins({ page, activeTab }) {
   const channelRef         = useRef(null);
   const modeRef            = useRef('cursor');
   const isOwnerRef         = useRef(false);
+  const isFinePointerRef   = useRef(false);
   const activeTabRef       = useRef(activeTab);
 
   // Drag refs
@@ -528,6 +529,10 @@ export default function CommentPins({ page, activeTab }) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => {
+    isFinePointerRef.current = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   }, []);
 
   useEffect(() => {
@@ -787,7 +792,10 @@ export default function CommentPins({ page, activeTab }) {
       if (m.width === 0) return;
       const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
       const x_pct = (e.clientX - m.left) / m.width * 100;
-      overlayRef.current.style.cursor = (x_pct >= minX && x_pct <= maxX) ? 'copy' : 'not-allowed';
+      const fp = isFinePointerRef.current;
+      overlayRef.current.style.cursor = (x_pct >= minX && x_pct <= maxX)
+        ? (fp ? "url('/cursors/add.svg') 5 3, copy" : 'copy')
+        : (fp ? "url('/cursors/not-allowed.svg') 5 3, not-allowed" : 'not-allowed');
     };
     window.addEventListener('mousemove', onMove);
     return () => window.removeEventListener('mousemove', onMove);
@@ -1403,7 +1411,7 @@ export default function CommentPins({ page, activeTab }) {
 
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
-      cursor: canDrag ? (isDragging ? 'grabbing' : 'grab') : 'default',
+      cursor: canDrag ? (isDragging ? (isFinePointerRef.current ? "url('/cursors/grab.svg') 32 26, grabbing" : 'grabbing') : (isFinePointerRef.current ? "url('/cursors/hover.svg') 32 18, grab" : 'grab')) : 'inherit',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
       ...(isLockedActive ? { zIndex: 1001 } : {}),
@@ -1418,7 +1426,7 @@ export default function CommentPins({ page, activeTab }) {
     return (
       <div
         key={id}
-        className={`cc-card-wrapper${isLockedActive ? ' cc-locked-active' : ''}`}
+        className={`cc-card-wrapper${isLockedActive ? ' cc-locked-active' : ''}${canDrag ? ' cc-can-drag' : ''}`}
         style={wrapperStyle}
         onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
         onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
@@ -1586,7 +1594,7 @@ export default function CommentPins({ page, activeTab }) {
   const overlay = (
     <div
       ref={overlayRef}
-      style={overlayStyle(mode, overlayHeight)}
+      style={overlayStyle(mode, overlayHeight, isFinePointerRef.current)}
       onClick={handleOverlayClick}
       data-locked={!!replyingToId || undefined}
     >

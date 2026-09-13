@@ -457,10 +457,10 @@ html.dark .cc-reply-count-open { color: #9ca3af; text-decoration-color: currentC
   left: 0;
   width: 100%;
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease;
-  cursor: pointer;
+  cursor: inherit;
 }
 
-.cc-carousel-item-centre { cursor: default; }
+.cc-carousel-item-centre { cursor: inherit; }
 
 .cc-carousel-card {
   background: #ffffff;
@@ -635,7 +635,7 @@ a:hover,
 
 /* Figma-style custom cursor for the user's own session */
 body {
-  cursor: url('/figma-cursor.svg') 4 2, default;
+  cursor: url('/figma-cursor.svg') 6 3, default;
 }
 
 /* Dark mode text colors */
@@ -2267,4 +2267,52 @@ html.dark .build-log-stack-reason { color: #6b7280; }
   0%, 100% { transform: scale(1)    rotate(0deg);  }
   40%       { transform: scale(1.04) rotate(6deg);  }
   75%       { transform: scale(0.97) rotate(-4deg); }
+}
+
+/* ─── Custom point.svg cursor — fine pointer devices only ───────────────── */
+@media (hover: hover) and (pointer: fine) {
+  a,
+  button,
+  [role="button"],
+  input[type="checkbox"],
+  input[type="radio"],
+  select,
+  button:hover,
+  a:hover,
+  [role="button"]:hover,
+  [onclick],
+  .clickable,
+  .hero-accent-word,
+  .cc-delete,
+  .cc-edit-btn,
+  .cc-reply-btn,
+  .cc-reply-count,
+  .cc-btn-cancel,
+  .cc-btn-save,
+  .cc-like-btn,
+  .theme-toggle-button,
+  .scroll-to-top-btn,
+  .mobile-toast-close,
+  .image-modal-close,
+  .li-see-more,
+  .jff-arrow,
+  .jff-dot,
+  .lb-close,
+  .lb-arrow,
+  .exp-item-header,
+  .cursor-pointer {
+    cursor: url('/cursors/point.svg') 22 18, pointer !important;
+  }
+
+  .li-image {
+    cursor: url('/cursors/zoom.svg') 19 17, zoom-in !important;
+  }
+
+  .cc-card-wrapper.cc-can-drag {
+    cursor: url('/cursors/hover.svg') 32 18, grab !important;
+  }
+
+  .cc-card-wrapper.cc-can-drag:active {
+    cursor: url('/cursors/grab.svg') 32 26, grabbing !important;
+  }
 }
