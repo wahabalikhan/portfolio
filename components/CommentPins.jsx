@@ -1311,6 +1311,10 @@ export default function CommentPins({ page, activeTab }) {
   };
 
   const handleDelete = async (id) => {
+    console.log('[DEL:admin] 1. start — id:', id);
+    const card = comments.find(c => c.id === id);
+    const savedPos = commentPosCache[id];
+    console.log('[DEL:admin] 2. card found:', !!card, '| savedPos:', savedPos);
     setComments(prev => prev.filter(c => c.id !== id));
     setCommentPosCache(prev => {
       if (!(id in prev)) return prev;
@@ -1321,13 +1325,39 @@ export default function CommentPins({ page, activeTab }) {
     setExpandedId(null);
     setEditingId(null);
     const ch = channelRef.current;
-    if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
-    await supabase.from('comments').delete().eq('id', id);
+    console.log('[DEL:admin] 3. sending supabase DELETE — table: comments, filter: id =', id);
+    const response = await supabase.from('comments').delete().eq('id', id).select();
+    console.log('[DEL:admin] 4. raw supabase response:', JSON.stringify(response));
+    const { data, error } = response;
+    const deleted = !error && data && data.length > 0;
+    console.log('[DEL:admin] 5. deleted?', deleted, '| error:', error, '| data:', data);
+    if (!deleted) {
+      console.error('[DEL:admin] 6. ROLLBACK branch — error:', error ?? 'no rows deleted');
+      if (card) setComments(prev => {
+        const next = prev.some(c => c.id === id) ? prev : [...prev, card];
+        console.log('[DEL:admin] 7. comments after rollback (count):', next.length);
+        return next;
+      });
+      if (savedPos) setCommentPosCache(prev => {
+        const n = { ...prev, [id]: savedPos };
+        try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+        console.log('[DEL:admin] 8. commentPosCache after rollback — restored id:', id);
+        return n;
+      });
+    } else {
+      console.log('[DEL:admin] 6. SUCCESS branch — broadcasting card_delete');
+      if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
+      console.log('[DEL:admin] 7. comments remaining (count):', comments.filter(c => c.id !== id).length);
+    }
   };
 
   const handleVisitorDelete = async (id) => {
+    console.log('[DEL:visitor] 1. start — id:', id);
     const card = comments.find(c => c.id === id);
-    if (!card) return;
+    if (!card) { console.warn('[DEL:visitor] card not found in state, aborting'); return; }
+    const savedPos = commentPosCache[id];
+    const token = localSessionToken.current;
+    console.log('[DEL:visitor] 2. card found:', !!card, '| savedPos:', savedPos, '| token:', token);
     setComments(prev => prev.filter(c => c.id !== id));
     setCommentPosCache(prev => {
       if (!(id in prev)) return prev;
@@ -1338,13 +1368,31 @@ export default function CommentPins({ page, activeTab }) {
     setExpandedId(null);
     setEditingId(null);
     const ch = channelRef.current;
-    if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
-    const token = localStorage.getItem('wahab_session_token');
-    const { error } = await supabase.from('comments').delete().eq('id', id).eq('session_token', token);
-    if (error) {
-      setComments(prev => prev.some(c => c.id === id) ? prev : [...prev, card]);
+    console.log('[DEL:visitor] 3. sending supabase DELETE — table: comments, filter: id =', id, ', session_token =', token);
+    const response = await supabase.from('comments').delete().eq('id', id).eq('session_token', token).select();
+    console.log('[DEL:visitor] 4. raw supabase response:', JSON.stringify(response));
+    const { data, error } = response;
+    const deleted = !error && data && data.length > 0;
+    console.log('[DEL:visitor] 5. deleted?', deleted, '| error:', error, '| data:', data);
+    if (!deleted) {
+      console.error('[DEL:visitor] 6. ROLLBACK branch — error:', error ?? 'no rows deleted');
+      setComments(prev => {
+        const next = prev.some(c => c.id === id) ? prev : [...prev, card];
+        console.log('[DEL:visitor] 7. comments after rollback (count):', next.length);
+        return next;
+      });
+      if (savedPos) setCommentPosCache(prev => {
+        const n = { ...prev, [id]: savedPos };
+        try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
+        console.log('[DEL:visitor] 8. commentPosCache after rollback — restored id:', id);
+        return n;
+      });
       setCardErrors(prev => ({ ...prev, [id]: true }));
       setTimeout(() => setCardErrors(prev => { const n = { ...prev }; delete n[id]; return n; }), 3000);
+    } else {
+      console.log('[DEL:visitor] 6. SUCCESS branch — broadcasting card_delete');
+      if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
+      console.log('[DEL:visitor] 7. comments remaining (count):', comments.filter(c => c.id !== id).length);
     }
   };
 

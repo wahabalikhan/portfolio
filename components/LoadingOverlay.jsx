@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { OVERLAY_BG_STYLE, OverlayIcons } from './OverlayBackground';
 
 const QUOTES = [
@@ -12,32 +12,29 @@ const QUOTES = [
 ];
 
 export default function LoadingOverlay({ onExiting }) {
-  // Check sessionStorage synchronously so the overlay returns null from the
-  // very first client render on returning visits, rather than waiting for useEffect.
-  // SSR gets 'idle' (no window); the hydration mismatch is recovered by React.
-  const [phase, setPhase] = useState(() => {
-    if (typeof window === 'undefined') return 'idle';
-    try {
-      if (sessionStorage.getItem('splash_shown')) return 'done';
-    } catch {}
-    return 'idle';
-  });
+  // Always 'idle' on first render so SSR and client produce identical output,
+  // eliminating the hydration mismatch that occurred when returning visitors
+  // got 'done' (null render) on the client vs 'idle' (overlay div) on the server.
+  const [phase, setPhase] = useState('idle');
   const [quote, setQuote] = useState('');
   // Guards against React Strict Mode's double-invocation of useEffect in dev.
   // Refs persist across the cleanup→reinvoke cycle, so the second invocation
   // restarts timers (cleared by cleanup) rather than re-running first-time setup.
   const initDoneRef = useRef(false);
 
+  // Fires synchronously before the browser paints — returning visitors skip the
+  // overlay entirely with no visible flash, since React re-renders to null before
+  // the first frame is committed to the screen.
+  useLayoutEffect(() => {
+    try {
+      if (sessionStorage.getItem('splash_shown')) { onExiting?.(); setPhase('done'); }
+    } catch { onExiting?.(); setPhase('done'); }
+  }, []);
+
   useEffect(() => {
     try {
-      if (sessionStorage.getItem('splash_shown')) {
-        onExiting?.();
-        setPhase('done');
-        return;
-      }
+      if (sessionStorage.getItem('splash_shown')) return; // already handled by useLayoutEffect
     } catch {
-      onExiting?.();
-      setPhase('done');
       return;
     }
 
