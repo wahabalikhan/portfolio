@@ -13,21 +13,21 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 export default function GitDiffPage() {
     const router = useRouter();
     const [selectedImage, setSelectedImage] = useState(null);
-    usePageTitle('How user-centric design improved visibility of user changes');
+    usePageTitle('Designing confidence into a high-risk engineering workflow (Git Diff)');
     return (
         <div className="max-w-3xl mx-auto px-6 py-16" role="main">
             <FadeUp delay={100}>
             <BackButton onClick={() => router.back()} />
 
             <h1 className="text-4xl font-bold mb-2 text-gray-900">
-                Designing confidence into a high-risk engineering workflow
+                Designing confidence into a high-risk engineering workflow (Git Diff)
             </h1>
             </FadeUp>
 
             <FadeUp delay={100}>
             <CaseStudyMeta items={[
               { label: 'Timeline', value: 'January 2025 – March 2025 · 3 months' },
-              { label: 'Team', value: 'DataOps (PO, Engineers), 1 additional Product Designer' },
+              { label: 'Team', value: 'DataOps (PM, PO, 3 Engineers), 1 additional Product Designer' },
               { label: 'Role', value: 'Product Designer. Research, strategy, design, testing, metrics.' },
             ]} />
 
@@ -124,11 +124,13 @@ export default function GitDiffPage() {
                 <p className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Competitive analysis of how VS Code, GitHub Desktop, and JetBrains handle this problem</li>
-                        <li><span className='font-bold'>5 internal data engineer interviews</span> covering the full user spectrum</li>
+                        <li><span className='font-bold'>1 external customer* and 4 internal data engineer interviews</span> covering the full user spectrum</li>
                         <li>A cross-functional workshop to explore different visualisation approaches</li>
                         <li>Workflow mapping to understand when and why engineers need to see what changed</li>
                     </ul>
                 </p>
+
+                <p>* Due to time constraints, only 1 external customer was available for interview.</p>
 
                 <img
                     src="/images/diff_research_1.png"
