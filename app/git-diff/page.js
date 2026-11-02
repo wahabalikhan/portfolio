@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import BackButton from '@/components/BackButton';
+import CaseStudyReadTracker from '@/components/CaseStudyReadTracker';
 import CaseStudyMeta from '@/components/CaseStudyMeta';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
@@ -16,6 +17,7 @@ export default function GitDiffPage() {
     usePageTitle('Designing confidence into a high-risk engineering workflow (Git Diff)');
     return (
         <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+            <CaseStudyReadTracker study="git-diff" />
             <FadeUp delay={100}>
             <BackButton onClick={() => router.back()} />
 

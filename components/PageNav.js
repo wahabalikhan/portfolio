@@ -60,6 +60,7 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
         <Link href="/experience" className={linkClass(isExperience)}>Experience</Link>
         <a
           href="mailto:wahab-ali-khan@hotmail.com"
+          onClick={() => window.bobby?.track('contact_click', { via: 'email', place: 'nav' })}
           className="nav-link text-gray-500 transition-colors"
         >
           Contact ↗
@@ -193,7 +194,10 @@ export default function PageNav({ isDarkMode, pastCaseStudies }) {
               </button>
               <a
                 href="mailto:wahab-ali-khan@hotmail.com"
-                onClick={closeMenu}
+                onClick={() => {
+                  window.bobby?.track('contact_click', { via: 'email', place: 'menu' });
+                  closeMenu();
+                }}
                 style={{
                   padding: 0,
                   fontSize: '2.75rem',
