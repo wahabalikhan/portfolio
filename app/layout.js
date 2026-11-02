@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
         {/* Bobby Builds: my own cookie-free analytics. Sends nothing with Global Privacy Control or Do Not Track on. */}
         <script
           defer
-          src="https://bobbybuilds.wahab-ali-khan.workers.dev/t.js"
+          src="https://bobbybuilds.app/t.js"
           data-key="pk_ofc9Edalhytt9Qvmshz3Wan3"
         />
       </head>

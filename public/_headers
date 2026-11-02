@@ -4,10 +4,10 @@
 # on every page (including comments and the GitHub cards). Anything not listed below is blocked.
 #
 # Sources:
-#   bobbybuilds.wahab-ali-khan.workers.dev  Bobby Builds analytics (t.js, t-vitals.js, /v1)
+#   bobbybuilds.app  Bobby Builds analytics (t.js, t-vitals.js, /v1)
 #   fonts.googleapis.com / fonts.gstatic.com  Inter and Caveat
 #   *.supabase.co (https + wss)  comments, likes, live cursors and presence
 #   cdn.jsdelivr.net, cdn.simpleicons.org  stack icons on the GitHub repo cards
 #   'unsafe-inline' scripts: needed by Next.js static exports (inline page data)
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://bobbybuilds.wahab-ali-khan.workers.dev; connect-src 'self' https://bobbybuilds.wahab-ali-khan.workers.dev https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.jsdelivr.net https://cdn.simpleicons.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://bobbybuilds.app; connect-src 'self' https://bobbybuilds.app https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.jsdelivr.net https://cdn.simpleicons.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
