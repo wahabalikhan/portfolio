@@ -1,8 +1,7 @@
 # Cloudflare Pages headers. https://developers.cloudflare.com/pages/configuration/headers/
 #
-# Content Security Policy, REPORT-ONLY for now: the browser logs anything that would be blocked
-# (in the console) but blocks nothing. Once a preview deployment shows a clear console on every
-# page (including comments and the GitHub cards), rename the header to Content-Security-Policy.
+# Content Security Policy, ENFORCED. It ran report-only on the preview first, with a clear console
+# on every page (including comments and the GitHub cards). Anything not listed below is blocked.
 #
 # Sources:
 #   bobbybuilds.wahab-ali-khan.workers.dev  Bobby Builds analytics (t.js, t-vitals.js, /v1)
@@ -11,4 +10,4 @@
 #   cdn.jsdelivr.net, cdn.simpleicons.org  stack icons on the GitHub repo cards
 #   'unsafe-inline' scripts: needed by Next.js static exports (inline page data)
 /*
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://bobbybuilds.wahab-ali-khan.workers.dev; connect-src 'self' https://bobbybuilds.wahab-ali-khan.workers.dev https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.jsdelivr.net https://cdn.simpleicons.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://bobbybuilds.wahab-ali-khan.workers.dev; connect-src 'self' https://bobbybuilds.wahab-ali-khan.workers.dev https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.jsdelivr.net https://cdn.simpleicons.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
