@@ -74,6 +74,13 @@ export default function Footer() {
           <b><span className="linkedin-label">LinkedIn </span>↗</b>
         </a>
       </div>
+      <p className="mt-4 text-xs text-gray-500">
+        Visits are counted by{' '}
+        <a href="https://bobbybuilds.wahab-ali-khan.workers.dev/p/portfolio" className="underline" target="_blank" rel="noopener noreferrer">
+          Bobby Builds
+        </a>
+        , my own analytics: no cookies, no personal data, and nothing at all if your browser sends Global Privacy Control or Do Not Track.
+      </p>
     </footer>
   );
 }

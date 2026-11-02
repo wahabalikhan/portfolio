@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import BackButton from '@/components/BackButton';
+import CaseStudyReadTracker from '@/components/CaseStudyReadTracker';
 import CaseStudyMeta from '@/components/CaseStudyMeta';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
@@ -16,6 +17,7 @@ export default function SchemasPage() {
   usePageTitle('Reframing a quick-win request into a user-validated strategy');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+      <CaseStudyReadTracker study="schemas" />
       <FadeUp delay={100}>
       <BackButton onClick={() => router.back()} />
 
