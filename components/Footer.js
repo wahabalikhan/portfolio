@@ -77,7 +77,7 @@ export default function Footer() {
       <p className="mt-4 text-xs text-gray-500">
         Visits are counted by{' '}
         <a href="https://bobbybuilds.app" className="underline" target="_blank" rel="noopener noreferrer">
-          Bobby Builds
+          BobbyBuilds
         </a>
         , my own analytics: no cookies, no personal data, and nothing at all if your browser sends Global Privacy Control or Do Not Track.
       </p>

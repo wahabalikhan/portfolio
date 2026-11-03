@@ -130,12 +130,12 @@ export default function HomePage() {
 
         <div className="hero-body">
           <h1 className="font-bold mb-2 text-gray-900" style={{ fontSize: '2.75rem', lineHeight: '1.12' }}>
-            Hey <span className="nav-wave">👋</span>, I{' '}
-            <span className="hero-accent-word hero-accent-design" onClick={() => showTooltip('designing')}>
+            Hey <span className="nav-wave">👋</span> I'm Wahab (Bobby). I{' '}
+            <span className="hero-accent-word hero-accent-design" onClick={() => showTooltip('design')}>
               {activeTooltip === 'design' && <span className="hero-word-tooltip">Figma, mostly 👀</span>}
               design
             </span>
-            {' '}products then help{' '}
+            {' '}products and help{' '}
             <span className="hero-accent-word hero-accent-ship" onClick={() => showTooltip('ship')}>
               {activeTooltip === 'ship' && <span className="hero-word-tooltip">Claude Code helped 🤝</span>}
               ship
@@ -149,6 +149,20 @@ export default function HomePage() {
 
           <p className="text-base text-gray-700 leading-relaxed" style={{ fontSize: '15.6px' }}>
             <span className="font-bold">Product Designer</span> & AI-first Coder <span style={{ margin: '0 4px' }}>·</span> <span className="font-bold">Enterprise B2B SaaS</span> <span style={{ margin: '0 4px' }}>·</span> BSc CS <span style={{ margin: '0 4px' }}>·</span> NN/g Certified (ID: 1081116)
+          </p>
+
+          <p className="hero-status">
+            <span className="hero-status-dot" aria-hidden="true" />
+            <span>
+              Currently building{' '}
+              <a href="https://techjobs.bobbybuilds.app" target="_blank" rel="noopener noreferrer">
+                TechJobs ↗
+              </a>
+              {' '}at{' '}
+              <a href="https://bobbybuilds.app" target="_blank" rel="noopener noreferrer">
+                BobbyBuilds ↗
+              </a>
+            </span>
           </p>
 
         </div>
