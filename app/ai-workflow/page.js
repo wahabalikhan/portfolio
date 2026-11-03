@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import BackButton from '@/components/BackButton';
+import CaseStudyReadTracker from '@/components/CaseStudyReadTracker';
 import CaseStudyMeta from '@/components/CaseStudyMeta';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
@@ -16,6 +17,7 @@ export default function AIWorkflowPage() {
     usePageTitle('The Designer Who Ships Code');
     return (
         <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+            <CaseStudyReadTracker study="ai-workflow" />
             <FadeUp delay={100}>
             <BackButton onClick={() => router.back()} />
 
