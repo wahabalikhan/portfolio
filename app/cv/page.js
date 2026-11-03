@@ -97,7 +97,7 @@ export default function CVPage() {
 
       {/* Header */}
       <h1 className="font-bold text-gray-900" style={{ fontSize: '2.5rem', lineHeight: 1.15, marginBottom: '0.25rem' }}>
-        <span className="text-blue-600">Wahab Ali Khan</span>
+        <span className="text-blue-600">Wahab (Bobby) Khan</span>
       </h1>
       <p className="text-gray-900 font-semibold" style={{ fontSize: '1.125rem', marginBottom: '0.75rem' }}>Product Designer</p>
       <p className="text-gray-500" style={{ fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '0.25rem' }}>

@@ -11,3 +11,7 @@
 #   'unsafe-inline' scripts: needed by Next.js static exports (inline page data)
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://bobbybuilds.app; connect-src 'self' https://bobbybuilds.app https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.jsdelivr.net https://cdn.simpleicons.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+
+# Share image: Next.js exports it without a file extension, so set the type for link-preview crawlers.
+/opengraph-image
+  Content-Type: image/png
