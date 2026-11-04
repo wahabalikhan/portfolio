@@ -243,6 +243,21 @@ export default function GitDiffPage() {
                         <li>"Exactly what we needed"</li>
                     </ul>
                 </p>
+                <img
+                    src="/images/testing1.png"
+                    alt="Git Diff testing"
+                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/testing1.png', alt: 'Git Diff testing' })}
+                />
+                <p className='mb-8 text-xs'>I ran tests with data engineers to test Git Diff's findability and clarity. Participants were asked to locate and use the feature within realistic tasks, all successfully completed the comparison flow, describing it as "clear," "easy," and "intuitive."</p>
+
+                <img
+                    src="/images/testing2.png"
+                    alt="Git Diff testing"
+                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setSelectedImage({ src: '/images/testing2.png', alt: 'Git Diff testing' })}
+                />
+                <p className='mb-8 text-xs'>All participants successfully completed the Git Diff task, confirming the feature was easy to find and understand. Most rated the experience as "very easy," validating the clarity of the design and overall discoverability of the comparison flow.</p>
 
             </section>
 
