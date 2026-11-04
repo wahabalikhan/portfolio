@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
-import { usePageTitle } from '@/hooks/usePageTitle';
 
 const EXPERIENCE = [
   {
@@ -90,7 +89,6 @@ const SKILLS = [
 ];
 
 export default function CVPage() {
-  usePageTitle('CV');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16" role="main">
       <FadeUp delay={100}>

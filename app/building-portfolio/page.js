@@ -8,11 +8,9 @@ import BlogMeta from '@/components/BlogMeta';
 import { blogPosts } from '@/data/blogPosts';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
-import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function BuildingPortfolioPage() {
   const router = useRouter();
-  usePageTitle('Building this portfolio');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16" role="main">
       <FadeUp delay={100}>

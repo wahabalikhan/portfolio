@@ -8,11 +8,9 @@ import BlogMeta from '@/components/BlogMeta';
 import { blogPosts } from '@/data/blogPosts';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
-import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function DesignSystemsBlogPage() {
   const router = useRouter();
-  usePageTitle('Design systems and the importance of documentation');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16" role="main">
       <FadeUp delay={100}>

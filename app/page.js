@@ -12,7 +12,6 @@ import BuildLogCard from '@/components/BuildLogCard';
 import JustForFunCard from '@/components/JustForFunCard';
 import GitHubRepoCard from '@/components/GitHubRepoCard';
 import GitHubContributions from '@/components/GitHubContributions';
-import { usePageTitle } from '@/hooks/usePageTitle';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import { smoothScrollToElement } from '@/utils/smoothScroll';
 
@@ -66,7 +65,6 @@ function GitHubMark() {
 
 export default function HomePage() {
     const [activeTab, setActiveTab] = useState('Design');
-    usePageTitle();
 
     const [activeTooltip, setActiveTooltip] = useState(null);
     const tooltipTimerRef = useRef(null);

@@ -5,7 +5,6 @@ import { ChevronRight } from 'lucide-react';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import CommentPins from '@/components/CommentPins';
-import { usePageTitle } from '@/hooks/usePageTitle';
 
 const EXPERIENCE = [
   {
@@ -127,7 +126,6 @@ function ExperienceItem({ job }) {
 }
 
 export default function ExperiencePage() {
-  usePageTitle('Experience');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16 relative experience-page" role="main">
       <CommentPins page="experience" showPresets={false} />
