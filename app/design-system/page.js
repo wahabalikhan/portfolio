@@ -9,12 +9,10 @@ import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import ImageModal from '@/components/ImageModal';
 import OtherCaseStudies from '@/components/OtherCaseStudies';
-import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function DesignSystemPage() {
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(null);
-  usePageTitle('From Framework to Design System');
   return (
     <div className="max-w-3xl mx-auto px-6 py-16" role="main">
       <CaseStudyReadTracker study="design-system" />
