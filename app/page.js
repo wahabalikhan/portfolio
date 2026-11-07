@@ -16,6 +16,11 @@ import GitHubContributions from '@/components/GitHubContributions';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import { smoothScrollToElement } from '@/utils/smoothScroll';
 
+// TechJobs' status on BobbyBuilds: 'building' (still amber dot) or 'live' (pulsing green).
+// Set by hand: BobbyBuilds has no public status feed to read it from, so change this when
+// TechJobs' status changes there.
+const TECHJOBS_STATUS = 'building';
+
 const HARDCODED_REPOS = [
   {
     name: 'portfolio',
@@ -159,7 +164,7 @@ export default function HomePage() {
           </p>
 
           <p className="hero-status">
-            <span className="hero-status-dot" aria-hidden="true" />
+            <span className={`hero-status-dot is-${TECHJOBS_STATUS}`} aria-hidden="true" />
             <span>
               Currently building{' '}
               <a href="https://techjobs.bobbybuilds.app" target="_blank" rel="noopener noreferrer">

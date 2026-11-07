@@ -117,12 +117,26 @@ html.dark .hero-subtitle { color: #aaa; }
   color: #6b7280;
   margin-top: 0.75rem;
 }
+/* TechJobs' status, matching BobbyBuilds' status dots (its --warning / --good colours and
+   live-pulse): Building is a still amber dot, Live a pulsing green one (still for reduced
+   motion). The status is set in app/page.js (TECHJOBS_STATUS). */
 .hero-status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #16a34a;
   flex-shrink: 0;
+}
+.hero-status-dot.is-building { background: #fab219; }
+.hero-status-dot.is-live {
+  background: #0ca30c;
+  animation: hero-live-pulse 2s ease-in-out infinite;
+}
+@keyframes hero-live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-status-dot.is-live { animation: none; }
 }
 .hero-status a {
   color: inherit;
@@ -133,7 +147,6 @@ html.dark .hero-subtitle { color: #aaa; }
 .hero-status a:hover { color: #2563eb; }
 
 html.dark .hero-status { color: #848b99; }
-html.dark .hero-status-dot { background: #22c55e; }
 html.dark .hero-status a:hover { color: #60a5fa; }
 
 /* ─── Hero accent words ("design" and "ship") ──────────────────────────────── */
