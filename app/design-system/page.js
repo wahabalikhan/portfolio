@@ -66,7 +66,7 @@ export default function DesignSystemPage() {
         <div>
           <h3 className="font-bold text-gray-900 mb-2">My Role</h3>
           <p className="text-gray-700 leading-relaxed mb-2">I owned this entirely, end-to-end:</p>
-          <p className="text-gray-700 mb-6">
+          <div className="text-gray-700 mb-6">
             <ul className='list-disc list-inside'>
               <li>Audited the existing product to understand the current state of components, patterns, and inconsistencies</li>
               <li>Built the ETL design system in Figma: components, variants, Auto Layout, edge cases, and documentation</li>
@@ -76,7 +76,7 @@ export default function DesignSystemPage() {
               <li>Introduced new components and patterns where GXT's rigidity required custom solutions</li>
               <li>Maintained the system as a live, evolving resource, not a one-off deliverable</li>
             </ul>
-          </p>
+          </div>
         </div>
         <div>
           <h3 className="font-bold text-gray-900 mb-2">Results</h3>
@@ -107,13 +107,13 @@ export default function DesignSystemPage() {
         <h2 className="text-2xl font-bold mb-4 text-gray-900">What I Set Out to Solve</h2>
         <p className="text-gray-700 leading-relaxed mb-6">Three problems, not one:</p>
         <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-          <p className="text-gray-700 mb-6">
+          <div className="text-gray-700 mb-6">
             <ul className='list-disc list-inside font-bold'>
               <li>"Designers are rebuilding the same components from scratch, every time." No shared library meant every new screen started from zero. Inconsistency crept in at every edge.</li>
               <li>"The product looks like it was built by different people, because it was." Without a system, visual and interaction patterns diverged across the product over time.</li>
               <li>"Engineers are building without UX context." The team was shipping functional software, but UX culture, thinking about how people actually use things, wasn't embedded in how they worked.</li>
             </ul>
-          </p>
+          </div>
           <p className="text-gray-700 leading-relaxed mb-2">Solving any one of these in isolation wouldn't be enough. The design system had to address all three at once.</p>
         </div>
       </section>
@@ -121,14 +121,14 @@ export default function DesignSystemPage() {
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Understanding the Landscape First</h2>
         <p className="text-gray-700 leading-relaxed mb-6">Before building anything, I needed to understand what existed and why it had evolved that way. What I found:</p>
-        <p className="text-gray-700 mb-6">
+        <div className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li>Sencha GXT provided a baseline set of UI components, but they weren't designed with UX consistency in mind. They were functional building blocks, not a design language.</li>
             <li>Figma files were designer-by-designer, feature-by-feature. No shared styles, no shared components, no naming conventions.</li>
             <li>Engineers were making visual and interaction decisions themselves when design guidance wasn't available, not out of carelessness, but because there was no system to reference.</li>
             <li>Design reviews were slow and feedback-heavy because so much needed correcting at the pattern level, not just the pixel level.</li>
           </ul>
-        </p>
+        </div>
 
         <img
           src="/images/metl.png"
@@ -143,7 +143,7 @@ export default function DesignSystemPage() {
 
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Design Goals</h2>
-        <p className="text-gray-700 mb-6">
+        <div className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li><span className='font-bold'>One source of truth</span> - a Figma library that designers pull from, not build from scratch</li>
             <li><span className='font-bold'>Components that reflect reality</span> - aligned to what engineers can actually build in Sencha GXT, with custom patterns introduced where GXT falls short</li>
@@ -151,7 +151,7 @@ export default function DesignSystemPage() {
             <li><span className='font-bold'>Engineers enabled, not just handed off to</span> - the system needed to change how the engineering team worked, not just give designers faster tools</li>
             <li><span className='font-bold'>Business value protected</span> - this ran alongside prioritised product work, not instead of it</li>
           </ul>
-        </p>
+        </div>
       </section>
 
       <section className="mb-12">
@@ -159,14 +159,14 @@ export default function DesignSystemPage() {
 
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Component Architecture in Figma</h3>
         <p className="text-gray-700 leading-relaxed mb-2">Every component was built with Figma's Auto Layout and Variants from the ground up:</p>
-        <p className="text-gray-700 mb-6">
+        <div className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li><span className='font-bold'>Auto Layout</span> ensured components stretched, stacked, and responded correctly across different content lengths and screen sizes, with no manual resizing needed.</li>
             <li><span className='font-bold'>Variants</span> covered every meaningful state: default, hover, focus, active, disabled, error, loading, and empty. Designers never had to improvise a state that wasn't already designed.</li>
             <li><span className='font-bold'>Component Properties</span> allowed text, icons, and visibility to be toggled within a single component, reducing the number of variants needed while keeping the library clean.</li>
             <li><span className='font-bold'>Nested components</span> meant global changes propagated automatically. Update the button atom, and every component using it updates instantly.</li>
           </ul>
-        </p>
+        </div>
 
         <img
           src="/images/design-system-bg.png"
@@ -178,25 +178,25 @@ export default function DesignSystemPage() {
 
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Patterns, Not Just Components</h3>
         <p className="text-gray-700 leading-relaxed mb-2">Individual components weren't enough. I built out the interaction patterns that connect them:</p>
-        <p className="text-gray-700 mb-6">
+        <div className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li><span className='font-bold'>Form patterns</span> - label placement, validation timing, error message structure, helper text rules</li>
             <li><span className='font-bold'>Data display patterns</span> - tables, empty states, loading skeletons, pagination</li>
             <li><span className='font-bold'>Feedback patterns</span> - toast notifications, inline errors, confirmation dialogs</li>
             <li><span className='font-bold'>Navigation patterns</span> - consistent with GXT's structural constraints but designed to feel intentional</li>
           </ul>
-        </p>
+        </div>
         <p className="text-gray-700 leading-relaxed mb-6">Each pattern included annotated documentation covering when to use it, when not to, and what edge cases to account for.</p>
 
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Working Within Sencha GXT's Constraints</h3>
         <p className="text-gray-700 leading-relaxed mb-2">GXT is rigid. It has its own component model and styling system that doesn't map to a modern design system without significant work. This required a practical approach:</p>
-        <p className="text-gray-700 mb-6">
+        <div className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li>Where GXT components could be styled to match the design system, I documented exactly how.</li>
             <li>Where GXT fell short, I worked with engineers to introduce new, custom components: built and owned by the team, not inherited from the framework.</li>
             <li>Every new component had a clear Figma counterpart, so design and code stayed aligned.</li>
           </ul>
-        </p>
+        </div>
         <p className="text-gray-700 leading-relaxed mb-6">The goal was never to replace GXT wholesale. It was to extend it thoughtfully, and make the seams invisible to the end user.</p>
       </section>
 
@@ -225,27 +225,27 @@ export default function DesignSystemPage() {
         <p className="text-gray-700 leading-relaxed mb-6">The engineering team at Matillion was skilled and experienced, but UX culture wasn't embedded in how they worked. They were building features, not experiences. That gap needed to close.</p>
 
         <p className="text-gray-700 leading-relaxed mb-2">What I did:</p>
-        <p className="text-gray-700 mb-6">
+        <div className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li>Ran structured sessions with the engineering team on UX fundamentals: not theory, but practical. How to think about user flows, what makes an interaction feel right, how to spot a UX problem before it ships.</li>
             <li>Walked engineers through the design system: how to read it, how to use it, what each component and pattern was for.</li>
             <li>Established a working rhythm where design system components were the starting point for new engineering work, not an afterthought.</li>
             <li>Made changes available progressively, prioritised alongside real product work so the team was never pulled away from business goals entirely.</li>
           </ul>
-        </p>
+        </div>
         <p className="text-gray-700 leading-relaxed mb-6">The shift wasn't instant. But over time, engineers started raising UX questions earlier, in planning, not just in review. That's the real marker of culture change.</p>
       </section>
 
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Why This Matters</h2>
         <p className="text-gray-700 leading-relaxed mb-2">A design system is the most direct intersection of design and engineering work that exists. It requires:</p>
-        <p className="text-gray-700 mb-6">
+        <div className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li>Enough design depth to build components that are flexible, consistent, and cover every real-world state</li>
             <li>Enough engineering understanding to know what's actually buildable, and how</li>
             <li>The ability to communicate across both disciplines and change how each one works</li>
           </ul>
-        </p>
+        </div>
         <p className="text-gray-700 leading-relaxed mb-6">This project wasn't just about making Figma files faster to build. It was about closing the structural gap between how design thought about the product and how engineering built it.</p>
       </section>
 
@@ -261,13 +261,13 @@ export default function DesignSystemPage() {
 
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Next Steps</h2>
-        <p className="text-gray-700 leading-relaxed">
+        <div className="text-gray-700 leading-relaxed">
           <ul className='list-disc list-inside'>
             <li>Extend the system to cover more complex data visualisation and pipeline-specific patterns</li>
             <li>Build a design QA process: checking shipped UI against design system components automatically</li>
             <li>Explore a tokenised approach to styling that maps directly between Figma and code, reducing drift between design and implementation</li>
           </ul>
-        </p>
+        </div>
       </section>
 
       </FadeUp>

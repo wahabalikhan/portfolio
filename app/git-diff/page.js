@@ -61,7 +61,7 @@ export default function GitDiffPage() {
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">My Role</h3>
                     <p className="text-gray-700 leading-relaxed mb-2">I led the full design process end-to-end:</p>
-                    <p className="text-gray-700 mb-6">
+                    <div className="text-gray-700 mb-6">
                         <ul className='list-disc list-inside'>
                             <li>Discovery planning and user research</li>
                             <li>Competitive analysis of how other developer tools handle this problem</li>
@@ -70,7 +70,7 @@ export default function GitDiffPage() {
                             <li>UX delivery, design QA, and analytics setup</li>
                             <li>Post-launch tracking and iteration planning</li>
                         </ul>
-                    </p>
+                    </div>
                     <p className="text-gray-700 leading-relaxed mb-2">This project touched research, product strategy, engineering alignment, interaction design, and behavioural change.</p>
 
                 </div>
@@ -103,13 +103,13 @@ export default function GitDiffPage() {
             <section className="mb-12">
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Design Goals</h3>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Give engineers real-time visibility of what changed before they commit</li>
                         <li>Maintain familiarity for engineers already comfortable with developer tool workflows</li>
                         <li>Increase confidence through clarity, not through adding more UI</li>
                     </ul>
-                </p>
+                </div>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
                     <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 Value to the business and user</p>
                     <p className="text-gray-700 bg-blue-50">
@@ -121,14 +121,14 @@ export default function GitDiffPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Research and Discovery</h2>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">What I conducted</h3>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Competitive analysis of how VS Code, GitHub Desktop, and JetBrains handle this problem</li>
                         <li><span className='font-bold'>1 external customer* and 4 internal data engineer interviews</span> covering the full user spectrum</li>
                         <li>A cross-functional workshop to explore different visualisation approaches</li>
                         <li>Workflow mapping to understand when and why engineers need to see what changed</li>
                     </ul>
-                </p>
+                </div>
 
                 <p>* Due to time constraints, only 1 external customer was available for interview.</p>
 
@@ -161,7 +161,7 @@ export default function GitDiffPage() {
                 <h3 className="text-xl font-semibold mb-4 text-gray-900">Key user needs (framed as problems)</h3>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
 
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside font-bold'>
                         <li>"I need to easily understand what changed between my local version and what has been saved."</li>
                         <li>"I need a scannable, side-by-side view because inline comparisons hide too much context."</li>
@@ -169,7 +169,7 @@ export default function GitDiffPage() {
                         <li>"I need control. Show me all files, or only the ones that matter."</li>
                     </ul>
 
-                </p>
+                </div>
                 <p className="text-gray-700 leading-relaxed mb-2">These weren't feature requests. They were framed as problems to solve.</p>
                 </div>
             </section>
@@ -178,40 +178,40 @@ export default function GitDiffPage() {
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Ideation and Design</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">Using insights from the workshop, I explored two directions:</p>
                 <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept A: Inline comparison</p>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Lightweight</li>
                         <li>Familiar to engineers used to command-line tools</li>
                         <li>But less visual clarity, harder to scan quickly</li>
                     </ul>
-                </p>
+                </div>
                 <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept B: Side-by-side comparison, inspired by IDE tools (chosen)</p>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Mirrors the mental model engineers already have from tools like VS Code</li>
                         <li>Clearer structure, better scannability</li>
                         <li>Stronger visual separation between what changed and what didn't</li>
                     </ul>
-                </p>
+                </div>
                 <p className="text-gray-700 leading-relaxed mb-2">Testing with internal engineers confirmed <span className="font-bold">Concept B</span> was more intuitive and trustworthy. We developed it further through:</p>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>An interactive comparison view with contextual filters</li>
                         <li>A transparent, scannable layout that built user confidence</li>
                         <li>Visual indicators that made additions and deletions immediately obvious</li>
                     </ul>
-                </p>
+                </div>
             </section>
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Execution</h2>
                 <p className="text-gray-700 leading-relaxed mb-2">I partnered closely with engineering to:</p>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Deliver a scalable, technically feasible feature</li>
                         <li>Balance performance with clarity throughout</li>
                         <li>Ensure the final implementation matched the intended UX through regular QA checks</li>
                     </ul>
-                </p>
+                </div>
                 <p className="text-gray-700 leading-relaxed mb-6">Regular check-ins with Product helped prioritise and sequence improvements for rollout.</p>
 
                 <img
@@ -227,22 +227,22 @@ export default function GitDiffPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Validation and Testing</h2>
                 <p className="text-gray-700 leading-relaxed mb-2">Usability testing with five data engineers:</p>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li><span className='font-bold'>100% task success rate</span></li>
                         <li>All participants rated the flow <span className='font-bold'>"easy" or "very easy"</span></li>
                         <li>Zero misclicks or moments of confusion</li>
                     </ul>
-                </p>
+                </div>
 
                 <p className="text-gray-700 leading-relaxed mb-2">Participants described the experience as:</p>
-                <p className="text-gray-700">
+                <div className="text-gray-700">
                     <ul className='list-disc list-inside mb-6'>
                         <li>"Clear"</li>
                         <li>"Intuitive"</li>
                         <li>"Exactly what we needed"</li>
                     </ul>
-                </p>
+                </div>
                 <img
                     src="/images/testing1.png"
                     alt="Git Diff testing"
@@ -282,7 +282,7 @@ export default function GitDiffPage() {
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Business outcome</h3>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
                     <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 Better version control visibility increased overall platform trust:</p>
-                    <p className="text-gray-700 bg-blue-50">
+                    <div className="text-gray-700 bg-blue-50">
                         <ul className='list-disc list-inside'>
                             <li>Lower cognitive load on engineering teams</li>
                             <li>Fewer support tickets related to version control errors</li>
@@ -291,7 +291,7 @@ export default function GitDiffPage() {
                             <li>More time focused on real work, not recovering from mistakes</li>
                             <li>Matillion feeling more like a reliable IDE, not just a data tool</li>
                         </ul>
-                    </p>
+                    </div>
                 </div>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">The cost of skipping validation</h3>
@@ -310,14 +310,14 @@ export default function GitDiffPage() {
                 <p className="text-gray-700 leading-relaxed mb-6">I also learned the value of shaping not just the UI, but the behaviour around it. Supporting engineers in shifting to integrated version control workflows, with less friction and more trust in the tool, was the real outcome. The numbers confirmed it.</p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Next steps</h3>
-                <p className="text-gray-700 leading-relaxed">
+                <div className="text-gray-700 leading-relaxed">
                     <ul className='list-disc list-inside'>
                         <li>Merge-level comparisons</li>
                         <li>Conflict resolution flows</li>
                         <li>Commit-to-commit comparisons</li>
                     </ul>
 
-                </p>
+                </div>
             </section>
             </FadeUp>
             <OtherCaseStudies currentId="git-diff" />

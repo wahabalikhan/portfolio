@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X, Pencil, GripHorizontal, Heart } from 'lucide-react';
+import { MousePointer2, MessageCircle, Trash2, LogOut, Eye, EyeOff, X, Pencil, GripHorizontal, Heart, Check } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 const VISITOR_COLORS = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '#6366F1', '#8B5CF6'];
@@ -14,7 +14,7 @@ const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#
 const PLAY_AREA_WIDTH = 1300;
 
 // Fixed y-coordinate denominator. Must not change across tabs or screen sizes.
-// scrollHeight was rejected because it varies per tab (Design: ~3678, Development: ~1975, Extras: ~1846),
+// scrollHeight was rejected because it varies per tab (Design: ~3678, Development: ~1975, Just for fun: ~1846),
 // causing comments to jump when switching tabs. 4000 exceeds the tallest tab's height on any screen.
 const Y_REFERENCE_HEIGHT = 4000;
 
@@ -83,6 +83,16 @@ const getOrCreateSessionToken = () => {
   } catch { return null; }
 };
 
+// The database stores only a SHA-256 hash of a visitor's token (see lib/supabaseClient.js
+// and supabase/comment-moderation.sql), so "is this my comment?" compares hashes.
+const hashToken = async (token) => {
+  try {
+    if (!token || !crypto?.subtle) return null;
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch { return null; }
+};
+
 const ADJECTIVES = ['Purple', 'Blue', 'Green', 'Orange', 'Pink', 'Teal', 'Amber', 'Coral', 'Slate', 'Indigo'];
 const NOUNS      = ['Designer', 'Visitor', 'Explorer', 'Thinker', 'Maker', 'Builder', 'Creator', 'Dreamer', 'Reader', 'Wanderer'];
 
@@ -142,6 +152,75 @@ const cursorStyle = (xPct, yPct, color, contentLeft, contentWidth, contentAbsTop
   color,
 });
 
+// ── Keeping pins on the page and clear of controls ──────────────────────────────
+// Room a collapsed card needs (max-width 220px plus the "N replies" line and its tilt).
+const CARD_BOX = { w: 224, h: 48 };
+const NAV_HEIGHT = 64;   // the fixed top nav bar (4rem)
+const CLEARANCE = 6;     // gap kept between a card and a control
+// Controls a card must never cover. Big block links (whole case-study, repo and blog
+// cards) are left out: pins may sit over those, just not over buttons and inline links.
+const CONTROL_SELECTOR = 'button, a, input, textarea, select, [role="button"], .hero-accent-word';
+const MAX_LINK_AREA = 40000; // px²; anything larger is a block link, not a control
+
+// Page-coordinate rectangles of every visible control on the page (at the current
+// layout). Controls in the fixed nav count where they sit at the top of the page; other
+// fixed things (comment toolbar, scroll-to-top) float over everything, so they're skipped.
+const measureBlockers = () => {
+  const root = document.querySelector('.app-root');
+  if (!root) return [];
+  const out = [];
+  root.querySelectorAll(CONTROL_SELECTOR).forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) return;
+    if (el.tagName === 'A' && r.width * r.height > MAX_LINK_AREA) return;
+    const inNav = !!el.closest('.top-nav-bar');
+    if (!inNav) {
+      for (let p = el; p && p !== root; p = p.parentElement) {
+        if (getComputedStyle(p).position === 'fixed') return;
+      }
+    }
+    const top = inNav ? r.top : r.top + window.scrollY;
+    out.push({ left: r.left, top, right: r.right, bottom: top + r.height });
+  });
+  return out;
+};
+
+// Takes a card's wanted centre (page pixels) and returns the nearest centre that keeps
+// the card on the page (inside the window's width, below the nav, above the page's end)
+// and off every control, searching up and down first, then sideways.
+const resolveCardPosition = (cx, cy, blockers, pageHeight) => {
+  const hw = CARD_BOX.w / 2, hh = CARD_BOX.h / 2;
+  const minX = hw + 8, maxX = Math.max(minX, window.innerWidth - hw - 8);
+  const minY = NAV_HEIGHT + hh + 4, maxY = Math.max(minY, pageHeight - hh - 8);
+  const clampX = (x) => Math.min(maxX, Math.max(minX, x));
+  const clampY = (y) => Math.min(maxY, Math.max(minY, y));
+  const free = (x, y) => !blockers.some((b) =>
+    x - hw < b.right + CLEARANCE && x + hw > b.left - CLEARANCE &&
+    y - hh < b.bottom + CLEARANCE && y + hh > b.top - CLEARANCE);
+  const x0 = clampX(cx), y0 = clampY(cy);
+  if (free(x0, y0)) return { x: x0, y: y0 };
+  for (let d = 8; d <= 640; d += 8) {
+    for (const y of [y0 + d, y0 - d]) {
+      const yc = clampY(y);
+      if (free(x0, yc)) return { x: x0, y: yc };
+    }
+  }
+  for (let d = 8; d <= 640; d += 8) {
+    for (const x of [x0 - d, x0 + d]) {
+      const xc = clampX(x);
+      if (free(xc, y0)) return { x: xc, y: y0 };
+    }
+  }
+  return { x: x0, y: y0 };
+};
+
+// Tells BobbyBuilds HQ how many comments are waiting for approval (comments_waiting).
+// The Pages Function counts them and sends the number with the HQ secret key; this only
+// nudges it. Fire and forget: it never blocks or breaks commenting.
+const pingCommentsWaiting = () => {
+  try { fetch('/api/comments-waiting', { method: 'POST', keepalive: true }).catch(() => {}); } catch {}
+};
+
 const toolbarStyle = {
   position: 'fixed',
   bottom: '2rem',
@@ -182,7 +261,7 @@ const inputStyle = {
   color: '#111827', backgroundColor: '#ffffff', boxSizing: 'border-box',
 };
 
-function ReplyCarousel({ replies, centredIndex, onCycle, likes, onLike, editingId, editBody, onEditBodyChange, onStartEdit, onSaveEdit, onCancelEdit, onDelete, isOwner, ownToken }) {
+function ReplyCarousel({ replies, centredIndex, onCycle, likes, onLike, editingId, editBody, onEditBodyChange, onStartEdit, onSaveEdit, onCancelEdit, onDelete, onApprove, isOwner, ownToken }) {
   const containerRef = useRef(null);
   const onCycleRef = useRef(onCycle);
   onCycleRef.current = onCycle;
@@ -223,11 +302,12 @@ function ReplyCarousel({ replies, centredIndex, onCycle, likes, onLike, editingI
         const opacity = abs === 0 ? 1 : abs === 1 ? 0.7 : 0.35;
         const zIndex = 10 - abs * 2;
         const isCenter = abs === 0;
-        const isOwnReply = !!reply.session_token && reply.session_token === ownToken;
+        const isOwnReply = !!reply.session_token && !!ownToken && reply.session_token === ownToken;
         const canEdit   = isCenter && (isOwner || isOwnReply);
         const canDelete = isCenter && (isOwner || isOwnReply);
         const isEditing = isCenter && editingId === reply.id;
         const replyLikes = likes?.[reply.id] || { count: 0, liked: false };
+        const isPending = reply.approved === false;
 
         return (
           <div
@@ -237,7 +317,7 @@ function ReplyCarousel({ replies, centredIndex, onCycle, likes, onLike, editingI
             onClick={isCenter ? undefined : (e) => { e.stopPropagation(); onCycleRef.current(offset > 0 ? 1 : -1); }}
           >
             <div
-              className="cc-carousel-card"
+              className={`cc-carousel-card${isPending ? ' cc-pending' : ''}`}
               style={{ transform: `perspective(600px) rotateX(${rotateX}deg) scale(${scale})` }}
             >
               <div className="cc-carousel-header">
@@ -300,6 +380,17 @@ function ReplyCarousel({ replies, centredIndex, onCycle, likes, onLike, editingI
               ) : (
                 <p className={`cc-carousel-body${isCenter ? ' cc-carousel-body-full' : ''}`}>{reply.body}</p>
               )}
+              {isPending && isCenter && isOwner && !isEditing && (
+                <div className="cc-pending-bar">
+                  <span className="cc-pending-label">Waiting for approval</span>
+                  <button type="button" className="cc-approve-btn" onClick={(e) => { e.stopPropagation(); onApprove(reply.id); }}>
+                    <Check size={12} /> Approve
+                  </button>
+                  <button type="button" className="cc-reject-btn" onClick={(e) => { e.stopPropagation(); onDelete(reply.id, reply.session_token); }}>
+                    <Trash2 size={12} /> Delete
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -328,6 +419,7 @@ export default function CommentPins({ page, activeTab }) {
   const preDragPosRef   = useRef(null);
   const dbWriteTimerRef = useRef(null);
   const likeInFlight   = useRef({});
+  const resolvePctRef  = useRef((x_pct, y_pct) => ({ x_pct, y_pct })); // set each render below
 
   const annotationDragMetaRef = useRef(null);
   const annotationDragPosRef  = useRef(null);
@@ -360,16 +452,29 @@ export default function CommentPins({ page, activeTab }) {
   const [draftBody, setDraftBody] = useState('');
   const [expandedId, setExpandedId] = useState(null);
   const [saving, setSaving]       = useState(false);
-  const [hidden, setHidden]       = useState(() => {
-    try { return localStorage.getItem('wahab_comments_hidden') === 'true'; } catch { return false; }
-  });
+  // Read from localStorage after mounting, so the server and the browser's first render
+  // agree (reading it during render caused a hydration mismatch).
+  const [hidden, setHidden]       = useState(false);
   const [overlayHeight, setOverlayHeight] = useState(() =>
     typeof window !== 'undefined' ? document.documentElement.scrollHeight : 0
   );
   const [cursors, setCursors]     = useState({});
   const [viewerCount, setViewerCount] = useState(0);
-  const [isMobile, setIsMobile]   = useState(() => typeof window !== 'undefined' && window.innerWidth <= 767);
+  // null until mounted: the server can't know the screen width, so the first render
+  // matches the server's (desktop markup) and a layout effect settles it before paint.
+  // Nothing loads or connects until it's known to be false.
+  const [isMobile, setIsMobile]   = useState(null);
+  // "Thanks, it'll show once approved" note after a visitor posts or edits.
+  const [notice, setNotice]       = useState(null);
+  const noticeTimerRef            = useRef(null);
+  // Page height and control rectangles, for keeping pins on the page and off controls.
+  const [pageHeight, setPageHeight] = useState(0);
+  const [blockers, setBlockers]     = useState([]);
+  // True only for the one owner account (the database's is_comments_owner(), by user ID);
+  // any other signed-in account is treated as a visitor.
   const [isOwner, setIsOwner]         = useState(false);
+  // Hash of this browser's comment token: matches session_token on its own comments.
+  const [ownTokenHash, setOwnTokenHash] = useState(null);
   const [likes, setLikes]             = useState({});
   const [replyingToId, setReplyingToId] = useState(null);
   const [openCarouselId, setOpenCarouselId] = useState(null);
@@ -428,8 +533,10 @@ export default function CommentPins({ page, activeTab }) {
   // entirely in the DB and are loaded via the comments state on every mount.
   try { localStorage.removeItem('visitor-comment-positions'); } catch {}
 
-  // Load annotation position from Supabase on mount.
+  // Load annotation position from Supabase on mount. The hand-written notes only exist
+  // on the home page; asking for them elsewhere failed (406, no such row).
   useEffect(() => {
+    if (page !== 'home') return;
     supabase.from('pin_positions').select('*')
       .eq('id', 'annotation').eq('page', page).single()
       .then(({ data }) => {
@@ -438,6 +545,7 @@ export default function CommentPins({ page, activeTab }) {
   }, [page]);
 
   useEffect(() => {
+    if (page !== 'home') return;
     supabase.from('pin_positions').select('*')
       .eq('id', 'annotation2').eq('page', page).single()
       .then(({ data }) => {
@@ -486,9 +594,27 @@ export default function CommentPins({ page, activeTab }) {
       return { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight };
     });
     contentMetricsRef.current = { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight };
+    measureLayout();
+  };
+
+  // Page height and control rectangles (see resolveCardPosition). Only updates state when
+  // something actually moved, so it's safe to call on every resize.
+  const measureLayout = () => {
+    const h = document.documentElement.scrollHeight;
+    setPageHeight(prev => (Math.abs(prev - h) < 1 ? prev : h));
+    const next = measureBlockers();
+    setBlockers(prev => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
   };
 
   useLayoutEffect(() => { updateContentMetrics(); }, []);
+
+  // Re-measure after a tab switch, and again once the fade-in animations have settled
+  // (they move things by a few pixels while they run).
+  useEffect(() => {
+    if (isMobile !== false) return;
+    const timers = [0, 900, 2500].map(ms => setTimeout(measureLayout, ms));
+    return () => timers.forEach(clearTimeout);
+  }, [activeTab, isMobile]);
 
   useEffect(() => {
     const observer = new ResizeObserver(updateContentMetrics);
@@ -502,11 +628,41 @@ export default function CommentPins({ page, activeTab }) {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    setIsMobile(window.innerWidth <= 767);
+    try { setHidden(localStorage.getItem('wahab_comments_hidden') === 'true'); } catch {}
     const onResize = () => setIsMobile(window.innerWidth <= 767);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  // Drafts and open replies belong to the tab they were started on.
+  useEffect(() => {
+    setDraft(null); setDraftAuthor(''); setDraftBody('');
+    setReplyingToId(null); setOpenCarouselId(null); setExpandedId(null);
+  }, [activeTab]);
+
+  useEffect(() => {
+    hashToken(localSessionToken.current).then(setOwnTokenHash);
+  }, []);
+
+  // Makes this browser's comment token if it hasn't one yet (it's sent with every request
+  // from then on), and keeps its hash current.
+  const ensureToken = () => {
+    const token = getOrCreateSessionToken();
+    if (token && token !== localSessionToken.current) {
+      localSessionToken.current = token;
+      hashToken(token).then(setOwnTokenHash);
+    }
+    return token;
+  };
+
+  const showNotice = (text) => {
+    clearTimeout(noticeTimerRef.current);
+    setNotice(text);
+    noticeTimerRef.current = setTimeout(() => setNotice(null), 5000);
+  };
+  useEffect(() => () => clearTimeout(noticeTimerRef.current), []);
 
   useEffect(() => {
     if (!isMobile) return;
@@ -536,8 +692,17 @@ export default function CommentPins({ page, activeTab }) {
   }, []);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setIsOwner(!!session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => setIsOwner(!!session));
+    // Signed in isn't enough: ask the database whether this account is the owner.
+    let current = 0;
+    const check = (session) => {
+      const run = ++current;
+      if (!session) { setIsOwner(false); return; }
+      supabase.rpc('is_comments_owner').then(({ data, error }) => {
+        if (run === current) setIsOwner(!error && data === true);
+      });
+    };
+    supabase.auth.getSession().then(({ data: { session } }) => check(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => check(session));
     return () => subscription.unsubscribe();
   }, []);
 
@@ -566,7 +731,7 @@ export default function CommentPins({ page, activeTab }) {
   }, [activeTab]);
 
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile !== false) return;
     supabase.from('comments').select('*').eq('page', page).order('created_at', { ascending: true }).then(({ data, error }) => {
       if (!error && data) {
         setComments(data);
@@ -601,10 +766,10 @@ export default function CommentPins({ page, activeTab }) {
         }
       }
     });
-  }, [page, isMobile]);
+  }, [page, isMobile, isOwner]);
 
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile !== false) return;
     const channel = supabase.channel(`room:${page}`, { config: { broadcast: { self: false }, presence: { key: sessionId } } });
     channel
       .on('broadcast', { event: 'cursor' }, ({ payload }) => {
@@ -651,6 +816,9 @@ export default function CommentPins({ page, activeTab }) {
       })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
         ({ new: row }) => {
+          // Row-level security already keeps unapproved comments from visitors; this is a
+          // second guard in case a pending row ever arrives.
+          if (row.approved === false && !isOwnerRef.current) return;
           setComments(prev => prev.some(c => c.id === row.id) ? prev : [...prev, row]);
           setCommentPosCache(prev => {
             if (prev[row.id]) return prev;
@@ -673,8 +841,16 @@ export default function CommentPins({ page, activeTab }) {
       )
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'comments', filter: `page=eq.${page}` },
         ({ new: row }) => {
-          setComments(prev => prev.map(c => c.id === row.id
-            ? { ...c, x_pct: row.x_pct, y_pct: row.y_pct, body: row.body, author: row.author } : c));
+          // Back in the queue (a visitor edited it): gone for everyone but the owner.
+          if (row.approved === false && !isOwnerRef.current) {
+            setComments(prev => prev.filter(c => c.id !== row.id));
+            return;
+          }
+          // Just approved: visitors haven't got it yet, so it's added rather than updated.
+          setComments(prev => prev.some(c => c.id === row.id)
+            ? prev.map(c => c.id === row.id
+              ? { ...c, x_pct: row.x_pct, y_pct: row.y_pct, body: row.body, author: row.author, approved: row.approved, tab: row.tab } : c)
+            : [...prev, row]);
           setCommentPosCache(prev => {
             const n = { ...prev, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } };
             try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
@@ -713,7 +889,7 @@ export default function CommentPins({ page, activeTab }) {
   }, [page, sessionId, cursorColor, isMobile]);
 
   const resyncComments = useCallback(async () => {
-    if (isMobile) return;
+    if (isMobile !== false) return;
     const { data, error } = await supabase
       .from('comments').select('*').eq('page', page).order('created_at', { ascending: true });
     if (error) { console.warn('[CommentPins] Resync failed:', error); return; }
@@ -758,7 +934,7 @@ export default function CommentPins({ page, activeTab }) {
   // same content position regardless of each viewer's screen width.
   useEffect(() => {
     if (isTouchDevice()) return;
-    if (isMobile) return;
+    if (isMobile !== false) return;
     let lastSent = 0;
     const onMove = (e) => {
       const now = performance.now();
@@ -846,10 +1022,10 @@ export default function CommentPins({ page, activeTab }) {
       const m = contentMetricsRef.current;
       if (m.width === 0) return;
       const relX = clientX - m.left;
-      const relY = pageY - m.absTop;
       const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
       const x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
-      const y_pct = Math.max(0, Math.min(95, ((relY - meta.offsetY_px) / m.height) * 100));
+      // Same y scale as placing and drawing a pin: page pixels over Y_REFERENCE_HEIGHT.
+      const y_pct = Math.max(0, Math.min(95, ((pageY - meta.offsetY_px) / Y_REFERENCE_HEIGHT) * 100));
       dragPosRef.current = { x_pct, y_pct };
 
       const now = performance.now();
@@ -869,12 +1045,14 @@ export default function CommentPins({ page, activeTab }) {
       const pos  = dragPosRef.current;
 
       if (meta && pos) {
+        // Where it lands: kept on the page and off any button or link.
+        const landed = resolvePctRef.current(pos.x_pct, pos.y_pct);
         if (meta.isDraft) {
-          setDraft(prev => prev ? { ...prev, x_pct: pos.x_pct, y_pct: pos.y_pct } : null);
+          setDraft(prev => prev ? { ...prev, x_pct: landed.x_pct, y_pct: landed.y_pct } : null);
           justDraggedRef.current = true;
         } else {
-          const finalX = pos.x_pct;
-          const finalY = pos.y_pct;
+          const finalX = landed.x_pct;
+          const finalY = landed.y_pct;
           const preDrag = preDragPosRef.current;
           const positionChanged = !preDrag
             || Math.abs(finalX - preDrag.x_pct) > 0.1
@@ -898,13 +1076,11 @@ export default function CommentPins({ page, activeTab }) {
             clearTimeout(dbWriteTimerRef.current);
             const capturedId    = meta.id;
             const capturedPre   = preDrag;
-            const capturedToken = meta.sessionToken;
             dbWriteTimerRef.current = setTimeout(async () => {
-              const base = supabase.from('comments').update({ x_pct: finalX, y_pct: finalY }).eq('id', capturedId);
-              const result = await (capturedToken ? base.eq('session_token', capturedToken) : base);
-              if (capturedToken) console.log('Visitor DB write result:', result);
-              const { error } = result;
-              if (error && capturedPre) {
+              // The database decides whether this browser may move it (owner, or its author).
+              const { error, count } = await supabase.from('comments')
+                .update({ x_pct: finalX, y_pct: finalY }, { count: 'exact' }).eq('id', capturedId);
+              if ((error || count === 0) && capturedPre) {
                 setComments(prev => prev.map(c => c.id === capturedId
                   ? { ...c, x_pct: capturedPre.x_pct, y_pct: capturedPre.y_pct } : c));
                 setCardErrors(prev => ({ ...prev, [capturedId]: true }));
@@ -1121,7 +1297,7 @@ export default function CommentPins({ page, activeTab }) {
       isDraft: true,
       sessionToken: null,
       offsetX_px: (clientX - m.left) - (draft.x_pct / 100) * m.width,
-      offsetY_px: (pageY   - m.absTop) - (draft.y_pct / 100) * m.height,
+      offsetY_px: pageY - (draft.y_pct / 100) * Y_REFERENCE_HEIGHT,
     };
     dragPosRef.current = { x_pct: draft.x_pct, y_pct: draft.y_pct };
     setDraggingId('__draft__');
@@ -1173,20 +1349,22 @@ export default function CommentPins({ page, activeTab }) {
   const handleVisitorEdit = async (id, newBody) => {
     if (!newBody.trim()) return;
     const trimmed = newBody.trim();
-    const token = localSessionToken.current;
-    setComments(prev => prev.map(c => c.id === id ? { ...c, body: trimmed } : c));
     setEditingId(null);
-    const ch = channelRef.current;
-    if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_edit', payload: { id, body: trimmed } });
-    await supabase.from('comments').update({ body: trimmed }).eq('id', id).eq('session_token', token);
+    // An edited comment goes back to the queue (the database marks it unapproved), so it
+    // leaves the page until it's approved again. No broadcast: others shouldn't see it.
+    // Through edit_my_comment(): the database checks this browser's token and re-queues it.
+    const { data: changed, error } = await supabase.rpc('edit_my_comment', { comment_id: id, new_body: trimmed });
+    if (error || changed !== true) { showNotice('Couldn’t save that edit. Please try again in a moment.'); return; }
+    setComments(prev => prev.filter(c => c.id !== id && c.parent_id !== id));
+    showNotice('Thanks! Your edit will show once Wahab approves it.');
+    pingCommentsWaiting();
   };
 
   const handleToggleLike = async (e, id) => {
     e.stopPropagation();
     if (likeInFlight.current[id]) return;
-    const token = getOrCreateSessionToken();
+    const token = ensureToken();
     if (!token) return;
-    localSessionToken.current = token;
     likeInFlight.current[id] = true;
     const current = likes[id] || { count: 0, liked: false };
     const isLiked = current.liked;
@@ -1215,25 +1393,50 @@ export default function CommentPins({ page, activeTab }) {
     setReplyBody('');
   };
 
+  // Saves a new comment or reply. New ones are unapproved (the database decides: only the
+  // signed-in owner's are approved straight away), so the row isn't read back: a visitor
+  // isn't allowed to see it yet. The id is made here so the owner's copy can be shown at once.
+  const insertComment = async (fields) => {
+    ensureToken(); // the database records its hash as the author's token
+    const id = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : undefined;
+    const row = { ...(id ? { id } : {}), page, ...fields };
+    const { error } = await supabase.from('comments').insert(row);
+    if (error) {
+      showNotice('Couldn’t save that. Please try again in a moment.');
+      return { ok: false };
+    }
+    if (isOwner) {
+      if (id) setComments(prev => prev.some(c => c.id === id) ? prev : [...prev, { ...row, session_token: ownTokenHash, approved: true, created_at: new Date().toISOString() }]);
+    } else {
+      showNotice(fields.parent_id ? 'Thanks! Your reply will show once Wahab approves it.' : 'Thanks! Your comment will show once Wahab approves it.');
+      pingCommentsWaiting();
+    }
+    return { ok: true, row };
+  };
+
+  // Owner only: makes a waiting comment or reply visible to everyone.
+  const handleApprove = async (id) => {
+    const { error } = await supabase.from('comments').update({ approved: true }).eq('id', id);
+    if (error) { showNotice('Couldn’t approve that. Please try again.'); return; }
+    setComments(prev => prev.map(c => c.id === id ? { ...c, approved: true } : c));
+    pingCommentsWaiting();
+  };
+
   const saveReply = async () => {
     if (!replyBody.trim() || !replyingToId) return;
     setReplySaving(true);
-    const token = getOrCreateSessionToken();
-    localSessionToken.current = token;
     const enteredName = replyAuthor.trim();
     const parent = comments.find(c => c.id === replyingToId);
-    const { data, error } = await supabase.from('comments').insert({
-      page,
+    const { ok } = await insertComment({
       x_pct: parent?.x_pct ?? 50,
       y_pct: parent?.y_pct ?? 50,
       author: enteredName || 'Anonymous',
       body: replyBody.trim(),
-      session_token: token,
       parent_id: replyingToId,
-    }).select().single();
+      tab: parent?.tab ?? (page === 'home' ? activeTab : null),
+    });
     setReplySaving(false);
-    if (!error && data) {
-      setComments(prev => prev.some(c => c.id === data.id) ? prev : [...prev, data]);
+    if (ok) {
       if (enteredName && enteredName !== 'Anonymous') {
         try { localStorage.setItem('wahab_visitor_name', enteredName); } catch {}
       }
@@ -1257,7 +1460,7 @@ export default function CommentPins({ page, activeTab }) {
       id,
       sessionToken: isOwner ? null : localSessionToken.current,
       offsetX_px: (clientX - m.left) - (x_pct / 100) * m.width,
-      offsetY_px: (pageY - m.absTop) - (y_pct / 100) * m.height,
+      offsetY_px: pageY - (y_pct / 100) * Y_REFERENCE_HEIGHT,
     };
     dragPosRef.current = { x_pct, y_pct };
     setExpandedId(null);
@@ -1276,7 +1479,8 @@ export default function CommentPins({ page, activeTab }) {
     const x_pct = ((e.clientX - m.left) / m.width) * 100;
     if (x_pct < minX || x_pct > maxX) return;
     const y_pct = (e.pageY / Y_REFERENCE_HEIGHT) * 100;
-    setDraft({ x_pct, y_pct });
+    // Nudged to the nearest spot that's on the page and off any button or link.
+    setDraft(resolvePctRef.current(x_pct, y_pct));
     const savedRealName = isOwner ? 'Wahab' : (() => { try { return localStorage.getItem('wahab_visitor_name') || ''; } catch { return ''; } })();
     setDraftAuthor(savedRealName); setDraftBody('');
   };
@@ -1286,20 +1490,18 @@ export default function CommentPins({ page, activeTab }) {
   const saveDraft = async () => {
     if (!draftBody.trim() || !draft) return;
     setSaving(true);
-    const token = getOrCreateSessionToken();
-    localSessionToken.current = token;
     const enteredName = draftAuthor.trim();
-    const { data, error } = await supabase.from('comments').insert({
-      page, x_pct: draft.x_pct, y_pct: draft.y_pct,
+    const { ok, row } = await insertComment({
+      x_pct: draft.x_pct, y_pct: draft.y_pct,
       author: enteredName || 'Anonymous', body: draftBody.trim(),
-      session_token: token,
-    }).select().single();
+      // Home comments belong to the tab they were left on.
+      tab: page === 'home' ? activeTab : null,
+    });
     setSaving(false);
-    if (!error && data) {
-      setComments(prev => prev.some(c => c.id === data.id) ? prev : [...prev, data]);
-      setCommentPosCache(prev => {
-        if (prev[data.id]) return prev;
-        const n = { ...prev, [data.id]: { x_pct: data.x_pct, y_pct: data.y_pct } };
+    if (ok) {
+      if (row.id) setCommentPosCache(prev => {
+        if (prev[row.id]) return prev;
+        const n = { ...prev, [row.id]: { x_pct: row.x_pct, y_pct: row.y_pct } };
         try { localStorage.setItem(`cc-pos-${page}`, JSON.stringify(n)); } catch {}
         return n;
       });
@@ -1347,6 +1549,7 @@ export default function CommentPins({ page, activeTab }) {
     } else {
       console.log('[DEL:admin] 6. SUCCESS branch — broadcasting card_delete');
       if (ch?.state === 'joined') ch.send({ type: 'broadcast', event: 'card_delete', payload: { id } });
+      if (card?.approved === false) pingCommentsWaiting();
       console.log('[DEL:admin] 7. comments remaining (count):', comments.filter(c => c.id !== id).length);
     }
   };
@@ -1356,8 +1559,7 @@ export default function CommentPins({ page, activeTab }) {
     const card = comments.find(c => c.id === id);
     if (!card) { console.warn('[DEL:visitor] card not found in state, aborting'); return; }
     const savedPos = commentPosCache[id];
-    const token = localSessionToken.current;
-    console.log('[DEL:visitor] 2. card found:', !!card, '| savedPos:', savedPos, '| token:', token);
+    console.log('[DEL:visitor] 2. card found:', !!card, '| savedPos:', savedPos);
     setComments(prev => prev.filter(c => c.id !== id));
     setCommentPosCache(prev => {
       if (!(id in prev)) return prev;
@@ -1368,8 +1570,9 @@ export default function CommentPins({ page, activeTab }) {
     setExpandedId(null);
     setEditingId(null);
     const ch = channelRef.current;
-    console.log('[DEL:visitor] 3. sending supabase DELETE — table: comments, filter: id =', id, ', session_token =', token);
-    const response = await supabase.from('comments').delete().eq('id', id).eq('session_token', token).select();
+    console.log('[DEL:visitor] 3. sending supabase DELETE — table: comments, filter: id =', id);
+    // The database only lets the author's browser (by its token) delete it.
+    const response = await supabase.from('comments').delete().eq('id', id).select();
     console.log('[DEL:visitor] 4. raw supabase response:', JSON.stringify(response));
     const { data, error } = response;
     const deleted = !error && data && data.length > 0;
@@ -1430,11 +1633,33 @@ export default function CommentPins({ page, activeTab }) {
   };
 
   const { left: cLeft, width: cWidth, absTop: cAbsTop, height: cHeight } = contentMetrics;
+
+  // A pin's stored spot (x_pct of the content column, y_pct of Y_REFERENCE_HEIGHT) → where
+  // it's actually drawn: on the page and off every control. Stored positions are never
+  // rewritten by this, so a pin moves back if the layout later frees up its spot.
+  const resolvePx = (x_pct, y_pct) => {
+    const cx = cLeft + (x_pct / 100) * cWidth;
+    const cy = (y_pct / 100) * Y_REFERENCE_HEIGHT;
+    if (!pageHeight || cWidth === 0) return { left: cx, top: cy };
+    const { x, y } = resolveCardPosition(cx, cy, blockers, pageHeight);
+    return { left: x, top: y };
+  };
+  // Same, in stored units: used when a pin is placed or dropped.
+  resolvePctRef.current = (x_pct, y_pct) => {
+    const { left, top } = resolvePx(x_pct, y_pct);
+    return { x_pct: ((left - cLeft) / cWidth) * 100, y_pct: (top / Y_REFERENCE_HEIGHT) * 100 };
+  };
+
+  // Which top-level pins show: on the home page, only the active tab's (comments from
+  // before tabs were stored count as Design, the default tab); unapproved ones only for
+  // the owner.
+  const isOnThisTab = (c) => page !== 'home' || (c.tab || 'Design') === activeTab;
+  const isVisibleTo = (c) => c.approved !== false || isOwner;
   const annotationReady = cHeight > 0 && cAbsTop > 0;
 
 
 
-  const renderCard = (id, author, body, color, x_pct, y_pct, isDragging, sessionToken) => {
+  const renderCard = (id, author, body, color, x_pct, y_pct, isDragging, sessionToken, isPending) => {
     const remoteMove = remoteCardMoves[id];
     let displayX = x_pct;
     let displayY = y_pct;
@@ -1452,13 +1677,18 @@ export default function CommentPins({ page, activeTab }) {
     const isExpanded     = expandedId === id;
     const isLockedActive = id === replyingToId || id === openCarouselId;
     const deg            = getDeg(id);
-    const isOwnCard  = !!sessionToken && sessionToken === localSessionToken.current;
+    const isOwnCard  = !!sessionToken && !!ownTokenHash && sessionToken === ownTokenHash;
     const canDrag    = isOwner || isOwnCard;
     const canDelete  = isOwner || isOwnCard;
     const canEdit    = isOwner || isOwnCard;
 
+    // While dragging, the card follows the pointer exactly; otherwise it's drawn at its
+    // resolved spot (on the page, off controls), and a drag starts from there.
+    const drawn = resolvePctRef.current(x_pct, y_pct);
+    const placed = (isDragging && dragPos) ? null : resolvePx(displayX, displayY);
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
+      ...(placed ? { left: `${placed.left}px`, top: `${placed.top}px` } : {}),
       cursor: canDrag ? (isDragging ? (isFinePointerRef.current ? "url('/cursors/grab.svg') 32 26, grabbing" : 'grabbing') : (isFinePointerRef.current ? "url('/cursors/hover.svg') 32 18, grab" : 'grab')) : 'inherit',
       ...(isDragging ? { willChange: 'transform' } : {}),
       ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
@@ -1469,6 +1699,7 @@ export default function CommentPins({ page, activeTab }) {
       'cc-card',
       isExpanded       ? 'cc-card-expanded'     : '',
       isRemotelyMoving ? 'cc-card-remote-moving' : '',
+      isPending        ? 'cc-pending'            : '',
     ].filter(Boolean).join(' ');
 
     return (
@@ -1476,8 +1707,8 @@ export default function CommentPins({ page, activeTab }) {
         key={id}
         className={`cc-card-wrapper${isLockedActive ? ' cc-locked-active' : ''}${canDrag ? ' cc-can-drag' : ''}`}
         style={wrapperStyle}
-        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
-        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel')) return; startDrag(e, id, x_pct, y_pct); } : undefined}
+        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel,.cc-pending-bar')) return; startDrag(e, id, drawn.x_pct, drawn.y_pct); } : undefined}
+        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel,.cc-pending-bar')) return; startDrag(e, id, drawn.x_pct, drawn.y_pct); } : undefined}
         onClick={(e) => onCardClick(e, id)}
         onMouseEnter={() => onCardEnter(id)}
         onMouseLeave={() => onCardLeave(id)}
@@ -1552,6 +1783,17 @@ export default function CommentPins({ page, activeTab }) {
           ) : (
             <p className={`cc-body${isExpanded ? ' cc-body-visible' : ''}`}>{body}</p>
           )}
+        {isPending && isOwner && editingId !== id && (
+          <div className="cc-pending-bar" onClick={(e) => e.stopPropagation()}>
+            <span className="cc-pending-label">Waiting for approval</span>
+            <button type="button" className="cc-approve-btn" onClick={(e) => { e.stopPropagation(); handleApprove(id); }}>
+              <Check size={12} /> Approve
+            </button>
+            <button type="button" className="cc-reject-btn" onClick={(e) => { e.stopPropagation(); handleDelete(id); }}>
+              <Trash2 size={12} /> Delete
+            </button>
+          </div>
+        )}
         {id === replyingToId && (
           <div
             style={{ position: 'absolute', top: '100%', left: 0, marginTop: '26px', width: '100%', zIndex: 1 }}
@@ -1589,7 +1831,7 @@ export default function CommentPins({ page, activeTab }) {
         )}
         {(() => {
           const replies = comments
-            .filter(c => c.parent_id === id)
+            .filter(c => c.parent_id === id && isVisibleTo(c))
             .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
           if (replies.length === 0) return null;
           const isOpen = openCarouselId === id;
@@ -1612,6 +1854,10 @@ export default function CommentPins({ page, activeTab }) {
                 }}
               >
                 {replies.length === 1 ? '1 reply' : `${replies.length} replies`}
+                {(() => {
+                  const waiting = replies.filter(r => r.approved === false).length;
+                  return waiting > 0 ? <span className="cc-pending-count"> · {waiting} waiting</span> : null;
+                })()}
               </button>
               {isOpen && (
                 <ReplyCarousel
@@ -1627,8 +1873,9 @@ export default function CommentPins({ page, activeTab }) {
                   onSaveEdit={(rid) => isOwner ? handleEdit(rid, editBody) : handleVisitorEdit(rid, editBody)}
                   onCancelEdit={() => setEditingId(null)}
                   onDelete={(rid) => isOwner ? handleDelete(rid) : handleVisitorDelete(rid)}
+                  onApprove={handleApprove}
                   isOwner={isOwner}
-                  ownToken={localSessionToken.current}
+                  ownToken={ownTokenHash}
                 />
               )}
             </>
@@ -1646,11 +1893,11 @@ export default function CommentPins({ page, activeTab }) {
       onClick={handleOverlayClick}
       data-locked={!!replyingToId || undefined}
     >
-      {!hidden && comments.filter(c => !c.parent_id).map((pin, i) => {
+      {!hidden && comments.filter(c => !c.parent_id && isOnThisTab(c) && isVisibleTo(c)).map((pin, i) => {
         const cached = commentPosCache[pin.id];
         const x = cached ? cached.x_pct : pin.x_pct;
         const y = cached ? cached.y_pct : pin.y_pct;
-        return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token);
+        return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token, pin.approved === false);
       })}
 
       {page === 'home' && !hidden && annotationReady && annotation2Pos !== null && (() => {
@@ -1760,7 +2007,7 @@ export default function CommentPins({ page, activeTab }) {
     setTimeout(() => { setMobileToastFading(false); setMobileToastVisible(false); }, 200);
   };
 
-  if (isMobile) {
+  if (isMobile === true) {
     return mobileToastVisible ? (
       <div className={`mobile-toast${mobileToastFading ? ' mobile-toast-out' : ''}`}>
         <span>✨ More fun on desktop: drop comments and see who else is here.</span>
@@ -1782,12 +2029,34 @@ export default function CommentPins({ page, activeTab }) {
 
       {portalRoot && createPortal(overlay, portalRoot)}
 
+      {/* After a visitor posts or edits: it's waiting for approval. */}
+      <div className="cc-notice-region" role="status" aria-live="polite">
+        {notice && <div className="cc-notice">{notice}</div>}
+      </div>
+
       {/* Toolbar */}
       <div style={toolbarStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', padding: '0 0.625rem', fontSize: '0.75rem', fontWeight: 500, color: '#374151', whiteSpace: 'nowrap' }}>
           <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', backgroundColor: '#22c55e' }} />
           {viewerCount} viewing
         </div>
+        {isOwner && (() => {
+          // Waiting comments on this page, all tabs (each tab only shows its own pins).
+          const waiting = comments.filter(c => c.approved === false);
+          if (waiting.length === 0) return null;
+          const tabs = page === 'home'
+            ? [...new Set(waiting.map(c => (c.tab || 'Design') === 'JustForFun' ? 'Just for fun' : (c.tab || 'Design')))]
+            : [];
+          return (
+            <>
+              <div style={toolbarDivider} />
+              <div className="ftip-wrap">
+                <span className="cc-toolbar-waiting">{waiting.length} waiting</span>
+                <div className="ftip">{tabs.length ? `Waiting for approval on: ${tabs.join(', ')}` : 'Waiting for approval'}</div>
+              </div>
+            </>
+          );
+        })()}
         <div style={toolbarDivider} />
         <div className="ftip-wrap">
           <button type="button" aria-label="Cursor mode" style={toolbarBtnStyle(mode === 'cursor')}

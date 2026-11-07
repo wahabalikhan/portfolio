@@ -17,3 +17,9 @@ yarn-error.log*
 
 # macOS
 .DS_Store
+
+# Local scratch output
+.tmp/
+
+# Supabase CLI local state
+supabase/.temp/

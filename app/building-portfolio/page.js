@@ -17,7 +17,7 @@ export default function BuildingPortfolioPage() {
       <BackButton onClick={() => router.back()} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
-        Building this portfolio: what I learned from designing and shipping my own product in five days
+        Building this portfolio: what I learned from designing and shipping my own product in six days
       </h1>
 
       <BlogMeta date="June 20, 2026" />
@@ -26,7 +26,7 @@ export default function BuildingPortfolioPage() {
       <FadeUp delay={100}>
       <div className="prose prose-lg max-w-none">
         <p className="text-gray-700 leading-relaxed mb-6">
-          Building a portfolio is a design problem like any other. The constraint: represent five years of work honestly, without it feeling like a brochure or a CV. The approach: build it from scratch, make every decision deliberately, and document what I learned along the way.
+          Building a portfolio is a design problem like any other. The constraint: represent 4+ years of work honestly, without it feeling like a brochure or a CV. The approach: build it from scratch, make every decision deliberately, and document what I learned along the way.
         </p>
 
         <div style={{
@@ -43,7 +43,7 @@ export default function BuildingPortfolioPage() {
         </div>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          This version is built with Vite and React. I chose it partly because it made sense technically, and partly because I wanted to understand what I was actually building rather than hiding behind a template. Version control lives in GitHub, partly for safety, and partly because pushing commits to a repo called "portfolio" at 2am feels right in a way that's hard to explain.
+          It's built with Next.js and React. I chose it partly because it made sense technically, and partly because I wanted to understand what I was actually building rather than hiding behind a template. Version control lives in GitHub, partly for safety, and partly because pushing commits to a repo called "portfolio" at 2am feels right in a way that's hard to explain.
         </p>
 
         <p className="text-gray-700 leading-relaxed mb-6">
@@ -63,7 +63,7 @@ export default function BuildingPortfolioPage() {
         </div>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          Since writing this the portfolio has kept evolving. Moved from Vite to Next.js 15. Moved from GoDaddy cPanel to Cloudflare Pages with auto-deploys on every push to main. Debugged a cross-browser positioning issue that cost me a day and taught me more about getBoundingClientRect than I ever wanted to know. The full story is in the Extras tab if you want the unfiltered version.
+          It didn't start on Next.js. The first version was Vite and React, and I moved it to Next.js 15 on day four. Moved from GoDaddy cPanel to Cloudflare Pages with auto-deploys on every push to main. Debugged a cross-browser positioning issue that cost me a day and taught me more about getBoundingClientRect than I ever wanted to know. The full story is in the Build log on the Development tab if you want the unfiltered version.
         </p>
         <div style={{
           width: '100%', borderRadius: 8, overflow: 'hidden',

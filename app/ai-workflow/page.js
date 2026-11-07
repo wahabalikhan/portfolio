@@ -60,14 +60,14 @@ export default function AIWorkflowPage() {
                     <h3 className="font-bold text-gray-900 mb-2">My Role</h3>
                     <p className="text-gray-700 leading-relaxed mb-2">I joined this initiative halfway through, collaborating with a designer who had already been laying the groundwork. My contribution was in getting the workflow from almost there to actually working, and then using it on real work.</p>
                     <p className="text-gray-700 leading-relaxed mb-2">Specifically:</p>
-                    <p className="text-gray-700 mb-4">
+                    <div className="text-gray-700 mb-4">
                         <ul className='list-disc list-inside'>
                             <li>Worked through the setup process collaboratively: installing dependencies, working through Docker configuration, debugging errors, and feeding fixes back into the guide so the next person didn't hit the same walls.</li>
                             <li>Helped get the workflow to a polished, documented state the wider team could follow.</li>
                             <li>Participated in and helped run a team workshop to explore what AI looks like in design workflows, get everyone set up, and build shared understanding across the team.</li>
                             <li>Used the workflow on real work: committing via Git, getting changes reviewed by engineers, ensuring they passed tests, and getting them merged to main and shipped to customers.</li>
                         </ul>
-                    </p>
+                    </div>
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 mb-2">The Workshop</h3>
@@ -104,13 +104,13 @@ export default function AIWorkflowPage() {
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">What I Set Out to Do</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">Three concrete workflow problems, not vague goals:</p>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-                    <p className="text-gray-700 mb-6">
+                    <div className="text-gray-700 mb-6">
                         <ul className='list-disc list-inside font-bold'>
                             <li>"I need my design files to reflect what's actually live, not a snapshot from three sprints ago."</li>
                             <li>"I need to test ideas as working prototypes, not just static screens."</li>
                             <li>"I need to move between design and code without losing context each time."</li>
                         </ul>
-                    </p>
+                    </div>
                     <p className="text-gray-700 leading-relaxed mb-2">The goal wasn't to replace engineering. It was to make my design work more grounded, more testable, and more useful to the engineers I work with.</p>
                 </div>
             </section>
@@ -118,7 +118,7 @@ export default function AIWorkflowPage() {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">The Environment Setup</h2>
                 <p className="text-gray-700 leading-relaxed mb-6">Getting to the point where I could work fluidly between Figma and a live codebase meant building the right environment first:</p>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Installing Node.js and managing dependencies with npm, understanding package.json, running dev servers locally, and getting the right tooling in place.</li>
                         <li>Setting up VS Code with extensions for React, TypeScript linting, and Git integration.</li>
@@ -126,7 +126,7 @@ export default function AIWorkflowPage() {
                         <li>Managing all changes through Git: branching, committing, reviewing diffs, and pushing to GitHub for team review.</li>
                         <li>Running the app locally in a dev environment to test prototypes against the real product before anything reached users.</li>
                     </ul>
-                </p>
+                </div>
                 <p className="text-gray-700 leading-relaxed mb-6">Every change that touched the live product went through engineering review and had to pass tests. The workflow was collaborative by design.</p>
             </section>
 
@@ -158,24 +158,24 @@ export default function AIWorkflowPage() {
                 <p className="text-gray-700 leading-relaxed mb-6">Working closer to the codebase changes how you make design decisions. You are not designing in a vacuum and hoping it is feasible. You are testing against real constraints from the start. When design and engineering are operating in the same space, feedback loops shrink and the gap between what is designed and what ships gets smaller.</p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Without this workflow</h3>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Design happens disconnected from the live product</li>
                         <li>Feedback only arrives after something is fully built</li>
                         <li>Figma files are rebuilt from memory rather than generated from reality</li>
                         <li>Ideas take hours to communicate as static screens</li>
                     </ul>
-                </p>
+                </div>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">With it</h3>
-                <p className="text-gray-700 mb-6">
+                <div className="text-gray-700 mb-6">
                     <ul className='list-disc list-inside'>
                         <li>Design decisions are grounded in what is technically real from the start</li>
                         <li>Feedback loops shrink from sprints to sessions</li>
                         <li>Prototypes replace static screens in early engineering conversations</li>
                         <li>The gap between designed and shipped gets smaller with every project</li>
                     </ul>
-                </p>
+                </div>
             </section>
 
             <section className="mb-12">
@@ -190,14 +190,14 @@ export default function AIWorkflowPage() {
 
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Next Steps</h2>
-                <p className="text-gray-700 leading-relaxed">
+                <div className="text-gray-700 leading-relaxed">
                     <ul className='list-disc list-inside'>
                         <li>Formalise the workflow into a repeatable process other designers can pick up independently.</li>
                         <li>Explore AI-assisted design QA: checking shipped UI against design intent automatically.</li>
                         <li>Apply this approach to larger, multi-page products.</li>
                         <li>Contribute to a component-level design system kept in sync with the codebase.</li>
                     </ul>
-                </p>
+                </div>
                 <p className="text-gray-400 italic mt-4 leading-relaxed">
                     The role was made redundant due to organisational restructure in June 2026 before these could be taken further. The workflow and documentation remain with the team.
                 </p>

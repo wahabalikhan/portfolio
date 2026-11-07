@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects. https://developers.cloudflare.com/pages/configuration/redirects/
+# The HTML CV page was removed: the PDF (Resume ↓ in the nav) covers it.
+/cv   /  301
+/cv/  /  301

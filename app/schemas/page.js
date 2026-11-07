@@ -10,6 +10,8 @@ import Footer from '@/components/Footer';
 import ImageModal from '@/components/ImageModal';
 import OtherCaseStudies from '@/components/OtherCaseStudies';
 
+const SLIDES_ALT = "The playback deck in FigJam: six frames titled What we\u2019re looking at, What are schemas, What did we do, What did they say, Other problems, and Next steps, each with sticky notes";
+
 export default function SchemasPage() {
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(null);
@@ -37,9 +39,9 @@ export default function SchemasPage() {
 
       <img
         src="/images/schema_bg.png"
-        alt="Schemas"
+        alt="A search bar with a hand-drawn arrow pointing into the Data Productivity Cloud, where a long Schemas list sits beside the Files panel"
         className="w-full rounded-lg mb-8 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-        onClick={() => setSelectedImage({ src: '/images/schema_bg.png', alt: 'Schemas' })}
+        onClick={() => setSelectedImage({ src: '/images/schema_bg.png', alt: 'A search bar with a hand-drawn arrow pointing into the Data Productivity Cloud, where a long Schemas list sits beside the Files panel' })}
       />
       </FadeUp>
 
@@ -58,7 +60,7 @@ export default function SchemasPage() {
         <div>
           <h3 className="font-bold text-gray-900 mb-2">My Role</h3>
           <p className="text-gray-700 leading-relaxed mb-2">I led:</p>
-          <p className="text-gray-700 mb-6">
+          <div className="text-gray-700 mb-6">
             <ul className='list-disc list-inside'>
               <li>Problem definition and challenge of the original brief</li>
               <li>Discovery planning and interview planning</li>
@@ -67,7 +69,7 @@ export default function SchemasPage() {
               <li>Stakeholder alignment and playback</li>
               <li>Reframing and design direction shaping</li>
             </ul>
-          </p>
+          </div>
           <p className="text-gray-700 leading-relaxed mb-2">The real design work happened before Figma opened.</p>
         </div>
         <div>
@@ -104,23 +106,17 @@ export default function SchemasPage() {
 
         <h3 className="text-xl font-semibold mb-4 text-gray-900">Research and Insights</h3>
         <p className="text-gray-700 leading-relaxed mb-2">I started with desk research and competitive analysis, looking at how the following handled metadata visibility, search, and table previews:</p>
-        <p className="text-gray-700 mb-6">
+        <div className="text-gray-700 mb-6">
           <ul className='list-disc list-inside'>
             <li>Snowflake</li>
             <li>dbt Cloud</li>
             <li>Notebooks and IDEs</li>
             <li>Matillion's own legacy product</li>
           </ul>
-        </p>
-        <img
-          src="/images/metl.png"
-          alt="Schema presentation"
-          className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-          onClick={() => setSelectedImage({ src: '/images/metl.png', alt: 'Schema presentation' })}
-        />
-        <p className='mb-8 text-xs'>Matillion ETL, their legacy product, used as a reference point in the schema research. It highlights how users could search, view, and interact with schema metadata, including tables, SQL, and properties, directly within the canvas, offering a streamlined, automated workflow that informed design decisions for the new Data Productivity Cloud.</p>
+        </div>
+        <p className="text-gray-700 leading-relaxed mb-6">Matillion ETL, Matillion's legacy product, was the main reference point. Users could search, view, and interact with schema metadata, including tables, SQL, and properties, directly within the canvas. That streamlined, automated workflow informed design decisions for the new Data Productivity Cloud.</p>
         <p className="text-gray-700 leading-relaxed mb-6">Then I ran <span className='font-bold'>5 internal data engineer interviews</span> to uncover:</p>
-        <p className="text-gray-700 mb-8">
+        <div className="text-gray-700 mb-8">
           <ul className='list-disc list-inside'>
             <li>How schemas fit into their actual workflow</li>
             <li>What information they prioritised</li>
@@ -128,9 +124,9 @@ export default function SchemasPage() {
             <li>What the previous Matillion tool did well that the new product lacked</li>
             <li>Where the real pain points were</li>
           </ul>
-        </p>
+        </div>
         <p className="text-gray-700 leading-relaxed mb-2">What users told me:</p>
-        <p className="text-gray-700 mb-8">
+        <div className="text-gray-700 mb-8">
           <ul className='list-disc list-inside'>
             <li>"I can't see the schema metadata unless I build a pipeline."</li>
             <li>"Previewing tables takes too many clicks."</li>
@@ -138,38 +134,38 @@ export default function SchemasPage() {
             <li>"The old tool used to give me context instantly."</li>
             <li>"Search isn't the main issue. I need visibility."</li>
           </ul>
-        </p>
+        </div>
 
         <h3 className="text-xl font-semibold mb-4 text-gray-900">Reframing the problem</h3>
         <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8">
-          <p className="text-gray-700 mb-6">
+          <div className="text-gray-700 mb-6">
             <ul className='list-disc list-inside font-bold'>
               <li>"I need to see metadata instantly, without building a pipeline first."</li>
               <li>"I need to preview table data with fewer clicks."</li>
               <li>"I need components to be pre-populated so I don't waste time on basics."</li>
             </ul>
 
-          </p>
+          </div>
           <p className="text-gray-700 leading-relaxed mb-2">Search was a symptom.</p>
           <p className="text-gray-700 leading-relaxed mb-2">Lack of visibility and context was the real problem.</p>
         </div>
 
         <h3 className="text-xl font-semibold mb-4 text-gray-900">Building the playback</h3>
         <p className="text-gray-700 leading-relaxed mb-2">I built a playback deck showing:</p>
-        <p className="text-gray-700 mb-8">
+        <div className="text-gray-700 mb-8">
           <ul className='list-disc list-inside'>
             <li>Side-by-side comparisons of competitors and the legacy product against the current state</li>
             <li>Best-practice patterns from other data tools</li>
             <li>Direct quotes and insights from interviews</li>
             <li>The gaps affecting productivity</li>
           </ul>
-        </p>
+        </div>
 
         <img
           src="/images/slides.png"
-          alt="Schema presentation"
+          alt={SLIDES_ALT}
           className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-          onClick={() => setSelectedImage({ src: '/images/slides.png', alt: 'Schema presentation' })}
+          onClick={() => setSelectedImage({ src: '/images/slides.png', alt: SLIDES_ALT })}
         />
 
         <p className="text-gray-700 leading-relaxed mb-4">I reframed the decision from: "Should we add search?"</p>
@@ -185,35 +181,35 @@ export default function SchemasPage() {
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Execution</h2>
         <p className="text-gray-700 leading-relaxed mb-2">The research revealed <span className='font-bold'>two overlapping projects running in parallel:</span></p>
-        <p className="text-gray-700 mb-8">
+        <div className="text-gray-700 mb-8">
           <ul className='list-disc list-inside'>
             <li>Schema Enhancements</li>
             <li>Pipeline Creation Modals</li>
           </ul>
-        </p>
+        </div>
         <p className="text-gray-700 leading-relaxed mb-8">Both required better schema metadata, visibility, and sampling.</p>
 
         <p className="text-gray-700 leading-relaxed mb-2">I proposed merging them into a <span className='font-bold'>single, user-centred project</span> to:</p>
-        <p className="text-gray-700 mb-8">
+        <div className="text-gray-700 mb-8">
           <ul className='list-disc list-inside'>
             <li>Increase impact</li>
             <li>Reduce rework</li>
             <li>Align UX across workflows</li>
             <li>Simplify engineering implementation</li>
           </ul>
-        </p>
+        </div>
       </section>
 
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Validation and Playback</h2>
         <p className="text-gray-700 leading-relaxed mb-2">In the playback session:</p>
-        <p className="text-gray-700 mb-8">
+        <div className="text-gray-700 mb-8">
           <ul className='list-disc list-inside'>
             <li>Stakeholders responded strongly to the story around user impact rather than features</li>
             <li>They agreed the initial request was too narrow and supported merging the initiatives</li>
             <li>What had started as a quick-win feature request had evolved into a validated, user-driven roadmap for schema management</li>
           </ul>
-        </p>
+        </div>
       </section>
 
       <section className="mb-12">
@@ -233,7 +229,7 @@ export default function SchemasPage() {
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Business outcome</h3>
         <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
           <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 Business value:</p>
-          <p className="text-gray-700 bg-blue-50">
+          <div className="text-gray-700 bg-blue-50">
             <ul className='list-disc list-inside'>
               <li>A future design that reduces engineering build time</li>
               <li>A more competitive schema experience compared to Snowflake and dbt</li>
@@ -242,7 +238,7 @@ export default function SchemasPage() {
               <li>Reduced support burden through clearer schema navigation</li>
               <li>Stronger trust in Matillion's UX practice</li>
             </ul>
-          </p>
+          </div>
         </div>
 
         <h3 className="text-xl font-semibold mb-3 text-gray-900">The cost of skipping validation</h3>
@@ -259,7 +255,7 @@ export default function SchemasPage() {
         <p className="text-gray-700 leading-relaxed mb-6">Asking why and backing it with evidence helped avoid a shallow fix and move toward a meaningful workflow improvement. I didn't just design a solution. I reshaped the problem.</p>
 
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Next steps</h3>
-        <p className="text-gray-700 leading-relaxed">
+        <div className="text-gray-700 leading-relaxed">
           <ul className='list-disc list-inside'>
             <li>Schema sampling</li>
             <li>Metadata visibility improvements</li>
@@ -268,7 +264,7 @@ export default function SchemasPage() {
           </ul>
 
 
-        </p>
+        </div>
       </section>
 
       </FadeUp>

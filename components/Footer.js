@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const S = 16;
 
@@ -49,6 +49,17 @@ const STACK = [
 ];
 
 export default function Footer() {
+  // Touch screens have no hover, so a tap shows an icon's tooltip for 1.5 seconds
+  // (the same timing as the hero's word tooltips).
+  const [tappedTip, setTappedTip] = useState(null);
+  const tipTimer = useRef(null);
+  useEffect(() => () => clearTimeout(tipTimer.current), []);
+  const showTip = (id) => {
+    clearTimeout(tipTimer.current);
+    setTappedTip(id);
+    tipTimer.current = setTimeout(() => setTappedTip(null), 1500);
+  };
+
   return (
     <footer className="border-t border-gray-200 pt-8 footer-fade-in">
       <div className="flex items-center justify-between">
@@ -56,7 +67,11 @@ export default function Footer() {
           <span className="text-sm text-gray-600">Made with 🫶🏼 using</span>
           <div className="flex items-center gap-1.5" style={{ overflow: 'visible' }}>
             {STACK.map(item => (
-              <div key={item.id} className="ftip-wrap">
+              <div
+                key={item.id}
+                className={`ftip-wrap${tappedTip === item.id ? ' ftip-open' : ''}`}
+                onClick={() => showTip(item.id)}
+              >
                 <div style={iconStyle}>{item.render()}</div>
                 <div className="ftip">{item.label}</div>
               </div>

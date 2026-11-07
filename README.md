@@ -41,6 +41,22 @@ The GitHub contributions graph (`functions/api/github-contributions.js`) only ru
 Cloudflare Pages, and needs a `GITHUB_TOKEN` set in the Pages project's settings.
 The rest of the site works without it.
 
+## Comments
+
+New comments and replies wait for approval. Only the owner account sees them, with
+Approve and Delete (sign in with Ctrl+Shift+L); the owner is one Supabase user, set by
+user ID in `supabase/comment-moderation.sql` (run it once in the Supabase SQL editor
+before deploying). Visitors can move, edit or delete only their own comments: the
+browser sends its token in an `x-comment-token` header and the database keeps a hash of
+it. An edit goes back to the queue. On the home page each comment belongs to the tab it
+was left on.
+
+`functions/api/comments-waiting.js` sends the number waiting to BobbyBuilds HQ as
+`comments_waiting`. It needs `HQ_URL` and `HQ_KEY` (the project's secret key) in the
+Pages project's settings, and `comments_waiting` added as a product number in HQ.
+
+`/cv` redirects to the home page (`public/_redirects`); the CV is the PDF.
+
 ## Licence
 
 The code is MIT licensed. All content (case studies, writing, images, the CV and

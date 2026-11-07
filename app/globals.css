@@ -564,6 +564,71 @@ html.dark .cc-carousel-body { color: #d1d5db; }
   cursor: pointer;
 }
 
+/* ── Moderation: comments waiting for approval (only the signed-in owner sees them) ── */
+.cc-card.cc-pending,
+.cc-carousel-card.cc-pending {
+  border: 1px dashed #f59e0b;
+  background: #fffbeb;
+}
+.cc-pending-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+  flex-wrap: wrap;
+}
+.cc-pending-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #b45309;
+  margin-right: auto;
+}
+.cc-approve-btn,
+.cc-reject-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+.cc-approve-btn { border: none; background: #1D9E75; color: #ffffff; }
+.cc-reject-btn  { border: 1px solid #e5e7eb; background: #ffffff; color: #6b7280; }
+.cc-reject-btn:hover { color: #ef4444; }
+.cc-pending-count { color: #b45309; }
+.cc-toolbar-waiting {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #b45309;
+  white-space: nowrap;
+}
+
+/* "Thanks! Your comment will show once Wahab approves it." Sits just above the toolbar. */
+.cc-notice-region {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 5.5rem;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 100;
+}
+.cc-notice {
+  background: #111827;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 0.875rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
 .cc-btn-save {
   font-size: 0.8125rem;
   font-weight: 500;
@@ -979,7 +1044,15 @@ html.dark .scroll-to-top-btn:hover {
   border-top-color: #111827;
 }
 
-.ftip-wrap:hover .ftip {
+/* Hover only where there is a real hover (on touch screens :hover sticks after a tap).
+   Touch screens get .ftip-open from a tap instead (Footer.js). */
+@media (hover: hover) {
+  .ftip-wrap:hover .ftip {
+    opacity: 1;
+  }
+}
+
+.ftip-wrap.ftip-open .ftip {
   opacity: 1;
 }
 
@@ -996,8 +1069,10 @@ html.dark .scroll-to-top-btn:hover {
   border-bottom-color: #111827;
 }
 
-.ftip-wrap:hover .ftip-below {
-  opacity: 1;
+@media (hover: hover) {
+  .ftip-wrap:hover .ftip-below {
+    opacity: 1;
+  }
 }
 
 /* Keyboard key badge */

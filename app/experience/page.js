@@ -30,7 +30,7 @@ const EXPERIENCE = [
       'Designed the Git diff interface for high-risk pipeline actions, achieving a 34% increase in successful commits and 15% reduction in error recoveries.',
       'Built the ETL design system from scratch as sole designer, reducing design task completion time by 36.1%.',
       'Led research that reframed a stakeholder quick-win request into a validated service improvement, boosting stakeholder confidence by 12.3%.',
-      'Progressed from junior to mid-level over five years, mentoring junior designers and working closely with engineering throughout.',
+      'Progressed from junior to mid-level over 4+ years, mentoring junior designers and working closely with engineering throughout.',
     ],
   },
   {
@@ -128,7 +128,7 @@ function ExperienceItem({ job }) {
 export default function ExperiencePage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16 relative experience-page" role="main">
-      <CommentPins page="experience" showPresets={false} />
+      <CommentPins page="experience" />
       <FadeUp delay={100}>
         <h1 className="text-3xl font-bold mb-6 text-gray-900">Experience</h1>
 

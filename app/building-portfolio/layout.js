@@ -4,7 +4,7 @@ import { blogPosts } from '@/data/blogPosts';
 export const metadata = pageMetadata({
   name: 'Building This Portfolio',
   path: '/building-portfolio/',
-  description: blogPosts.find(p => p.id === 'building-portfolio').preview,
+  description: blogPosts.find(p => p.id === 'building-portfolio').seoDescription,
 });
 
 export default function Layout({ children }) {

@@ -1,10 +1,12 @@
 import { pageMetadata } from '@/lib/metadata';
 import { caseStudies } from '@/data/caseStudies';
 
+const study = caseStudies.find(s => s.id === 'git-diff');
+
 export const metadata = pageMetadata({
-  name: 'Git Diff',
+  name: study.headline,
   path: '/git-diff/',
-  description: caseStudies.find(s => s.id === 'git-diff').description,
+  description: study.seoDescription,
 });
 
 export default function Layout({ children }) {

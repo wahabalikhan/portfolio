@@ -1,8 +1,17 @@
 'use client';
 
+import { useEffect } from 'react';
 import { X } from 'lucide-react';
 
 export default function ImageModal({ isOpen, src, alt, onClose }) {
+  // Escape closes it, like the lightbox on the home page.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (

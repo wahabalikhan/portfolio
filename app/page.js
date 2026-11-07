@@ -4,6 +4,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { blogPosts } from '@/data/blogPosts';
+import { caseStudies } from '@/data/caseStudies';
 import Footer from '@/components/Footer';
 import CommentPins from '@/components/CommentPins';
 import FadeUp from '@/components/FadeUp';
@@ -54,6 +55,14 @@ const HARDCODED_REPOS = [
   },
 ];
 
+
+// Renders text with each phrase in `highlights` in bold.
+function WithHighlights({ text, highlights = [] }) {
+  if (highlights.length === 0) return text;
+  const escaped = highlights.map(h => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const parts = text.split(new RegExp(`(${escaped.join('|')})`));
+  return parts.map((part, i) => (highlights.includes(part) ? <span key={i} className="font-bold">{part}</span> : part));
+}
 
 function GitHubMark() {
   return (
@@ -200,44 +209,7 @@ export default function HomePage() {
         {/* Designer Tab Content */}
         {activeTab === 'Design' && (
           <FadeUp className="space-y-12">
-            {[
-              {
-                id: 'ai-workflow',
-                title: 'The Designer Who Ships Code',
-                description: <>How I contributed to bringing a closer-to-code design workflow to life at Adverity, collaborating on setup, getting it from half-built to team-wide, and using it to ship real changes through engineering review to production.</>,
-                logo_src: '/images/adverity.jpg',
-                company: 'Adverity',
-                bg_src: '/images/ai_thumbnail.png',
-                link: '/ai-workflow',
-              },
-              {
-                id: 'git-diff',
-                title: 'Designing confidence into a high-risk engineering workflow',
-                description: <>Data engineers were committing changes they couldn't see, leading to errors and lost trust in the tool. I redesigned the workflow to give them clarity before the point of no return. <span className="font-bold">34% more commits.</span> <span className="font-bold">15% fewer resets.</span></>,
-                logo_src: '/images/matillion-logo.svg',
-                company: 'Matillion',
-                bg_src: '/images/matillion-bg.png',
-                link: '/git-diff',
-              },
-              {
-                id: 'design-system',
-                title: 'From Framework to Design System',
-                description: <><strong>36.1% reduction in design task completion time</strong>, achieved by building Matillion's ETL design system from scratch: components, patterns, and documentation, while embedding UX practice into how the engineering team worked.</>,
-                logo_src: '/images/matillion-logo.svg',
-                company: 'Matillion',
-                bg_src: '/images/ds.png',
-                link: '/design-system',
-              },
-              {
-                id: 'schemas',
-                title: 'Reframing a quick-win request into a user-validated strategy',
-                description: <>A stakeholder asked for a search bar. I asked why. A month of research prevented the wrong thing from being built and redirected the roadmap toward the real problem. <span className="font-bold">Stakeholder confidence up 12.3%.</span></>,
-                logo_src: '/images/matillion-logo.svg',
-                company: 'Matillion',
-                bg_src: '/images/schema_bg.png',
-                link: '/schemas',
-              }
-            ].map((study) => (
+            {caseStudies.map((study) => (
               <Link
                 key={study.id}
                 href={study.link}
@@ -257,7 +229,7 @@ export default function HomePage() {
                   {study.title}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  {study.description}
+                  <WithHighlights text={study.description} highlights={study.highlights} />
                 </p>
                 <div className="cs-thumb">
                   {study.bg_src ? (
