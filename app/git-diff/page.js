@@ -78,10 +78,7 @@ export default function GitDiffPage() {
                     <h3 className="font-bold text-gray-900 mb-2">Results</h3>
                     <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
                         <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className=" font-bold bg-emerald-50">✅ 34% increase</span> in successful commits
-                        </p>
-                        <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ 15% decrease</span> in error recoveries
+                            <span className="font-bold bg-emerald-50">✅ 34% more successful commits and 15% fewer error recoveries</span> in the first 30 days
                         </p>
                         <p className="text-gray-700 bg-emerald-50 mb-0">
                             <span className=" font-bold bg-emerald-50">✅ 100% task success rate</span> in usability testing
@@ -269,10 +266,7 @@ export default function GitDiffPage() {
 
                 <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-3">
                     <p className="text-gray-700 bg-emerald-50 mb-2">
-                        <span className=" font-bold bg-emerald-50">✅ 34% increase</span> in successful commits
-                    </p>
-                    <p className="text-gray-700 bg-emerald-50 mb-2">
-                        <span className="font-bold bg-emerald-50">✅ 15% decrease</span> in error recoveries
+                        <span className="font-bold bg-emerald-50">✅ 34% more successful commits and 15% fewer error recoveries</span> in the first 30 days
                     </p>
                     <p className="text-gray-700 bg-emerald-50 mb-0">
                         <span className=" font-bold bg-emerald-50">✅ 100% success rate</span> in usability testing
@@ -299,7 +293,7 @@ export default function GitDiffPage() {
                     Without a research-led approach, the team would have shipped a basic comparison view with no grounding in how data engineers actually think about changes. The scannability vs inline debate wouldn't have been tested. Edge cases around file filtering would have been missed. There would have been no metric baseline to measure whether the feature actually changed behaviour.
                 </p>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                    The 34% increase in commits and 15% reduction in error recoveries are not just outcomes. They are evidence that the design changed how engineers work, not just how the screen looks.
+                    The 34% more successful commits and 15% fewer error recoveries in the first 30 days are not just outcomes. They are evidence that the design changed how engineers work, not just how the screen looks.
                 </p>
 
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">Reflection</h3>

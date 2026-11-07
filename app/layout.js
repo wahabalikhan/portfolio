@@ -3,20 +3,18 @@ import AppShell from '@/components/AppShell';
 import { SITE_NAME, SITE_URL } from '@/lib/metadata';
 
 const HOME_TITLE = `${SITE_NAME} · Product Designer`;
-// Search descriptions stay under 160 characters so results don't cut them off.
-const HOME_SUMMARY = 'product designer: 4+ years in enterprise B2B SaaS for technical users, using AI to help ship it. Case studies from Matillion and Adverity.';
-
-// The meta description uses "Wahab Ali Khan" so searches for the full name still find the site.
-// Every other page sets its own description (see lib/metadata.js).
+// The home page's search and link-preview description (under 160 characters, so results
+// don't cut it off). Every other page sets its own (see lib/metadata.js).
+const HOME_DESCRIPTION = 'Product designer with 4+ years designing B2B data tools. Case studies from Matillion and Adverity: research, design systems and workflow design.';
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: HOME_TITLE, template: `%s · ${SITE_NAME}` },
-  description: `Wahab Ali Khan, ${HOME_SUMMARY}`,
+  description: HOME_DESCRIPTION,
   alternates: { canonical: '/' },
   icons: { icon: '/images/profile.png' },
   openGraph: {
     title: HOME_TITLE,
-    description: `${SITE_NAME}, ${HOME_SUMMARY}`,
+    description: HOME_DESCRIPTION,
     url: '/',
     siteName: SITE_NAME,
     type: 'website',
@@ -24,7 +22,7 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: HOME_TITLE,
-    description: `${SITE_NAME}, ${HOME_SUMMARY}`,
+    description: HOME_DESCRIPTION,
   },
 };
 

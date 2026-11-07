@@ -75,7 +75,7 @@ export default function SchemasPage() {
         <div>
           <h3 className="font-bold text-gray-900 mb-2">Results</h3>
           <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
-            <p className="text-gray-700 bg-emerald-50 mb-2">✅ <span className="font-bold">12.3% increase in stakeholder confidence</span></p>
+            <p className="text-gray-700 bg-emerald-50 mb-2">✅ <span className="font-bold">12.3% increase in stakeholder confidence</span>, measured with a before-and-after stakeholder survey</p>
             <p className="text-gray-700 bg-emerald-50 mb-2">
               ✅ <span className="font-bold">Stakeholder alignment</span> on merging two overlapping projects into one roadmap
             </p>
@@ -217,7 +217,7 @@ export default function SchemasPage() {
         <h3 className="text-xl font-semibold mb-3 text-gray-900">Results</h3>
 
         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-6">
-          <p className="text-gray-700 bg-emerald-50 mb-6">While the project didn't ship before I moved on, it delivered measurable value internally:</p>
+          <p className="text-gray-700 bg-emerald-50 mb-6">Rather than shipping on its own, the schema work was folded into a related project, so both could be solved together as one end-to-end workflow. It delivered measurable value internally:</p>
           <p className="text-gray-700 bg-emerald-50 mb-2">✅ <span className="font-bold">12.3% increase in stakeholder confidence</span></p>
           <p className="text-gray-700 bg-emerald-50 mb-2">
             ✅ <span className="font-bold">Stakeholder alignment</span> on merging two projects into one roadmap

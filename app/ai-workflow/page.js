@@ -20,7 +20,7 @@ export default function AIWorkflowPage() {
             <BackButton onClick={() => router.back()} />
 
             <h1 className="text-4xl font-bold mb-2 text-gray-900">
-                The Designer Who Ships Code
+                Designing closer to the real product
             </h1>
             </FadeUp>
 
@@ -29,7 +29,7 @@ export default function AIWorkflowPage() {
               { label: 'Timeline', value: 'April 2026 – June 2026' },
               { label: 'Team', value: '3 Product Designers, Engineering pod' },
               { label: 'Role', value: 'Designer and contributor. Workflow adoption, tooling setup, code changes, engineering collaboration.' },
-              { label: 'Stack', value: 'Figma, VS Code, Claude Code, Git, GitHub, Node.js, npm' },
+              { label: 'Tools', value: 'Figma, Claude Code, VS Code, Git' },
             ]} />
 
             <img
@@ -117,17 +117,8 @@ export default function AIWorkflowPage() {
 
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">The Environment Setup</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">Getting to the point where I could work fluidly between Figma and a live codebase meant building the right environment first:</p>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>Installing Node.js and managing dependencies with npm, understanding package.json, running dev servers locally, and getting the right tooling in place.</li>
-                        <li>Setting up VS Code with extensions for React, TypeScript linting, and Git integration.</li>
-                        <li><span className='font-bold'>Using Claude Code</span> in the terminal as an AI coding assistant, not to generate code blindly, but to scaffold components based on design direction, then review and refine the output.</li>
-                        <li>Managing all changes through Git: branching, committing, reviewing diffs, and pushing to GitHub for team review.</li>
-                        <li>Running the app locally in a dev environment to test prototypes against the real product before anything reached users.</li>
-                    </ul>
-                </div>
-                <p className="text-gray-700 leading-relaxed mb-6">Every change that touched the live product went through engineering review and had to pass tests. The workflow was collaborative by design.</p>
+                <p className="text-gray-700 leading-relaxed mb-2">Getting there meant a working local setup first: Node.js, VS Code, Git, and Claude Code in the terminal to scaffold components from design direction.</p>
+                <p className="text-gray-700 leading-relaxed mb-6">Every change went to GitHub for review, and anything touching the live product had to pass engineering review and tests.</p>
             </section>
 
             <section className="mb-12">

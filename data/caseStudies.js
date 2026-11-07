@@ -1,35 +1,21 @@
 // One entry per case study. The home page cards, "Other case studies" and each page's
 // search/link-preview metadata all read from here.
+// Order here is the order on the home page's Design tab and in "Other case studies".
 export const caseStudies = [
-  {
-    id: 'ai-workflow',
-    title: 'The Designer Who Ships Code',
-    description: 'How I contributed to bringing a closer-to-code design workflow to life at Adverity, collaborating on setup, getting it from half-built to team-wide, and using it to ship real changes through engineering review to production.',
-    logo_src: '/images/adverity.jpg',
-    company: 'Adverity',
-    bg_src: '/images/ai_thumbnail.png',
-    link: '/ai-workflow',
-    // Bold on the home page card. Each must appear word for word in the description.
-    highlights: [],
-    // The case study page's H1, used as its browser-tab and search title.
-    headline: 'The Designer Who Ships Code',
-    // Search and link-preview description: under 160 characters.
-    seoDescription: 'How I helped take Adverity’s closer-to-code design workflow from half-built to team-wide, then used it to ship real changes through engineering review.',
-  },
   {
     id: 'git-diff',
     title: 'Designing confidence into a high-risk engineering workflow',
-    description: 'Data engineers were committing changes they couldn’t see, leading to errors and lost trust in the tool. I redesigned the workflow to give them clarity before the point of no return. 34% more commits. 15% fewer resets.',
+    description: 'Data engineers were committing changes they couldn’t see, leading to errors and lost trust in the tool. I redesigned the workflow to give them clarity before the point of no return. 34% more successful commits and 15% fewer error recoveries in the first 30 days.',
     logo_src: '/images/matillion-logo.svg',
     company: 'Matillion',
     bg_src: '/images/matillion-bg.png',
     link: '/git-diff',
     // Bold on the home page card. Each must appear word for word in the description.
-    highlights: ['34% more commits.','15% fewer resets.'],
+    highlights: ['34% more successful commits and 15% fewer error recoveries in the first 30 days.'],
     // The case study page's H1, used as its browser-tab and search title.
     headline: 'Designing confidence into a high-risk engineering workflow (Git Diff)',
     // Search and link-preview description: under 160 characters.
-    seoDescription: 'Data engineers were committing changes they couldn’t see. I redesigned the workflow to show them first: 34% more commits, 15% fewer resets.',
+    seoDescription: 'Engineers couldn’t see what they were committing. I redesigned the workflow: 34% more successful commits and 15% fewer error recoveries in the first 30 days.',
   },
   {
     id: 'design-system',
@@ -60,5 +46,20 @@ export const caseStudies = [
     headline: 'Reframing a quick-win request into a user-validated strategy',
     // Search and link-preview description: under 160 characters.
     seoDescription: 'A stakeholder asked for a search bar. I asked why. A month of research redirected the roadmap to the real problem. Stakeholder confidence up 12.3%.',
+  },
+  {
+    id: 'ai-workflow',
+    title: 'Designing closer to the real product',
+    description: 'How I helped get a design-to-code workflow working at Adverity, so designs started from the live product and ideas reached engineers as working prototypes.',
+    logo_src: '/images/adverity.jpg',
+    company: 'Adverity',
+    bg_src: '/images/ai_thumbnail.png',
+    link: '/ai-workflow',
+    // Bold on the home page card. Each must appear word for word in the description.
+    highlights: [],
+    // The case study page's H1, used as its browser-tab and search title.
+    headline: 'Designing closer to the real product',
+    // Search and link-preview description: under 160 characters.
+    seoDescription: 'How I helped get a design-to-code workflow working at Adverity, so designs started from the live product and ideas reached engineers as working prototypes.',
   },
 ];

@@ -151,11 +151,11 @@ export default function HomePage() {
           </h1>
 
           <p className="text-gray-500 leading-relaxed mt-3 mb-3" style={{ fontSize: '15.6px' }}>
-            4+ years designing enterprise SaaS for technical users. I use AI to move faster on implementation so I can spend more time on the work that actually matters: aligning teams around the right problem.
+            4+ years designing B2B data tools at Matillion and Adverity: research, interaction design and design systems that make complex workflows feel safe. I build my own products too.
           </p>
 
           <p className="text-base text-gray-700 leading-relaxed" style={{ fontSize: '15.6px' }}>
-            <span className="font-bold">Product Designer</span> & AI-first Coder <span style={{ margin: '0 4px' }}>·</span> <span className="font-bold">Enterprise B2B SaaS</span> <span style={{ margin: '0 4px' }}>·</span> BSc CS <span style={{ margin: '0 4px' }}>·</span> NN/g Certified (ID: 1081116)
+            <span className="font-bold">Product Designer</span> <span style={{ margin: '0 4px' }}>·</span> <span className="font-bold">B2B SaaS</span> <span style={{ margin: '0 4px' }}>·</span> BSc Computer Science <span style={{ margin: '0 4px' }}>·</span> NN/g UX Certified (ID: 1081116)
           </p>
 
           <p className="hero-status">

@@ -14,11 +14,10 @@ const EXPERIENCE = [
     note: 'Role ended due to redundancy from organisational restructures.',
     logo: '/images/adverity.jpg',
     bullets: [
-      'Joined an in-progress AI-assisted design workflow initiative and contributed to getting it from a half-built process to a documented, team-wide workflow, working through setup, debugging, and refining the step-by-step guide collaboratively with another designer.',
-      'Worked through environment setup hands-on: resolving Docker configuration issues, debugging dependency errors, and feeding solutions back into the documentation so the process was repeatable for others.',
-      'Took part in a team workshop mapping AI into design workflows, contributing to how the team understood and adopted the new process.',
-      'Used the workflow to ship real changes: making code and copy changes via VS Code and Claude Code, going through engineering review, passing tests, and seeing changes merged to production in front of customers.',
-      'Contributed to the browser-to-Figma process, grounding design work in live product pages rather than rebuilding from memory.',
+      'Helped get an AI-assisted design workflow from half-built to team-wide, so designers started from the live product instead of rebuilding screens from memory.',
+      'Co-ran a workshop that got the design team set up and aligned on working closer to code.',
+      'Fixed setup and documentation gaps, so the workflow was repeatable for the rest of the team.',
+      'Shipped small front-end and copy changes through engineering review and tests, straight to customers.',
     ],
   },
   {
@@ -27,10 +26,11 @@ const EXPERIENCE = [
     years: '2021 → 2026',
     logo: '/images/matillion-logo.svg',
     bullets: [
-      'Designed the Git diff interface for high-risk pipeline actions, achieving a 34% increase in successful commits and 15% reduction in error recoveries.',
+      'Designed the Git diff interface for high-risk pipeline actions, achieving 34% more successful commits and 15% fewer error recoveries in the first 30 days.',
       'Built the ETL design system from scratch as sole designer, reducing design task completion time by 36.1%.',
       'Led research that reframed a stakeholder quick-win request into a validated service improvement, boosting stakeholder confidence by 12.3%.',
-      'Progressed from junior to mid-level over 4+ years, mentoring junior designers and working closely with engineering throughout.',
+      'Designed for Maya, Matillion\'s AI assistant: showing its reasoning, and previewing changes before they\'re made.',
+      'Progressed from junior to mid-level, mentoring junior designers and working closely with engineering throughout.',
     ],
   },
   {
