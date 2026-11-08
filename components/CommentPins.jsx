@@ -19,8 +19,8 @@ const PLAY_AREA_WIDTH = 1300;
 const Y_REFERENCE_HEIGHT = 4000;
 
 // x is measured against a centred column at most this wide (the original 768px content
-// column), so pins keep their place on screen when a page's own column is wider (the home
-// page is 800px from 1024px up).
+// column), so pins keep their place on screen now that page containers are wider
+// (850px).
 const COMMENT_COLUMN_WIDTH = 768;
 
 // Returns the min/max x_pct values (content-relative) that correspond to the PLAY_AREA_WIDTH

@@ -3,7 +3,7 @@ export const blogPosts = [
     id: 'building-portfolio',
     // One line for the Writing list (under 15 words), and reading time at ~200 words a minute.
     summary: 'Designing and shipping my own portfolio from scratch, and what it taught me.',
-    readMinutes: 2,
+    readMinutes: 7, // intro plus the full build log, ~1,290 words
     title: 'Building this portfolio: what I learned from designing and shipping my own product in six days',
     date: 'June 20, 2026',
     preview: "Building a portfolio is a design problem like any other. The constraint: represent 4+ years of work honestly, without it feeling like a brochure or a CV. The approach: build it from scratch, make every decision deliberately, and document what I learned along the way.",

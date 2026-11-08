@@ -8,6 +8,7 @@ import BlogMeta from '@/components/BlogMeta';
 import { blogPosts } from '@/data/blogPosts';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
+import BuildLog from '@/components/BuildLog';
 
 export default function BuildingPortfolioPage() {
   const router = useRouter();
@@ -63,7 +64,7 @@ export default function BuildingPortfolioPage() {
         </div>
 
         <p className="text-gray-700 leading-relaxed mb-6">
-          It didn't start on Next.js. The first version was Vite and React, and I moved it to Next.js 15 on day four. Moved from GoDaddy cPanel to Cloudflare Pages with auto-deploys on every push to main. Debugged a cross-browser positioning issue that cost me a day and taught me more about getBoundingClientRect than I ever wanted to know. The full story is in the Build log on the Development tab if you want the unfiltered version.
+          It didn't start on Next.js. The first version was Vite and React, and I moved it to Next.js 15 on day four. Moved from GoDaddy cPanel to Cloudflare Pages with auto-deploys on every push to main. Debugged a cross-browser positioning issue that cost me a day and taught me more about getBoundingClientRect than I ever wanted to know. The full story is below, day by day, if you want the unfiltered version.
         </p>
         <div style={{
           width: '100%', borderRadius: 8, overflow: 'hidden',
@@ -97,6 +98,9 @@ export default function BuildingPortfolioPage() {
         <p className="text-gray-700 leading-relaxed mb-6">
           The honest version of building with AI isn't magic. It's knowing enough to ask the right questions, recognising when the output is wrong, and caring enough about the details to keep going until it feels right. That's not so different from design, really. Just with more terminal errors.
         </p>
+
+        {/* The full build log (it used to be a card on the home page). */}
+        <BuildLog />
       </div>
 
       <div className="mt-16 mb-12">

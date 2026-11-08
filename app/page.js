@@ -9,7 +9,6 @@ import Footer from '@/components/Footer';
 import CommentPins from '@/components/CommentPins';
 import FadeUp from '@/components/FadeUp';
 import LinkedInPostCard from '@/components/LinkedInPostCard';
-import BuildLogCard from '@/components/BuildLogCard';
 import CaseStudyCard from '@/components/CaseStudyCard';
 import JustForFunCard from '@/components/JustForFunCard';
 import GitHubContributions from '@/components/GitHubContributions';
@@ -68,6 +67,14 @@ const EARLIER_PROJECTS = [
   },
 ];
 
+function GitHubMark() {
+  return (
+    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+    </svg>
+  );
+}
+
 const designStudies = caseStudies.filter((s) => s.category === 'design');
 const buildingStudies = caseStudies.filter((s) => s.category === 'building');
 
@@ -106,9 +113,9 @@ export default function HomePage() {
         tooltipTimerRef.current = null;
       }, 1500);
     };
-  // The container is 768px wide (max-w-3xl), widening to 800px from 1024px. Phone rules key off max-w-3xl.
+  // The container's width (850px) and padding are set for every page in globals.css (.max-w-3xl.mx-auto).
   return (
-    <div className="max-w-3xl lg:max-w-[800px] mx-auto px-6 py-16 md:pt-10 relative home-page" role="application">
+    <div className="max-w-3xl mx-auto px-6 py-16 md:pt-10 relative home-page" role="application">
       <CommentPins page="home" activeTab={activeTab} />
       <div
         suppressHydrationWarning
@@ -240,15 +247,18 @@ export default function HomePage() {
 
             <section className="built-section" aria-labelledby="built-how">
               <h3 id="built-how" className="built-heading">How I work</h3>
-              <div className="home-cs-grid mb-8">
+              <div className="home-cs-grid">
                 {buildingStudies.map((study) => <CaseStudyCard key={study.id} study={study} />)}
               </div>
-              <BuildLogCard />
             </section>
 
             <section className="built-section" aria-labelledby="built-earlier">
               <h3 id="built-earlier" className="built-heading">Earlier projects</h3>
               <div className="gh-contrib-small">
+                <div className="gh-from">
+                  <GitHubMark />
+                  <span>from GitHub</span>
+                </div>
                 <GitHubContributions />
               </div>
               <ul className="project-rows">

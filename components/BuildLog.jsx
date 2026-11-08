@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 
 const TIMELINE = [
@@ -49,96 +47,60 @@ const STACK_ICONS = [
   { id: 'figma', label: 'Figma', reason: 'Where every design decision started before it became code', icon: () => <svg width={S} height={S} viewBox="0 0 38 57" fill="none"><path fill="#1ABCFE" d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z"/><path fill="#0ACF83" d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 0 1-19 0z"/><path fill="#FF7262" d="M19 0v19h9.5a9.5 9.5 0 0 0 0-19z"/><path fill="#F24E1E" d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z"/><path fill="#A259FF" d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z"/></svg> },
 ];
 
-export default function BuildLogCard() {
+// The build log, part of the "Building this portfolio" post (app/building-portfolio/page.js).
+
+const ON_CLAUDE = [
+  "Claude was not just a code generator on this project. It was closer to a design thinking partner.",
+  "I used it the way I would use a senior colleague: describing problems, getting a first response, pushing back when the output was wrong, iterating until it felt right. The UX decisions were mine. The copy decisions were mine. The architectural decisions were mine. Claude helped me move faster on implementation and challenged me when my framing was off.",
+  "Every prompt was written like a design brief: context, constraints, acceptance criteria. Every output was reviewed like a design review: does this solve the actual problem, or does it just look like it does.",
+  "The result is a portfolio where I can point to every decision and explain why it was made. That matters more than shipping fast.",
+];
+
+const DO_DIFFERENTLY = [
+  "Start with Next.js. The Vite to Next.js migration on day four was necessary but painful. If I had known I would need proper routing and Safari compatibility from the start, I would have started there.",
+  "Sort out the deployment pipeline on day one. The move to Cloudflare Pages improved everything immediately. There was no reason to wait until day four.",
+  "Commit more often. The commit history on this project is messier than it should be because I was moving fast and not stopping to checkpoint. Good habits matter even when you are the only person on the repo.",
+];
+
+// The day-by-day build log as article sections: dated entries on a rule (the same rhythm as
+// the Writing list), then "On using Claude throughout", "The stack" and "What I would do
+// differently".
+export default function BuildLog() {
   return (
-    <div className="build-log-card">
-      {/* Header */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <span className="blog-meta-tag" style={{ marginBottom: '0.75rem', display: 'inline-flex' }}>
-          🗂️ Build log
-        </span>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginTop: '0.5rem', marginBottom: '0.375rem' }} className="text-gray-900">
-          How this portfolio was built
-        </h3>
-        <p className="text-gray-500" style={{ fontSize: '0.8125rem', lineHeight: 1.5 }}>
-          A behind-the-scenes account of six days, a lot of terminal errors, and one very patient AI.
-        </p>
-      </div>
+    <>
+      <h2 className="post-h2">How this portfolio was built</h2>
+      <p className="post-p">A behind-the-scenes account of six days, a lot of terminal errors, and one very patient AI.</p>
 
-      {/* Timeline */}
-      <div className="build-log-timeline">
-        {TIMELINE.map((entry, i) => (
-          <div key={i} className="build-log-entry">
-            <div className="build-log-left">
-              <div className="build-log-dot" />
-              {i < TIMELINE.length - 1 && <div className="build-log-line" />}
-            </div>
-            <div className="build-log-content">
-              <div className="build-log-date-row">
-                <span className="build-log-date">{entry.date}</span>
-              </div>
-              <p className="build-log-headline">{entry.headline}</p>
-              <p className="build-log-body">{entry.body}</p>
-            </div>
-          </div>
+      <ol className="writing-list post-log">
+        {TIMELINE.map((entry) => (
+          <li key={entry.date} className="writing-row">
+            <span className="writing-dot" aria-hidden="true" />
+            <p className="writing-meta">{entry.date}</p>
+            <h3 className="writing-title">{entry.headline}</h3>
+            {entry.body.split('\n\n').map((para, i) => (
+              <p key={i} className="post-log-body">{para}</p>
+            ))}
+          </li>
         ))}
-      </div>
+      </ol>
 
-      {/* On using Claude */}
-      <div className="build-log-section">
-        <div className="build-log-divider" />
-        <p className="build-log-section-headline">On using Claude throughout</p>
-        <p className="build-log-body">
-          Claude was not just a code generator on this project. It was closer to a design thinking partner.
-        </p>
-        <p className="build-log-body" style={{ marginTop: '0.75rem' }}>
-          I used it the way I would use a senior colleague: describing problems, getting a first response, pushing back when the output was wrong, iterating until it felt right. The UX decisions were mine. The copy decisions were mine. The architectural decisions were mine. Claude helped me move faster on implementation and challenged me when my framing was off.
-        </p>
-        <p className="build-log-body" style={{ marginTop: '0.75rem' }}>
-          Every prompt was written like a design brief: context, constraints, acceptance criteria. Every output was reviewed like a design review: does this solve the actual problem, or does it just look like it does.
-        </p>
-        <p className="build-log-body" style={{ marginTop: '0.75rem' }}>
-          The result is a portfolio where I can point to every decision and explain why it was made. That matters more than shipping fast.
-        </p>
-      </div>
+      <h2 className="post-h2">On using Claude throughout</h2>
+      {ON_CLAUDE.map((para, i) => <p key={i} className="post-p">{para}</p>)}
 
-      {/* The stack */}
-      <div className="build-log-section">
-        <div className="build-log-divider" />
-        <p className="build-log-section-headline">The stack</p>
-        <div className="build-log-stack-list">
-          {STACK_ICONS.map(item => (
-            <div key={item.id} className="build-log-stack-item">
-              <div style={iconStyle}>{item.icon()}</div>
-              <div>
-                <span className="build-log-stack-name">{item.label}</span>
-                <span className="build-log-stack-reason">{item.reason}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <h2 className="post-h2">The stack</h2>
+      <ul className="post-stack">
+        {STACK_ICONS.map((item) => (
+          <li key={item.id} className="post-stack-item">
+            <span style={iconStyle} aria-hidden="true">{item.icon()}</span>
+            <span><span className="post-stack-name">{item.label}:</span> {item.reason}</span>
+          </li>
+        ))}
+      </ul>
 
-      {/* What I would do differently */}
-      <div className="build-log-section">
-        <div className="build-log-divider" />
-        <p className="build-log-section-headline">What I would do differently</p>
-        <p className="build-log-body">
-          Start with Next.js. The Vite to Next.js migration on day four was necessary but painful. If I had known I would need proper routing and Safari compatibility from the start, I would have started there.
-        </p>
-        <p className="build-log-body" style={{ marginTop: '0.75rem' }}>
-          Sort out the deployment pipeline on day one. The move to Cloudflare Pages improved everything immediately. There was no reason to wait until day four.
-        </p>
-        <p className="build-log-body" style={{ marginTop: '0.75rem' }}>
-          Commit more often. The commit history on this project is messier than it should be because I was moving fast and not stopping to checkpoint. Good habits matter even when you are the only person on the repo.
-        </p>
-      </div>
+      <h2 className="post-h2">What I would do differently</h2>
+      {DO_DIFFERENTLY.map((para, i) => <p key={i} className="post-p">{para}</p>)}
 
-      {/* Footer */}
-      <div className="build-log-divider" style={{ marginTop: '1.5rem' }} />
-      <p className="text-gray-400" style={{ fontSize: '0.75rem', marginTop: '0.75rem', fontStyle: 'italic' }}>
-        Still evolving. UI polish and final touches ongoing post-launch.
-      </p>
-    </div>
+      <p className="post-note">Still evolving. UI polish and final touches ongoing post-launch.</p>
+    </>
   );
 }
