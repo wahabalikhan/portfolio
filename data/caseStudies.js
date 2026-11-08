@@ -37,7 +37,7 @@ export const caseStudies = [
     // The case study page's H1, used as its browser-tab and search title.
     headline: 'From Framework to Design System',
     // Search and link-preview description: under 160 characters.
-    seoDescription: 'Building Matillion’s ETL design system from scratch, and embedding UX practice in how the engineering team worked. Design tasks got 36.1% faster.',
+    seoDescription: "How I built Matillion's ETL design system from scratch as the sole designer, within a rigid framework, making design tasks 36.1% faster.",
   },
   {
     id: 'schemas',
