@@ -2108,6 +2108,57 @@ html.dark .cs-eyebrow { color: #9CA3AF; }
 .cs-part-label { font-weight: 600; color: #111827; }
 .cs-decision-sketch { margin: 1rem 0 0 2.05rem; }
 
+/* Image captions: small and quiet, under the image. */
+.cs-figure-caption { margin-top: 0.5rem; font-size: 0.875rem; line-height: 1.5; color: #6B7280; }
+
+/* Step diagram: numbered cards joined by arrows. Stacked on phones (badge beside the
+   title, arrows pointing down), in a row from 640px (badge above the title). */
+.cs-steps { display: flex; flex-direction: column; margin: 0 0 1.5rem; }
+.cs-step {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 0.75rem;
+  background: #F9FAFB;
+}
+.cs-step-title { font-weight: 600; color: #111827; line-height: 1.35; }
+.cs-step-link { position: relative; flex: 0 0 1.5rem; }
+.cs-step-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 6px;
+  left: calc(1rem + 0.8125rem);
+  width: 2px;
+  margin-left: -1px;
+  background: #D1D5DB;
+}
+.cs-step-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: calc(1rem + 0.8125rem);
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-bottom: 0;
+  border-top: 6px solid #D1D5DB;
+}
+@media (min-width: 640px) {
+  .cs-steps { flex-direction: row; align-items: stretch; }
+  .cs-step { flex: 1 1 0; flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 0.875rem 1rem 1rem; }
+  .cs-step-link::before { top: 50%; bottom: auto; left: 0; right: 6px; width: auto; height: 2px; margin: -1px 0 0; }
+  .cs-step-link::after { top: 50%; bottom: auto; left: auto; right: 0; margin: -5px 0 0; border: 5px solid transparent; border-right: 0; border-left: 6px solid #D1D5DB; }
+}
+html.dark .cs-step { border-color: #374151; background: rgba(255, 255, 255, 0.04); }
+html.dark .cs-step-title { color: #F3F4F6; }
+html.dark .cs-step-link::before { background: #4B5563; }
+html.dark .cs-step-link::after { border-top-color: #4B5563; }
+@media (min-width: 640px) {
+  html.dark .cs-step-link::after { border-top-color: transparent; border-left-color: #4B5563; }
+}
+
 /* ─── BlogMeta bar ────────────────────────────────────────────────────────── */
 .blog-meta {
   display: flex;

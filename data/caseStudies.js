@@ -55,7 +55,7 @@ export const caseStudies = [
     // The case study page's H1, used as its browser-tab and search title.
     headline: 'Asking why before adding search',
     // Search and link-preview description: under 160 characters.
-    seoDescription: 'A stakeholder asked for a search bar. I asked why. A month of research redirected the roadmap to the real problem. Stakeholder confidence up 12.3%.',
+    seoDescription: 'A stakeholder asked for a search bar. Research showed the real problem was visibility, merged two projects, and raised stakeholder confidence 12.3%.',
   },
   {
     id: 'ai-workflow',
@@ -68,11 +68,11 @@ export const caseStudies = [
     metric: null,
     logo_src: '/images/adverity.jpg',
     company: 'Adverity',
-    bg_src: '/images/ai_thumbnail.png',
+    bg_src: '/images/ai_workshop.png',
     link: '/ai-workflow',
     // The case study page's H1, used as its browser-tab and search title.
     headline: 'Designing closer to the real product',
     // Search and link-preview description: under 160 characters.
-    seoDescription: 'How I helped get a design-to-code workflow working at Adverity, so designs started from the live product and ideas reached engineers as working prototypes.',
+    seoDescription: "How I helped get an AI-assisted design workflow working across Adverity's design team, so designs started from the live product, not from memory.",
   },
 ];

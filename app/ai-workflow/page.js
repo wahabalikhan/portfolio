@@ -1,208 +1,176 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import BackButton from '@/components/BackButton';
 import CaseStudyReadTracker from '@/components/CaseStudyReadTracker';
-import CaseStudyMeta from '@/components/CaseStudyMeta';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import ImageModal from '@/components/ImageModal';
 import OtherCaseStudies from '@/components/OtherCaseStudies';
+import { AtAGlance, CaseImage, Decision, PersonaCards, SectionLabel, StepFlow } from '@/components/CaseStudyParts';
+
+const PERSONAS = [
+  { name: 'The designer new to code', text: 'Confident in Figma, but had never used a terminal, and was wary of breaking something.' },
+  { name: 'The designer already experimenting', text: 'Trying AI tools on their own, but without a repeatable way to use them on real work.' },
+];
+
+const STEPS = ['Browser to Figma', 'Change it in code', 'Review and ship', 'Live prototypes'];
+
+const H2 = 'text-2xl font-bold mb-4 text-gray-900';
+const P = 'text-gray-700 leading-relaxed mb-4';
+const UL = 'list-disc pl-5 text-gray-700 leading-relaxed mb-6 space-y-2';
+const LABEL = 'font-semibold text-gray-900';
 
 export default function AIWorkflowPage() {
-    const router = useRouter();
-    const [selectedImage, setSelectedImage] = useState(null);
-    return (
-        <div className="max-w-3xl mx-auto px-6 py-16" role="main">
-            <CaseStudyReadTracker study="ai-workflow" />
-            <FadeUp delay={100}>
-            <BackButton onClick={() => router.back()} />
+  const [selectedImage, setSelectedImage] = useState(null);
+  const open = setSelectedImage;
 
-            <h1 className="text-4xl font-bold mb-2 text-gray-900">
-                Designing closer to the real product
-            </h1>
-            </FadeUp>
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+      <CaseStudyReadTracker study="ai-workflow" />
 
-            <FadeUp delay={100}>
-            <CaseStudyMeta items={[
-              { label: 'Timeline', value: 'April 2026 – June 2026' },
-              { label: 'Team', value: '3 Product Designers, Engineering pod' },
-              { label: 'Role', value: 'Designer and contributor. Workflow adoption, tooling setup, code changes, engineering collaboration.' },
-              { label: 'Tools', value: 'Figma, Claude Code, VS Code, Git' },
-            ]} />
+      <FadeUp delay={100}>
+        <BackButton />
+        <h1 className="text-4xl font-bold mb-2 text-gray-900">Designing closer to the real product</h1>
+        <p className="text-lg text-gray-700 mt-4 mb-6 leading-relaxed">
+          At Adverity, design files drifted from what was actually live, and ideas reached engineers as static screens. I helped get an AI-assisted workflow working across the design team, so designs started from the live product and ideas could be tested as working prototypes.
+        </p>
+        <CaseImage
+          src="/images/ai_workshop.png"
+          alt="The AI Workflows Design Workshop board in FigJam: a schedule, an AI tool dot vote, the team's workflows mapped step by step, and sticky notes with pros and cons for Claude, Claude Design, Gemini, Figma Make and ChatGPT"
+          onOpen={open}
+        />
+        <AtAGlance items={[
+          { label: 'Role', value: 'AI Product Designer: getting the workflow working, documentation, co-running the workshop, and shipping changes' },
+          { label: 'Team', value: '3 product designers and an engineering pod' },
+          { label: 'Timeline', value: 'April to June 2026' },
+          { label: 'Results', value: 'The workflow went from half-built to team-wide, six designers used the browser-to-Figma tool after the workshop, and real changes shipped to production' },
+        ]} />
+      </FadeUp>
 
-            <img
-                src="/images/ai_thumbnail.png"
-                alt="AI Workflow"
-                className="w-full rounded-lg mb-8 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => setSelectedImage({ src: '/images/ai_thumbnail.png', alt: 'AI Workflow' })}
-            />
-            </FadeUp>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>The problem</SectionLabel>
+          <h2 className={H2}>Design and code were running on parallel tracks</h2>
+          <p className={P}>At Adverity, design files were rebuilt from memory and quickly fell out of date, and ideas took hours to communicate as static screens. A workflow to bring designers closer to the codebase already existed in draft, but getting it to work consistently, on different machines and setups, was the hard part.</p>
+        </section>
+      </FadeUp>
 
-            <FadeUp delay={100}>
-            <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">The Problem</h3>
-                    <div className="border-l-4 border-yellow-500 p-6 mb-6 bg-yellow-50">
-                        <p className="mb-6" style={{ color: '#374151' }}>
-                            ⚠️ <span className='font-bold' style={{ color: '#374151' }}>Design and code have always run on parallel tracks.</span>
-                        </p>
-                        <p className="mb-6" style={{ color: '#374151' }}>
-                            At Adverity, an initiative was already underway to close that gap, bringing designers closer to the codebase and reducing the friction between design intent and what actually ships. The workflow existed in draft form. The step-by-step guide existed. The goal was clear. Getting it to actually work, consistently, across different machines and setups, was the harder part.
-                        </p>
-                        <p style={{ color: '#374151' }}>
-                            That's where I came in.
-                        </p>
-                    </div>
-                </div>
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">My Role</h3>
-                    <p className="text-gray-700 leading-relaxed mb-2">I joined this initiative halfway through, collaborating with a designer who had already been laying the groundwork. My contribution was in getting the workflow from almost there to actually working, and then using it on real work.</p>
-                    <p className="text-gray-700 leading-relaxed mb-2">Specifically:</p>
-                    <div className="text-gray-700 mb-4">
-                        <ul className='list-disc list-inside'>
-                            <li>Worked through the setup process collaboratively: installing dependencies, working through Docker configuration, debugging errors, and feeding fixes back into the guide so the next person didn't hit the same walls.</li>
-                            <li>Helped get the workflow to a polished, documented state the wider team could follow.</li>
-                            <li>Participated in and helped run a team workshop to explore what AI looks like in design workflows, get everyone set up, and build shared understanding across the team.</li>
-                            <li>Used the workflow on real work: committing via Git, getting changes reviewed by engineers, ensuring they passed tests, and getting them merged to main and shipped to customers.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">The Workshop</h3>
-                    <p className="text-gray-700 leading-relaxed mb-4">Before anyone could adopt the workflow independently, we needed to get the team aligned on what it even meant to work closer to code as a designer.</p>
-                    <p className="text-gray-700 leading-relaxed mb-4">We ran a hands-on workshop with the wider design team. The goal wasn't to turn designers into developers. It was to demystify the tools, show what was actually possible, and get everyone set up and confident enough to try it themselves.</p>
-                    <p className="text-gray-700 leading-relaxed mb-4">We walked through the full workflow together: pulling live pages into Figma, making changes in VS Code with Claude Code, committing via Git, and seeing something run locally. People who had never opened a terminal left with a working dev environment.</p>
-                    {/* Workshop image — replace src when image is supplied */}
-                    <img src="/images/ai_workshop.png" alt="Workshop" className="w-full rounded-lg mb-4 border border-gray-200" />
-                    <p className="text-gray-700 leading-relaxed mb-4">Getting a team aligned on a new way of working is its own design problem. The workshop was as much about reducing fear around the tooling as it was about the tools themselves.</p>
-                </div>
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Results</h3>
-                    <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
-                        <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ Real changes shipped to production</span> - seen by customers, not just local demos.
-                        </p>
-                        <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ A workflow that went from half-working to documented</span> - usable by the wider team.
-                        </p>
-                        <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ A team workshop</span> - that got designers set up and aligned on AI-assisted workflows.
-                        </p>
-                        <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ Faster idea communication</span> - live prototypes instead of static screens for early conversations with engineers and product.
-                        </p>
-                        <p className="text-gray-700 bg-emerald-50 mb-0">
-                            <span className="font-bold bg-emerald-50">✅ Design files grounded in reality</span> - generated from what was actually live, not rebuilt from memory.
-                        </p>
-                    </div>
-                </div>
-            </div>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Research</SectionLabel>
+          <h2 className={H2}>Three problems, not a vague goal</h2>
+          <p className={P}>I joined halfway through, alongside a designer who had laid the groundwork. Working through the setup ourselves, and talking with the team, came down to three needs:</p>
+          <ul className={UL}>
+            <li>"I need my design files to reflect what's actually live, not a snapshot from three sprints ago."</li>
+            <li>"I need to test ideas as working prototypes, not just static screens."</li>
+            <li>"I need to move between design and code without losing context."</li>
+          </ul>
+        </section>
+      </FadeUp>
 
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">What I Set Out to Do</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">Three concrete workflow problems, not vague goals:</p>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-                    <div className="text-gray-700 mb-6">
-                        <ul className='list-disc list-inside font-bold'>
-                            <li>"I need my design files to reflect what's actually live, not a snapshot from three sprints ago."</li>
-                            <li>"I need to test ideas as working prototypes, not just static screens."</li>
-                            <li>"I need to move between design and code without losing context each time."</li>
-                        </ul>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed mb-2">The goal wasn't to replace engineering. It was to make my design work more grounded, more testable, and more useful to the engineers I work with.</p>
-                </div>
-            </section>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Personas</SectionLabel>
+          <h2 className={H2}>Some designers had never opened a terminal</h2>
+          <PersonaCards people={PERSONAS} />
+          <p className={P}><span className={LABEL}>How this shaped the work:</span> the setup had to be simple and documented enough for the first, and the workflow useful enough for the second.</p>
+        </section>
+      </FadeUp>
 
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">The Environment Setup</h2>
-                <p className="text-gray-700 leading-relaxed mb-2">Getting there meant a working local setup first: Node.js, VS Code, Git, and Claude Code in the terminal to scaffold components from design direction.</p>
-                <p className="text-gray-700 leading-relaxed mb-6">Every change went to GitHub for review, and anything touching the live product had to pass engineering review and tests.</p>
-            </section>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Decisions</SectionLabel>
+          <h2 className={`${H2} mb-6`}>Four decisions that shaped it</h2>
+          <Decision
+            n={1}
+            title="Start from the live product, not a blank file"
+            onOpen={open}
+            parts={[
+              { label: 'Options:', text: 'keep designing in Figma and use AI to turn finished designs into code, or start from the live product itself.' },
+              { label: 'Why live first:', text: 'an AI-assisted handoff is faster, but still one-way, so the Figma file is out of date by the time code ships. Pulling live pages into Figma as editable layers, and prototyping in code, keeps design and code connected. Real projects confirmed it.' },
+              { label: 'Trade-off:', text: 'every designer needed a working local setup, which was the hardest part to get right.' },
+            ]}
+          />
+          <Decision
+            n={2}
+            title="Make the setup repeatable before asking anyone to use it"
+            onOpen={open}
+            parts={[
+              { label: 'What I did:', text: "worked through installing dependencies, Docker configuration and errors on real machines, and fed every fix back into the step-by-step guide, so the next person didn't hit the same wall." },
+              { label: 'Trade-off:', text: 'time on setup instead of design, but without it, the workflow would have stayed with the two people who already had it working.' },
+            ]}
+          />
+          <Decision
+            n={3}
+            title="Run a workshop before rolling it out"
+            onOpen={open}
+            parts={[
+              { label: 'Why:', text: 'adopting a new way of working is its own design problem, and much of it is about reducing fear of the tools. We ran a hands-on workshop: sharing experiences, comparing AI tools (Claude, Claude Design, Figma Make, Gemini and ChatGPT) and voting on them, then setting everyone up.' },
+              { label: 'Result:', text: 'people who had never opened a terminal left with a working setup, and six designers went on to use the browser-to-Figma tool in their own work.' },
+            ]}
+          />
+          <Decision
+            n={4}
+            title="Every change goes through engineering review"
+            onOpen={open}
+            parts={[
+              { label: 'Why:', text: 'designers changing a live product needs trust. Every code or copy change went to GitHub for review, and had to pass engineering review and tests before reaching customers.' },
+              { label: 'Trade-off:', text: "slower than changing things directly, but it meant engineers saw designers' changes as help, not risk." },
+            ]}
+          />
+        </section>
+      </FadeUp>
 
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Two Approaches Considered</h2>
-                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept A: Design-first, AI-assisted handoff</p>
-                <p className="text-gray-700 leading-relaxed mb-6">The familiar path. Design in Figma, use AI to translate finished designs into code. Faster than a traditional handoff, but still one-directional. Drift creeps back in. The Figma file is already stale by the time the code ships.</p>
-                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept B: Code-first, design stays connected to the live product (chosen)</p>
-                <p className="text-gray-700 leading-relaxed mb-6">Live pages pulled into Figma as editable layers. Prototypes built directly in code from design intent. Design and code stay in sync because they're never fully separated.</p>
-                <p className="text-gray-700 leading-relaxed mb-6">Working through real projects confirmed Concept B. It became the foundation of the workflow.</p>
-            </section>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>The workflow</SectionLabel>
+          <h2 className={H2}>From the live product to a reviewed change</h2>
+          <StepFlow
+            steps={STEPS}
+            label="The workflow in four steps: 1, Browser to Figma; 2, Change it in code; 3, Review and ship; 4, Live prototypes."
+          />
+          <ol className="list-decimal pl-5 text-gray-700 leading-relaxed mb-6 space-y-2">
+            <li><span className={LABEL}>Browser to Figma:</span> pull a live product page into Figma as editable layers, so the design starts from what's actually there, then annotate and explore changes on top of it.</li>
+            <li><span className={LABEL}>Change it in code:</span> take the direction into VS Code, use Claude Code to make or adjust components, review what it produces, and test it locally against the live product.</li>
+            <li><span className={LABEL}>Review and ship:</span> commit through Git, open it for engineering review, pass the tests, then merge and ship to customers.</li>
+            <li><span className={LABEL}>Live prototypes:</span> another designer on the team built a separate workflow for quick, working prototypes. I used it to get ideas to engineers and product faster, without a polished static design first.</li>
+          </ol>
+        </section>
+      </FadeUp>
 
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">What the Workflow Actually Looks Like</h2>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Results</SectionLabel>
+          <h2 className={H2}>A workflow the whole team could run</h2>
+          <ul className={UL}>
+            <li>From half-built to team-wide, documented well enough for anyone to set it up.</li>
+            <li>Six designers used the browser-to-Figma tool in their own work after the workshop.</li>
+            <li>Real changes shipped to production, through engineering review and tests.</li>
+            <li>Faster conversations with engineers and product, using working prototypes instead of static screens.</li>
+          </ul>
+        </section>
+      </FadeUp>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">1. Browser to Figma</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">Pull a live product page directly into Figma as fully editable layers. Rather than starting from scratch or working from memory, the design file starts from what is actually live. Annotate, restyle, and explore changes on top of the real product.</p>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Reflection</SectionLabel>
+          <h2 className={H2}>A closer-to-code workflow only works if many people can run it</h2>
+          <p className={P}>This was collaborative from start to finish: the initiative existed before I joined, another designer had done significant groundwork, and engineers were involved throughout. My part was getting it working, helping the team adopt it, and using it on real work.</p>
+          <p className={P}><span className={LABEL}>What I'd do differently:</span> measure the impact from the start, for example how long it took to go from idea to prototype before and after. Without that, the results are real but harder to prove.</p>
+          <p className={P}><span className={LABEL}>Next:</span> the role ended in a company restructuring in June 2026, before we could formalise the workflow, check shipped UI against designs automatically, and keep the design system in sync with code. The workflow and its documentation stayed with the team.</p>
+        </section>
+      </FadeUp>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">2. Making changes in code</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">Take a direction from Figma into VS Code. Use Claude Code to scaffold or modify components, review the output, refine it, and test it locally against the live product. Then commit via Git, push to GitHub, and go through engineering review. Changes had to pass tests before anything got merged. This was the core of what I used day-to-day.</p>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">3. Live prototyping</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">Another designer on the team built a separate workflow for generating live prototypes quickly, turning a design direction into something working and interactive in minutes. I used this to get ideas across to engineers and product people faster and move conversations forward without needing a fully polished static design first.</p>
-            </section>
-
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Why This Matters</h2>
-
-                <p className="text-gray-700 leading-relaxed mb-6">Working closer to the codebase changes how you make design decisions. You are not designing in a vacuum and hoping it is feasible. You are testing against real constraints from the start. When design and engineering are operating in the same space, feedback loops shrink and the gap between what is designed and what ships gets smaller.</p>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Without this workflow</h3>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>Design happens disconnected from the live product</li>
-                        <li>Feedback only arrives after something is fully built</li>
-                        <li>Figma files are rebuilt from memory rather than generated from reality</li>
-                        <li>Ideas take hours to communicate as static screens</li>
-                    </ul>
-                </div>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">With it</h3>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>Design decisions are grounded in what is technically real from the start</li>
-                        <li>Feedback loops shrink from sprints to sessions</li>
-                        <li>Prototypes replace static screens in early engineering conversations</li>
-                        <li>The gap between designed and shipped gets smaller with every project</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Reflection</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    The honest version of this project is that it was collaborative from start to finish. The initiative existed before I joined. Another designer had done significant groundwork. Engineers were involved at every step. My contribution was in the middle and at the end: helping get the workflow working, running the workshop with the team, and using it to ship real things.
-                </p>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    That collaboration is actually the point. A closer-to-code design workflow only works if multiple people can run it. Getting it to a state where that was possible was the real outcome.
-                </p>
-            </section>
-
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Next Steps</h2>
-                <div className="text-gray-700 leading-relaxed">
-                    <ul className='list-disc list-inside'>
-                        <li>Formalise the workflow into a repeatable process other designers can pick up independently.</li>
-                        <li>Explore AI-assisted design QA: checking shipped UI against design intent automatically.</li>
-                        <li>Apply this approach to larger, multi-page products.</li>
-                        <li>Contribute to a component-level design system kept in sync with the codebase.</li>
-                    </ul>
-                </div>
-                <p className="text-gray-400 italic mt-4 leading-relaxed">
-                    The role was made redundant due to organisational restructure in June 2026 before these could be taken further. The workflow and documentation remain with the team.
-                </p>
-            </section>
-
-            </FadeUp>
-            <OtherCaseStudies currentId="ai-workflow" />
-            <Footer />
-            <ImageModal
-                isOpen={!!selectedImage}
-                src={selectedImage?.src}
-                alt={selectedImage?.alt}
-                onClose={() => setSelectedImage(null)}
-            />
-        </div>
-    );
+      <OtherCaseStudies currentId="ai-workflow" />
+      <Footer />
+      <ImageModal
+        isOpen={!!selectedImage}
+        src={selectedImage?.src}
+        alt={selectedImage?.alt}
+        markers={selectedImage?.markers}
+        onClose={() => setSelectedImage(null)}
+      />
+    </div>
+  );
 }

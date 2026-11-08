@@ -1,5 +1,7 @@
 'use client';
 
+import { Fragment } from 'react';
+
 // Building blocks for decision-led case studies (first used on /git-diff/).
 
 // A small label above a section's takeaway heading, naming the section type ("The problem",
@@ -40,15 +42,36 @@ export function MarkerLayer({ markers }) {
   ));
 }
 
-// A case-study image that opens the click-to-enlarge viewer, optionally with markers.
-export function CaseImage({ src, alt, markers, onOpen, className = '' }) {
+// A case-study image that opens the click-to-enlarge viewer, optionally with markers
+// and a caption underneath.
+export function CaseImage({ src, alt, markers, caption, onOpen, className = '' }) {
   return (
     <figure className={`cs-figure ${className}`}>
       <button type="button" className="cs-figure-button" onClick={() => onOpen({ src, alt, markers })} aria-label={`Enlarge image: ${alt}`}>
         <img src={src} alt={alt} />
         <MarkerLayer markers={markers} />
       </button>
+      {caption && <figcaption className="cs-figure-caption">{caption}</figcaption>}
     </figure>
+  );
+}
+
+// A simple step diagram: numbered steps joined by arrows, in a row on wider screens and
+// stacked on phones. Screen readers get it as one image described by `label`, because
+// the text after it explains each step in full.
+export function StepFlow({ steps, label }) {
+  return (
+    <div className="cs-steps" role="img" aria-label={label}>
+      {steps.map((title, i) => (
+        <Fragment key={title}>
+          {i > 0 && <span className="cs-step-link" />}
+          <div className="cs-step">
+            <span className="cs-decision-num">{i + 1}</span>
+            <span className="cs-step-title">{title}</span>
+          </div>
+        </Fragment>
+      ))}
+    </div>
   );
 }
 
