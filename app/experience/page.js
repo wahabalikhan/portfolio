@@ -6,7 +6,22 @@ import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import CommentPins from '@/components/CommentPins';
 
+const BB_LINK = 'link-text text-blue-600';
+
 const EXPERIENCE = [
+  {
+    company: 'BobbyBuilds',
+    role: 'Independent Product Designer',
+    years: '2026 → Present',
+    logo: '/images/icons/bobbybuilds.png',
+    bullets: [
+      <>Designing and building my own products in public, with honest numbers for each, at <a href="https://bobbybuilds.app" target="_blank" rel="noopener noreferrer" className={BB_LINK}>bobbybuilds.app</a>.</>,
+      <><a href="https://techjobs.bobbybuilds.app" target="_blank" rel="noopener noreferrer" className={BB_LINK}>TechJobs</a>: a UK job board with 1,800+ tech jobs taken straight from 290+ companies' own careers pages, designed and built with Claude Code.</>,
+      'Set the AI up to succeed: studied 6,466 real job ads, then wrote the rules and examples it uses to sort every ad into the same sections.',
+      'Checked the AI rather than trusting it: built an answer sheet of hand-checked ads, overruled the AI where it was confidently wrong, and tested it on ads it had never seen (79% correct with rules alone, between 87% and 92% with AI).',
+      "Chose quality over volume, listing only jobs from employers' own sites, and improved the product through a UX audit.",
+    ],
+  },
   {
     company: 'Adverity',
     role: 'AI Product Designer',
@@ -29,7 +44,7 @@ const EXPERIENCE = [
       'Designed the Git diff interface for high-risk pipeline actions, achieving 34% more successful commits and 15% fewer error recoveries in the first 30 days.',
       'Built the ETL design system from scratch as sole designer, reducing design task completion time by 36.1%.',
       'Led research that reframed a stakeholder quick-win request into a validated service improvement, boosting stakeholder confidence by 12.3%.',
-      'Designed for Maya, Matillion\'s AI assistant: showing its reasoning, and previewing changes before they\'re made.',
+      'Contributed to the interaction design for Maia, Matillion\'s AI assistant: showing its reasoning, and previewing changes before they\'re made.',
       'Progressed from junior to mid-level, mentoring junior designers and working closely with engineering throughout.',
     ],
   },

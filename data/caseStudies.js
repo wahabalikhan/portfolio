@@ -1,17 +1,21 @@
 // One entry per case study. The home page cards, "Other case studies" and each page's
 // search/link-preview metadata all read from here.
-// Order here is the order on the home page's Design tab and in "Other case studies".
+// Order here is the order on the home page (Design tab, then "How I work") and in each page's
+// "Other case studies" (same category first).
 export const caseStudies = [
   {
     id: 'git-diff',
+    // 'design': the Design tab. 'building': "Things I've built" (How I work).
+    category: 'design',
     title: 'Making risky commits feel safe',
-    description: "Data engineers couldn't see what they were about to commit. I designed a side-by-side comparison that shows every change first. 34% more successful commits and 15% fewer error recoveries in the first 30 days.",
+    // Card text: up to two lines, including the headline result.
+    description: 'Every change shown before committing, for 34% more successful commits.',
+    // Shown semibold in the main text colour; must appear word for word in the description (null: none).
+    metric: '34% more successful commits',
     logo_src: '/images/matillion-logo.svg',
     company: 'Matillion',
-    bg_src: '/images/git-diff-card.png',
+    bg_src: '/images/matillion-bg.png',
     link: '/git-diff',
-    // Bold on the home page card. Each must appear word for word in the description.
-    highlights: ['34% more successful commits and 15% fewer error recoveries in the first 30 days.'],
     // The browser-tab and search title (usually the page's H1, or a shorter version of it).
     headline: 'Making risky commits feel safe',
     // Search and link-preview description: under 160 characters.
@@ -19,14 +23,17 @@ export const caseStudies = [
   },
   {
     id: 'design-system',
+    // 'design': the Design tab. 'building': "Things I've built" (How I work).
+    category: 'design',
     title: 'From Framework to Design System',
-    description: '36.1% reduction in design task completion time, achieved by building Matillion’s ETL design system from scratch: components, patterns, and documentation, while embedding UX practice into how the engineering team worked.',
+    // Card text: up to two lines, including the headline result.
+    description: 'Built from scratch as the sole designer. Design tasks 36.1% faster.',
+    // Shown semibold in the main text colour; must appear word for word in the description (null: none).
+    metric: 'Design tasks 36.1% faster',
     logo_src: '/images/matillion-logo.svg',
     company: 'Matillion',
     bg_src: '/images/ds.png',
     link: '/design-system',
-    // Bold on the home page card. Each must appear word for word in the description.
-    highlights: ['36.1% reduction in design task completion time'],
     // The case study page's H1, used as its browser-tab and search title.
     headline: 'From Framework to Design System',
     // Search and link-preview description: under 160 characters.
@@ -34,29 +41,35 @@ export const caseStudies = [
   },
   {
     id: 'schemas',
-    title: 'Reframing a quick-win request into a user-validated strategy',
-    description: 'A stakeholder asked for a search bar. I asked why. A month of research prevented the wrong thing from being built and redirected the roadmap toward the real problem. Stakeholder confidence up 12.3%.',
+    // 'design': the Design tab. 'building': "Things I've built" (How I work).
+    category: 'design',
+    title: 'Asking why before adding search',
+    // Card text: up to two lines, including the headline result.
+    description: 'Asking why led to a better roadmap, and stakeholder confidence rose 12.3%.',
+    // Shown semibold in the main text colour; must appear word for word in the description (null: none).
+    metric: 'stakeholder confidence rose 12.3%',
     logo_src: '/images/matillion-logo.svg',
     company: 'Matillion',
     bg_src: '/images/schema_bg.png',
     link: '/schemas',
-    // Bold on the home page card. Each must appear word for word in the description.
-    highlights: ['Stakeholder confidence up 12.3%.'],
     // The case study page's H1, used as its browser-tab and search title.
-    headline: 'Reframing a quick-win request into a user-validated strategy',
+    headline: 'Asking why before adding search',
     // Search and link-preview description: under 160 characters.
     seoDescription: 'A stakeholder asked for a search bar. I asked why. A month of research redirected the roadmap to the real problem. Stakeholder confidence up 12.3%.',
   },
   {
     id: 'ai-workflow',
+    // 'design': the Design tab. 'building': "Things I've built" (How I work).
+    category: 'building',
     title: 'Designing closer to the real product',
-    description: 'How I helped get a design-to-code workflow working at Adverity, so designs started from the live product and ideas reached engineers as working prototypes.',
+    // Card text: up to two lines, including the headline result.
+    description: 'Starting designs from the live product, not from memory.',
+    // Shown semibold in the main text colour; must appear word for word in the description (null: none).
+    metric: null,
     logo_src: '/images/adverity.jpg',
     company: 'Adverity',
     bg_src: '/images/ai_thumbnail.png',
     link: '/ai-workflow',
-    // Bold on the home page card. Each must appear word for word in the description.
-    highlights: [],
     // The case study page's H1, used as its browser-tab and search title.
     headline: 'Designing closer to the real product',
     // Search and link-preview description: under 160 characters.

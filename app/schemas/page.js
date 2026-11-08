@@ -22,7 +22,7 @@ export default function SchemasPage() {
       <BackButton onClick={() => router.back()} />
 
       <h1 className="text-4xl font-bold mb-2 text-gray-900">
-        Reframing a quick-win request into a user-validated strategy
+        Asking why before adding search
       </h1>
       </FadeUp>
 

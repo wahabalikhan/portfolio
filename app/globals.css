@@ -2581,3 +2581,165 @@ html.dark .build-log-stack-reason { color: #6b7280; }
     cursor: url('/cursors/grab.svg') 32 26, grabbing !important;
   }
 }
+/* ─── Home: design first, building second (app/page.js) ───────────────────── */
+/* The home container is max-w-3xl (768px), as on the live site; paragraphs keep a
+   comfortable reading width inside it. */
+.reading-width,
+.home-cs-text,
+.product-problem,
+.project-row-line,
+.writing-summary { max-width: 65ch; }
+
+/* Section spacing: the same space above and below each divider (hero → Case studies →
+   Writing) and the footer's top border. */
+.home-page { --home-space: 2.5rem; }
+@media (min-width: 768px) {
+  .home-page { --home-space: 3rem; }
+}
+.home-divider { margin-top: var(--home-space); margin-bottom: var(--home-space); }
+.home-page footer { margin-top: var(--home-space); padding-top: var(--home-space); }
+
+/* Case-study cards: one column on phones, two from 768px. */
+/* minmax(0, 1fr): long text mustn't widen its column. */
+.home-cs-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem 2rem;
+}
+@media (min-width: 768px) {
+  .home-cs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Text first, then the thumbnail. Cards in a row stretch to the same height and the
+   thumbnail sits at the bottom, so thumbnails line up whatever the text's length. */
+.home-cs-card { display: flex; flex-direction: column; text-align: left; }
+.home-cs-body { padding-bottom: 0.875rem; min-width: 0; }
+/* 16:10, cropped from the centre. */
+.home-cs-thumb { aspect-ratio: 16 / 10; margin-top: auto; margin-bottom: 0; }
+.home-cs-thumb img { object-position: center; }
+/* First line: the logo (company name in its alt text and tooltip) with the title beside it,
+   the logo centred on the title's first line. */
+.home-cs-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  margin-bottom: 0.375rem;
+}
+.home-cs-logo-wrap { flex-shrink: 0; margin-top: 0.09375rem; } /* (27px line − 24px logo) / 2 */
+.home-cs-logo { width: 1.5rem; height: 1.5rem; display: block; }
+/* Styled like the "Products" heading (.built-heading): 18px bold. */
+.home-cs-title { font-size: 1.125rem; font-weight: 700; line-height: 1.5; min-width: 0; }
+/* Two lines at most (the clamp is on the inner span, so the title's hover underline isn't clipped). */
+.home-cs-title-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+/* Styled like the hero bio (15.6px, leading-relaxed, grey from text-gray-500 in the card).
+   Wraps freely (never cut); every card keeps room for two lines (2 × line-height), so the
+   thumbnails line up. */
+.home-cs-text { font-size: 15.6px; line-height: 1.625; min-height: 3.25em; }
+/* The metric phrase inside it: semibold, in the main text colour, no background. */
+.home-cs-metric { font-weight: 600; color: #111827; }
+
+/* "Other case studies" (components/OtherCaseStudies.jsx): the same card, smaller type, two to a row. */
+.other-cs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+/* Phones: one card per row. */
+@media (max-width: 767px) {
+  .other-cs-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.home-cs-card-compact .home-cs-body { padding-bottom: 0.75rem; }
+.home-cs-card-compact .home-cs-head { gap: 0.5rem; margin-bottom: 0.25rem; }
+.home-cs-card-compact .home-cs-logo-wrap { margin-top: 0; } /* 19.6px line, 20px logo */
+.home-cs-card-compact .home-cs-logo { width: 1.25rem; height: 1.25rem; }
+.home-cs-card-compact .home-cs-title { font-size: 0.875rem; line-height: 1.4; }
+.home-cs-card-compact .home-cs-text { font-size: 0.8125rem; line-height: 1.4; min-height: 2.8em; color: #6b7280; }
+
+/* "Things I've built" */
+.built-section { margin-bottom: 2.75rem; }
+.built-section:last-child { margin-bottom: 0; }
+.built-heading { font-size: 1.125rem; font-weight: 700; color: #111827; margin-bottom: 1rem; }
+
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 640px) {
+  .product-grid { grid-template-columns: 1fr 1fr; }
+}
+.product-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.125rem 1.25rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 0.75rem;
+  background: #F9FAFB;
+}
+.product-head { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.5rem; }
+.product-icon { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; }
+.product-name { font-size: 1.0625rem; font-weight: 700; color: #111827; }
+.product-problem { color: #374151; line-height: 1.55; }
+.product-result { color: #111827; font-weight: 700; line-height: 1.55; margin-top: 0.25rem; }
+.product-link { margin-top: auto; padding-top: 0.75rem; color: #2563eb; font-weight: 500; font-size: 0.9375rem; align-self: flex-start; }
+.product-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* The contribution graph, kept small above the earlier projects. */
+.gh-contrib-small { max-width: 44rem; margin-bottom: 1.25rem; }
+
+.project-rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid #E5E7EB; }
+.project-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #E5E7EB;
+}
+.project-row-main { min-width: 0; }
+.project-row-name { font-weight: 600; color: #111827; margin-right: 0.5rem; }
+.project-row-line { color: #4B5563; line-height: 1.55; }
+.project-row-tools { display: block; margin-top: 0.125rem; font-size: 0.8125rem; color: #6B7280; }
+.project-row-link { flex-shrink: 0; white-space: nowrap; color: #2563eb; font-weight: 500; font-size: 0.9375rem; }
+.project-row-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Writing: the same rhythm as BobbyBuilds' Journey rows (a rule on the left with a dot
+   per row, 14px meta line, 18px semibold title, then one line), in the portfolio's
+   font and greys. */
+.writing-list {
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+  list-style: none;
+  border-left: 1px solid #E5E7EB;
+}
+.writing-row { position: relative; }
+.writing-row + .writing-row { margin-top: 2rem; }
+.writing-dot {
+  position: absolute;
+  left: -29px;
+  top: 0.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  border: 1px solid #D1D5DB;
+  background: #F8FAFD;
+  box-shadow: 0 0 0 4px #F8FAFD;
+}
+@media (min-width: 640px) {
+  .writing-list { padding-left: 2rem; }
+  .writing-row + .writing-row { margin-top: 2.5rem; }
+  .writing-dot { left: -37px; }
+}
+.writing-meta { font-size: 0.875rem; color: #6B7280; }
+.writing-title { margin-top: 0.375rem; font-size: 1.125rem; font-weight: 600; line-height: 1.4; letter-spacing: -0.015em; }
+.writing-link { color: #111827; }
+.writing-link:hover { color: #2563eb; text-decoration: underline; text-underline-offset: 3px; }
+.writing-summary { margin-top: 0.5rem; color: #4B5563; line-height: 1.6; }

@@ -10,8 +10,8 @@ import CommentPins from '@/components/CommentPins';
 import FadeUp from '@/components/FadeUp';
 import LinkedInPostCard from '@/components/LinkedInPostCard';
 import BuildLogCard from '@/components/BuildLogCard';
+import CaseStudyCard from '@/components/CaseStudyCard';
 import JustForFunCard from '@/components/JustForFunCard';
-import GitHubRepoCard from '@/components/GitHubRepoCard';
 import GitHubContributions from '@/components/GitHubContributions';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import { smoothScrollToElement } from '@/utils/smoothScroll';
@@ -21,61 +21,55 @@ import { smoothScrollToElement } from '@/utils/smoothScroll';
 // TechJobs' status changes there.
 const TECHJOBS_STATUS = 'building';
 
-const HARDCODED_REPOS = [
+// "Things I've built" → Products: my own products, each with a one-line problem, one result
+// (optional) and a link to try it.
+const PRODUCTS = [
   {
-    name: 'portfolio',
-    description: 'The codebase behind this portfolio. Built in React and Next.js with a real-time Figma-style comment system, live cursors, and multiplayer presence powered by Supabase. Hosted on Cloudflare Pages. Every design decision on this site was made by a designer who then built it. This repo is the proof.',
-    language: 'JavaScript',
-    langColor: '#f1e05a',
-    topics: ['react', 'nextjs', 'supabase', 'claude', 'vscode', 'git', 'github', 'figma', 'cloudflare'],
-    updatedLabel: '16 hours ago',
+    name: 'TechJobs',
+    icon: '/images/icons/techjobs.png',
+    problem: "UK tech jobs straight from companies' own careers pages, every ad in one readable shape.",
+    result: '1,800+ jobs from 290+ companies',
+    url: 'https://techjobs.bobbybuilds.app',
+  },
+  {
+    name: 'BobbyBuilds',
+    icon: '/images/icons/bobbybuilds.png',
+    problem: 'My HQ for building in public: honest numbers, costs and progress for every product I make.',
+    result: null,
+    url: 'https://bobbybuilds.app',
+  },
+];
+
+// "Things I've built" → Earlier projects: compact rows with one line and the main tools.
+const EARLIER_PROJECTS = [
+  {
+    name: 'This portfolio',
+    line: 'Built with Next.js, with live Figma-style comments and cursors for visitors.',
+    tools: 'Next.js · Supabase · Cloudflare Pages',
     url: 'https://github.com/wahabalikhan/portfolio',
   },
   {
-    name: 'insurance-brokerage-management-system',
-    description: 'Final year CS project. I designed the UI in Figma first, then built the whole thing: a PHP and MySQL insurance platform with role-based access for admins, brokers, and consumers. Policy management, bookings, and quotes all in one system. Building it end-to-end taught me how design decisions become engineering constraints, which shapes how I work with engineers now.',
-    language: 'PHP',
-    langColor: '#4F5D95',
-    topics: ['figma', 'vscode', 'php', 'mysql', 'xampp'],
-    updatedLabel: '4 months ago',
+    name: 'Insurance brokerage system',
+    line: 'Final-year project: designed in Figma, then built in PHP and MySQL.',
+    tools: 'Figma · PHP · MySQL',
     url: 'https://github.com/wahabalikhan/final-FYP-Insurance_Brokerage_and_Management_System-19001546',
   },
   {
-    name: 'escape-game',
-    description: 'Solo university project in Java. A GUI-based 2D escape game built around object-oriented design, game loop architecture, and UI state management. Not a design project, but the systems thinking required to build it is the same thinking I bring to complex product design problems. Built in IntelliJ. Debugged extensively with Stack Overflow.',
-    language: 'Java',
-    langColor: '#b07219',
-    topics: ['java', 'intellij', 'stackoverflow'],
-    updatedLabel: '4 months ago',
+    name: 'Escape game',
+    line: 'A 2D escape game in Java, built around object-oriented design.',
+    tools: 'Java · IntelliJ',
     url: 'https://github.com/wahabalikhan/escape-game',
   },
   {
-    name: 'bobbys-desserts',
-    description: 'University project built around a fictional brief for a desserts business. I designed the UI in Figma before writing a line of code, then built a PHP and MySQL web app with role-based access, authentication, and CRUD features. Same process I use professionally: design first, then build, then iterate.',
-    language: 'PHP',
-    langColor: '#4F5D95',
-    topics: ['figma', 'vscode', 'php', 'mysql', 'javascript'],
-    updatedLabel: '4 months ago',
+    name: "Bobby's Desserts",
+    line: 'A desserts shop web app, designed in Figma, then built in PHP and MySQL.',
+    tools: 'Figma · PHP · MySQL',
     url: 'https://github.com/wahabalikhan/bobbys-desserts',
   },
 ];
 
-
-// Renders text with each phrase in `highlights` in bold.
-function WithHighlights({ text, highlights = [] }) {
-  if (highlights.length === 0) return text;
-  const escaped = highlights.map(h => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const parts = text.split(new RegExp(`(${escaped.join('|')})`));
-  return parts.map((part, i) => (highlights.includes(part) ? <span key={i} className="font-bold">{part}</span> : part));
-}
-
-function GitHubMark() {
-  return (
-    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-label="GitHub">
-      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-    </svg>
-  );
-}
+const designStudies = caseStudies.filter((s) => s.category === 'design');
+const buildingStudies = caseStudies.filter((s) => s.category === 'building');
 
 export default function HomePage() {
     const [activeTab, setActiveTab] = useState('Design');
@@ -112,8 +106,9 @@ export default function HomePage() {
         tooltipTimerRef.current = null;
       }, 1500);
     };
+  // The container is 768px wide (max-w-3xl), widening to 800px from 1024px. Phone rules key off max-w-3xl.
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 relative home-page" role="application">
+    <div className="max-w-3xl lg:max-w-[800px] mx-auto px-6 py-16 md:pt-10 relative home-page" role="application">
       <CommentPins page="home" activeTab={activeTab} />
       <div
         suppressHydrationWarning
@@ -125,7 +120,7 @@ export default function HomePage() {
             : 'none',
         }}
       >
-      <FadeUp delay={0} className="flex items-stretch gap-4 mb-6 hero-intro">
+      <FadeUp delay={0} className="flex items-stretch gap-4 hero-intro">
         <div className="hero-pic" style={{ position: 'relative', width: 100, height: 100, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
           <img
             src="/images/profile.png"
@@ -155,11 +150,11 @@ export default function HomePage() {
             {' '}them.
           </h1>
 
-          <p className="text-gray-500 leading-relaxed mt-3 mb-3" style={{ fontSize: '15.6px' }}>
+          <p className="text-gray-500 leading-relaxed mt-3 mb-2 reading-width" style={{ fontSize: '15.6px' }}>
             4+ years designing B2B data tools at Matillion and Adverity: research, interaction design and design systems that make complex workflows feel safe. I build my own products too.
           </p>
 
-          <p className="text-base text-gray-700 leading-relaxed" style={{ fontSize: '15.6px' }}>
+          <p className="text-base text-gray-700 leading-relaxed reading-width" style={{ fontSize: '15.6px' }}>
             <span className="font-bold">Product Designer</span> <span style={{ margin: '0 4px' }}>·</span> <span className="font-bold">B2B SaaS</span> <span style={{ margin: '0 4px' }}>·</span> BSc Computer Science <span style={{ margin: '0 4px' }}>·</span> NN/g UX Certified (ID: 1081116)
           </p>
 
@@ -170,23 +165,26 @@ export default function HomePage() {
               <a href="https://techjobs.bobbybuilds.app" target="_blank" rel="noopener noreferrer">
                 TechJobs ↗
               </a>
-              {' '}at{' '}
+              , a UK job board with 1,800+ jobs, at{' '}
               <a href="https://bobbybuilds.app" target="_blank" rel="noopener noreferrer">
                 BobbyBuilds ↗
               </a>
+              .
             </span>
           </p>
 
         </div>
       </FadeUp>
 
-      <div id="case-studies" className="mt-10 mb-10">
+      {/* Sections are separated by .home-divider, with the same space above and below it
+          (--home-space in globals.css), down to the footer. */}
+      <div id="case-studies">
         <FadeUp delay={0}>
-        <section className="border-t border-gray-200 pt-8 pb-0" />
-        <h2 className="text-2xl font-bold mb-8 text-gray-900">Case studies</h2>
+        <section className="home-divider border-t border-gray-200" />
+        <h2 className="text-2xl font-bold mb-6 text-gray-900">Case studies</h2>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-10">
+        <div className="flex gap-2 mb-8">
           <button
             onClick={() => setActiveTab('Design')}
             style={{ cursor: 'pointer' }}
@@ -195,11 +193,11 @@ export default function HomePage() {
             🎨 Design
           </button>
           <button
-            onClick={() => setActiveTab('Development')}
+            onClick={() => setActiveTab('Built')}
             style={{ cursor: 'pointer' }}
-            className={`tab-pill transition-all ${activeTab === 'Development' ? 'tab-pill-active' : 'tab-pill-inactive'}`}
+            className={`tab-pill transition-all ${activeTab === 'Built' ? 'tab-pill-active' : 'tab-pill-inactive'}`}
           >
-            💻 Development
+            🛠️ Things I've built
           </button>
           <button
             onClick={() => setActiveTab('JustForFun')}
@@ -211,77 +209,63 @@ export default function HomePage() {
         </div>
         </FadeUp>
 
-        {/* Designer Tab Content */}
+        {/* Design: the design case studies, two to a row on wider screens. */}
         {activeTab === 'Design' && (
-          <FadeUp className="space-y-12">
-            {caseStudies.map((study) => (
-              <Link
-                key={study.id}
-                href={study.link}
-                className="case-study-link block group w-full text-left"
-              >
-                <div className="flex items-start gap-3 mb-3">
-                  <img
-                    src={study.logo_src}
-                    alt={study.company}
-                    className="w-8 h-8 rounded"
-                  />
-                  <span className="font-semibold text-gray-900 pt-1">
-                    {study.company}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {study.title}
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  <WithHighlights text={study.description} highlights={study.highlights} />
-                </p>
-                <div className="cs-thumb">
-                  {study.bg_src ? (
-                    <img src={study.bg_src} alt={study.title} />
-                  ) : (
-                    <div className="cs-thumb-placeholder">
-                      <span>{study.title}</span>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ))}
+          <FadeUp className="home-cs-grid">
+            {designStudies.map((study) => <CaseStudyCard key={study.id} study={study} />)}
           </FadeUp>
         )}
 
-        {/* Development Tab Content */}
-        {activeTab === 'Development' && (
+        {/* Things I've built: products, how I work, earlier projects. */}
+        {activeTab === 'Built' && (
           <FadeUp>
-            <div className="gh-from">
-              <GitHubMark />
-              <span>from GitHub</span>
-            </div>
+            <section className="built-section" aria-labelledby="built-products">
+              <h3 id="built-products" className="built-heading">Products</h3>
+              <ul className="product-grid">
+                {PRODUCTS.map((p) => (
+                  <li key={p.name} className="product-card">
+                    <div className="product-head">
+                      <img src={p.icon} alt="" aria-hidden="true" className="product-icon" />
+                      <h4 className="product-name">{p.name}</h4>
+                    </div>
+                    <p className="product-problem">{p.problem}</p>
+                    {p.result && <p className="product-result">{p.result}</p>}
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="product-link">
+                      Try it ↗<span className="sr-only"> ({p.name}, opens in a new tab)</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
 
-            <p className="text-gray-700 leading-relaxed mb-6">
-              These repos span university projects and personal work. They're here because building things, even imperfect things, is how I learned to think like an engineer while designing like one.
-            </p>
-
-            <GitHubContributions />
-
-            <div className="gh-grid">
-              {HARDCODED_REPOS.map((repo) => (
-                <GitHubRepoCard
-                  key={repo.name}
-                  name={repo.name}
-                  description={repo.description}
-                  language={repo.language}
-                  langColor={repo.langColor}
-                  topics={repo.topics}
-                  updatedLabel={repo.updatedLabel}
-                  url={repo.url}
-                />
-              ))}
-            </div>
-
-            <div className="mt-8">
+            <section className="built-section" aria-labelledby="built-how">
+              <h3 id="built-how" className="built-heading">How I work</h3>
+              <div className="home-cs-grid mb-8">
+                {buildingStudies.map((study) => <CaseStudyCard key={study.id} study={study} />)}
+              </div>
               <BuildLogCard />
-            </div>
+            </section>
+
+            <section className="built-section" aria-labelledby="built-earlier">
+              <h3 id="built-earlier" className="built-heading">Earlier projects</h3>
+              <div className="gh-contrib-small">
+                <GitHubContributions />
+              </div>
+              <ul className="project-rows">
+                {EARLIER_PROJECTS.map((p) => (
+                  <li key={p.name} className="project-row">
+                    <div className="project-row-main">
+                      <span className="project-row-name">{p.name}</span>
+                      <span className="project-row-line">{p.line}</span>
+                      <span className="project-row-tools">{p.tools}</span>
+                    </div>
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="project-row-link">
+                      GitHub ↗<span className="sr-only"> ({p.name}, opens in a new tab)</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
           </FadeUp>
         )}
 
@@ -294,27 +278,22 @@ export default function HomePage() {
         )}
       </div>
 
-      <FadeUp className="mb-10">
-        <section className="border-t border-gray-200 pt-8 pb-0" />
-        <h2 className="text-2xl font-bold mb-8 text-gray-900">What's in my head!</h2>
-
-        <div className="space-y-12" role="feed" aria-label="Blog posts">
+      {/* Writing: compact rows, like the Journey on bobbybuilds.app. */}
+      <FadeUp>
+        <section className="home-divider border-t border-gray-200" />
+        <h2 className="text-2xl font-bold mb-6 text-gray-900">Writing</h2>
+        <ol className="writing-list" aria-label="Writing">
           {blogPosts.map((post) => (
-            <Link
-              key={post.id}
-              href={`/${post.id}`}
-              className="blog-post-link block text-left w-full group"
-            >
-              <p className="text-sm text-gray-500 mb-2">{post.date}</p>
-              <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">
-                {post.title}
+            <li key={post.id} className="writing-row">
+              <span className="writing-dot" aria-hidden="true" />
+              <p className="writing-meta">{post.date} <span aria-hidden="true">·</span> {post.readMinutes} min read</p>
+              <h3 className="writing-title">
+                <Link href={`/${post.id}`} className="writing-link">{post.title}</Link>
               </h3>
-              <p className="text-gray-700 leading-relaxed">
-                {post.preview}
-              </p>
-            </Link>
+              <p className="writing-summary">{post.summary}</p>
+            </li>
           ))}
-        </div>
+        </ol>
       </FadeUp>
 
       <Footer />

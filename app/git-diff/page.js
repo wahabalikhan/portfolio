@@ -53,8 +53,8 @@ export default function GitDiffPage() {
           Data engineers at Matillion couldn't see what they were about to change before committing, so they hesitated, made mistakes and undid their own work. I designed a side-by-side comparison that shows every change before the point of no return.
         </p>
         <CaseImage
-          src="/images/diff_screen.png"
-          alt="The Git Diff design: Compare changes shows the last commit on the left and local changes on the right, line by line, beside the Commit changes drawer"
+          src="/images/matillion-bg.png"
+          alt="The Matillion and Git logos side by side on a green background"
           onOpen={open}
         />
         <AtAGlance items={[

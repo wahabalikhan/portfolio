@@ -18,6 +18,11 @@ const PLAY_AREA_WIDTH = 1300;
 // causing comments to jump when switching tabs. 4000 exceeds the tallest tab's height on any screen.
 const Y_REFERENCE_HEIGHT = 4000;
 
+// x is measured against a centred column at most this wide (the original 768px content
+// column), so pins keep their place on screen when a page's own column is wider (the home
+// page is 800px from 1024px up).
+const COMMENT_COLUMN_WIDTH = 768;
+
 // Returns the min/max x_pct values (content-relative) that correspond to the PLAY_AREA_WIDTH
 // boundary centered on the current viewport. Allows pins to reach the edge of a 14" MBP screen
 // but no further, regardless of how wide the actual viewport is.
@@ -584,7 +589,7 @@ export default function CommentPins({ page, activeTab }) {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     if (rect.width === 0) return;
-    const newWidth  = rect.width;
+    const newWidth  = Math.min(rect.width, COMMENT_COLUMN_WIDTH);
     const newAbsTop = contentAnchorRef.current.getBoundingClientRect().top + window.scrollY;
     const newHeight = rect.height;
     // Derive contentLeft from window.innerWidth instead of rect.left.
