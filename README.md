@@ -48,8 +48,8 @@ Approve and Delete (sign in with Ctrl+Shift+L); the owner is one Supabase user, 
 user ID in `supabase/comment-moderation.sql` (run it once in the Supabase SQL editor
 before deploying). Visitors can move, edit or delete only their own comments: the
 browser sends its token in an `x-comment-token` header and the database keeps a hash of
-it. An edit goes back to the queue. On the home page each comment belongs to the tab it
-was left on.
+it. An edit goes back to the queue. On the home page every comment shows on every tab; pins
+are kept on the page and off buttons and links whatever the layout.
 
 `functions/api/comments-waiting.js` sends the number waiting to BobbyBuilds HQ as
 `comments_waiting`. It needs `HQ_URL` and `HQ_KEY` (the project's secret key) in the

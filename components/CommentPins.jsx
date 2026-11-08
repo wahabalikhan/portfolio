@@ -188,8 +188,8 @@ const measureBlockers = () => {
 // Takes a card's wanted centre (page pixels) and returns the nearest centre that keeps
 // the card on the page (inside the window's width, below the nav, above the page's end)
 // and off every control, searching up and down first, then sideways.
-const resolveCardPosition = (cx, cy, blockers, pageHeight) => {
-  const hw = CARD_BOX.w / 2, hh = CARD_BOX.h / 2;
+const resolveCardPosition = (cx, cy, blockers, pageHeight, box = CARD_BOX) => {
+  const hw = Math.max(CARD_BOX.w, box.w) / 2, hh = Math.max(CARD_BOX.h, box.h) / 2;
   const minX = hw + 8, maxX = Math.max(minX, window.innerWidth - hw - 8);
   const minY = NAV_HEIGHT + hh + 4, maxY = Math.max(minY, pageHeight - hh - 8);
   const clampX = (x) => Math.min(maxX, Math.max(minX, x));
@@ -470,6 +470,9 @@ export default function CommentPins({ page, activeTab }) {
   // Page height and control rectangles, for keeping pins on the page and off controls.
   const [pageHeight, setPageHeight] = useState(0);
   const [blockers, setBlockers]     = useState([]);
+  // Each drawn pin's real size (a waiting comment, with its Approve/Delete bar, is taller
+  // than a collapsed card), so the whole card is kept on the page and off controls.
+  const [pinSizes, setPinSizes]     = useState({});
   // True only for the one owner account (the database's is_comments_owner(), by user ID);
   // any other signed-in account is treated as a visitor.
   const [isOwner, setIsOwner]         = useState(false);
@@ -608,6 +611,27 @@ export default function CommentPins({ page, activeTab }) {
 
   useLayoutEffect(() => { updateContentMetrics(); }, []);
 
+  // Measure every drawn pin after each render. offsetWidth/Height ignore the tilt; the
+  // "N replies" line hangs below the card, so its room is added. Expanded (hovered) cards
+  // aren't measured, so a pin doesn't jump while it's being read.
+  useLayoutEffect(() => {
+    const next = {};
+    document.querySelectorAll('[data-pin-id]').forEach((el) => {
+      if (el.querySelector('.cc-card-expanded')) return;
+      const card = el.querySelector('.cc-card');
+      if (!card) return;
+      const replies = el.querySelector('.cc-reply-count') ? 18 : 0;
+      next[el.dataset.pinId] = { w: card.offsetWidth + 4, h: card.offsetHeight + replies + 4 };
+    });
+    setPinSizes((prev) => {
+      const ids = Object.keys(next);
+      // Only the pins measured this time are compared, so a skipped (expanded) one can't
+      // cause an update loop.
+      const same = ids.every((k) => prev[k] && Math.abs(prev[k].w - next[k].w) < 2 && Math.abs(prev[k].h - next[k].h) < 2);
+      return same ? prev : { ...prev, ...next };
+    });
+  });
+
   // Re-measure after a tab switch, and again once the fade-in animations have settled
   // (they move things by a few pixels while they run).
   useEffect(() => {
@@ -636,7 +660,7 @@ export default function CommentPins({ page, activeTab }) {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Drafts and open replies belong to the tab they were started on.
+  // An unsaved draft or open reply closes when the tab changes: the page under it changes.
   useEffect(() => {
     setDraft(null); setDraftAuthor(''); setDraftBody('');
     setReplyingToId(null); setOpenCarouselId(null); setExpandedId(null);
@@ -1494,7 +1518,7 @@ export default function CommentPins({ page, activeTab }) {
     const { ok, row } = await insertComment({
       x_pct: draft.x_pct, y_pct: draft.y_pct,
       author: enteredName || 'Anonymous', body: draftBody.trim(),
-      // Home comments belong to the tab they were left on.
+      // The home-page tab it was left on, recorded for reference (not used to hide it).
       tab: page === 'home' ? activeTab : null,
     });
     setSaving(false);
@@ -1637,23 +1661,23 @@ export default function CommentPins({ page, activeTab }) {
   // A pin's stored spot (x_pct of the content column, y_pct of Y_REFERENCE_HEIGHT) → where
   // it's actually drawn: on the page and off every control. Stored positions are never
   // rewritten by this, so a pin moves back if the layout later frees up its spot.
-  const resolvePx = (x_pct, y_pct) => {
+  const resolvePx = (x_pct, y_pct, id) => {
     const cx = cLeft + (x_pct / 100) * cWidth;
     const cy = (y_pct / 100) * Y_REFERENCE_HEIGHT;
     if (!pageHeight || cWidth === 0) return { left: cx, top: cy };
-    const { x, y } = resolveCardPosition(cx, cy, blockers, pageHeight);
+    const { x, y } = resolveCardPosition(cx, cy, blockers, pageHeight, (id && pinSizes[id]) || CARD_BOX);
     return { left: x, top: y };
   };
   // Same, in stored units: used when a pin is placed or dropped.
-  resolvePctRef.current = (x_pct, y_pct) => {
-    const { left, top } = resolvePx(x_pct, y_pct);
+  resolvePctRef.current = (x_pct, y_pct, id) => {
+    const { left, top } = resolvePx(x_pct, y_pct, id);
     return { x_pct: ((left - cLeft) / cWidth) * 100, y_pct: (top / Y_REFERENCE_HEIGHT) * 100 };
   };
 
-  // Which top-level pins show: on the home page, only the active tab's (comments from
-  // before tabs were stored count as Design, the default tab); unapproved ones only for
-  // the owner.
-  const isOnThisTab = (c) => page !== 'home' || (c.tab || 'Design') === activeTab;
+  // Which pins show: every comment on the page, whichever home-page tab is open (each pin
+  // is kept on the page and off controls by resolvePx, so a shorter tab can't hide one);
+  // unapproved ones only for the owner. The tab a comment was left on is stored but not
+  // used to hide it.
   const isVisibleTo = (c) => c.approved !== false || isOwner;
   const annotationReady = cHeight > 0 && cAbsTop > 0;
 
@@ -1684,8 +1708,8 @@ export default function CommentPins({ page, activeTab }) {
 
     // While dragging, the card follows the pointer exactly; otherwise it's drawn at its
     // resolved spot (on the page, off controls), and a drag starts from there.
-    const drawn = resolvePctRef.current(x_pct, y_pct);
-    const placed = (isDragging && dragPos) ? null : resolvePx(displayX, displayY);
+    const drawn = resolvePctRef.current(x_pct, y_pct, id);
+    const placed = (isDragging && dragPos) ? null : resolvePx(displayX, displayY, id);
     const wrapperStyle = {
       ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
       ...(placed ? { left: `${placed.left}px`, top: `${placed.top}px` } : {}),
@@ -1705,6 +1729,7 @@ export default function CommentPins({ page, activeTab }) {
     return (
       <div
         key={id}
+        data-pin-id={id}
         className={`cc-card-wrapper${isLockedActive ? ' cc-locked-active' : ''}${canDrag ? ' cc-can-drag' : ''}`}
         style={wrapperStyle}
         onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel,.cc-pending-bar')) return; startDrag(e, id, drawn.x_pct, drawn.y_pct); } : undefined}
@@ -1893,7 +1918,7 @@ export default function CommentPins({ page, activeTab }) {
       onClick={handleOverlayClick}
       data-locked={!!replyingToId || undefined}
     >
-      {!hidden && comments.filter(c => !c.parent_id && isOnThisTab(c) && isVisibleTo(c)).map((pin, i) => {
+      {!hidden && comments.filter(c => !c.parent_id && isVisibleTo(c)).map((pin, i) => {
         const cached = commentPosCache[pin.id];
         const x = cached ? cached.x_pct : pin.x_pct;
         const y = cached ? cached.y_pct : pin.y_pct;
@@ -2041,18 +2066,15 @@ export default function CommentPins({ page, activeTab }) {
           {viewerCount} viewing
         </div>
         {isOwner && (() => {
-          // Waiting comments on this page, all tabs (each tab only shows its own pins).
+          // Waiting comments on this page (they show in place on every tab).
           const waiting = comments.filter(c => c.approved === false);
           if (waiting.length === 0) return null;
-          const tabs = page === 'home'
-            ? [...new Set(waiting.map(c => (c.tab || 'Design') === 'JustForFun' ? 'Just for fun' : (c.tab || 'Design')))]
-            : [];
           return (
             <>
               <div style={toolbarDivider} />
               <div className="ftip-wrap">
                 <span className="cc-toolbar-waiting">{waiting.length} waiting</span>
-                <div className="ftip">{tabs.length ? `Waiting for approval on: ${tabs.join(', ')}` : 'Waiting for approval'}</div>
+                <div className="ftip">Waiting for approval</div>
               </div>
             </>
           );
