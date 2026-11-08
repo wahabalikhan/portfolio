@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import IconArt from '@/components/IconArt';
 
 // A case-study card: the company logo with the headline beside it (two lines at most), the
 // description (up to two lines, including the headline result; every card keeps room for
-// two lines), then a 16:10 thumbnail cropped from the centre.
+// two lines), then a 16:10 thumbnail cropped from the centre (or, with no bg_src yet, the
+// study's thumb_icon on a dark background).
 // The company's name is the logo's alt text and shows in a tooltip on hover. The thumbnail
 // sits at the bottom of the card, so thumbnails line up across a row. Reads one entry of
 // data/caseStudies.js. `compact`: smaller type, for "Other case studies".
@@ -35,7 +37,7 @@ export default function CaseStudyCard({ study, compact = false }) {
         <p className="home-cs-text text-gray-500"><Description text={study.description} metric={study.metric} /></p>
       </div>
       <div className="cs-thumb home-cs-thumb">
-        <img src={study.bg_src} alt={study.title} />
+        {study.bg_src ? <img src={study.bg_src} alt={study.title} /> : <IconArt src={study.thumb_icon} />}
       </div>
     </Link>
   );

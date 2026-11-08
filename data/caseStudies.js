@@ -22,6 +22,27 @@ export const caseStudies = [
     seoDescription: "How I designed Git Diff at Matillion, so data engineers see every change before committing: 34% more successful commits in the first 30 days.",
   },
   {
+    id: 'techjobs',
+    // 'design': the Design tab. 'building': "Things I've built" (How I work).
+    category: 'design',
+    title: 'Taking the faff out of finding a tech job',
+    // Card text: up to two lines, including the headline result.
+    description: "Tech jobs straight from employers' own sites: 1,800+ jobs from 290+ companies.",
+    // Shown semibold in the main text colour; must appear word for word in the description (null: none).
+    metric: '1,800+ jobs from 290+ companies',
+    logo_src: '/images/icons/techjobs.png',
+    company: 'TechJobs',
+    // No screenshot yet: with bg_src null, the card shows thumb_icon centred on a dark
+    // background instead. Set bg_src (the search page with the preview open) when it's ready.
+    bg_src: null,
+    thumb_icon: '/images/icons/techjobs-512.png',
+    link: '/techjobs',
+    // The case study page's H1, used as its browser-tab and search title.
+    headline: 'Taking the faff out of finding a tech job',
+    // Search and link-preview description: under 160 characters.
+    seoDescription: "How I designed and built TechJobs, a UK job board with 1,800+ jobs straight from employers' own careers pages, readable at a glance.",
+  },
+  {
     id: 'design-system',
     // 'design': the Design tab. 'building': "Things I've built" (How I work).
     category: 'design',
