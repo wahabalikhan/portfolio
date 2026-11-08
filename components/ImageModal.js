@@ -2,8 +2,9 @@
 
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { MarkerLayer } from '@/components/CaseStudyParts';
 
-export default function ImageModal({ isOpen, src, alt, onClose }) {
+export default function ImageModal({ isOpen, src, alt, markers, onClose }) {
   // Escape closes it, like the lightbox on the home page.
   useEffect(() => {
     if (!isOpen) return;
@@ -20,7 +21,15 @@ export default function ImageModal({ isOpen, src, alt, onClose }) {
         <button className="image-modal-close" onClick={onClose} aria-label="Close image">
           <X className="w-6 h-6" />
         </button>
-        <img src={src} alt={alt} className="image-modal-image" />
+        {markers?.length ? (
+          // Shrink-wraps the image so the markers sit on the same spots when enlarged.
+          <div className="image-modal-marked">
+            <img src={src} alt={alt} className="image-modal-image" />
+            <MarkerLayer markers={markers} />
+          </div>
+        ) : (
+          <img src={src} alt={alt} className="image-modal-image" />
+        )}
       </div>
     </div>
   );

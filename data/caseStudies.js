@@ -4,18 +4,18 @@
 export const caseStudies = [
   {
     id: 'git-diff',
-    title: 'Designing confidence into a high-risk engineering workflow',
-    description: 'Data engineers were committing changes they couldn’t see, leading to errors and lost trust in the tool. I redesigned the workflow to give them clarity before the point of no return. 34% more successful commits and 15% fewer error recoveries in the first 30 days.',
+    title: 'Making risky commits feel safe',
+    description: "Data engineers couldn't see what they were about to commit. I designed a side-by-side comparison that shows every change first. 34% more successful commits and 15% fewer error recoveries in the first 30 days.",
     logo_src: '/images/matillion-logo.svg',
     company: 'Matillion',
-    bg_src: '/images/matillion-bg.png',
+    bg_src: '/images/git-diff-card.png',
     link: '/git-diff',
     // Bold on the home page card. Each must appear word for word in the description.
     highlights: ['34% more successful commits and 15% fewer error recoveries in the first 30 days.'],
-    // The case study page's H1, used as its browser-tab and search title.
-    headline: 'Designing confidence into a high-risk engineering workflow (Git Diff)',
+    // The browser-tab and search title (usually the page's H1, or a shorter version of it).
+    headline: 'Making risky commits feel safe',
     // Search and link-preview description: under 160 characters.
-    seoDescription: 'Engineers couldn’t see what they were committing. I redesigned the workflow: 34% more successful commits and 15% fewer error recoveries in the first 30 days.',
+    seoDescription: "How I designed Git Diff at Matillion, so data engineers see every change before committing: 34% more successful commits in the first 30 days.",
   },
   {
     id: 'design-system',

@@ -1,327 +1,230 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import BackButton from '@/components/BackButton';
 import CaseStudyReadTracker from '@/components/CaseStudyReadTracker';
-import CaseStudyMeta from '@/components/CaseStudyMeta';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import ImageModal from '@/components/ImageModal';
 import OtherCaseStudies from '@/components/OtherCaseStudies';
+import { AtAGlance, CaseImage, Decision, MarkerNumber, PersonaCards, SectionLabel } from '@/components/CaseStudyParts';
+
+// Numbered markers on the final design (diff_screen.png), as percentages of the image.
+// They match the numbered list under it.
+const FINAL_DESIGN_MARKERS = [
+  { n: 1, x: 44.7, y: 13.6 }, // between the last-commit and local-changes headers
+  { n: 2, x: 23.4, y: 58.5 }, // the removed lines (red) beside their additions
+  { n: 3, x: 10.6, y: 13.8 }, // the Files filter
+  { n: 4, x: 69.4, y: 17.3 }, // the Unified view toggle
+  { n: 5, x: 88.0, y: 33.6 }, // Compare, beside each file in the commit drawer
+];
+
+// The Personas section (set to null to hide it). Each person is a card with their name as
+// its title; image ({ src, alt }) is optional.
+const PERSONAS = {
+  heading: 'Some engineers lived in Git; others feared it',
+  intro: "The interviews with data engineers and data scientists pointed to two kinds of user, split by how much they'd used version control:",
+  people: [
+    { name: 'The experienced committer', text: 'Comfortable with Git from tools like VS Code. They wanted to check changes quickly, then get on with their work, without leaving the product.' },
+    { name: 'The cautious committer', text: "Newer to Git, or using it rarely. They worried about committing changes they couldn't see or didn't recognise, including other people's, and about what would happen if something broke and they had to undo it." },
+  ],
+  shaped: 'whatever their experience, everyone needed the same thing: to see every change before committing. So one design had to work for both, clear enough for someone new to Git, and quick enough for someone who uses it every day.',
+};
+
+const H2 = 'text-2xl font-bold mb-4 text-gray-900';
+const P = 'text-gray-700 leading-relaxed mb-4';
+const UL = 'list-disc pl-5 text-gray-700 leading-relaxed mb-6 space-y-2';
+const LABEL = 'font-semibold text-gray-900';
 
 export default function GitDiffPage() {
-    const router = useRouter();
-    const [selectedImage, setSelectedImage] = useState(null);
-    return (
-        <div className="max-w-3xl mx-auto px-6 py-16" role="main">
-            <CaseStudyReadTracker study="git-diff" />
-            <FadeUp delay={100}>
-            <BackButton onClick={() => router.back()} />
+  const [selectedImage, setSelectedImage] = useState(null);
+  const open = setSelectedImage;
 
-            <h1 className="text-4xl font-bold mb-2 text-gray-900">
-                Designing confidence into a high-risk engineering workflow (Git Diff)
-            </h1>
-            </FadeUp>
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-16" role="main">
+      <CaseStudyReadTracker study="git-diff" />
 
-            <FadeUp delay={100}>
-            <CaseStudyMeta items={[
-              { label: 'Timeline', value: 'January 2025 – March 2025 · 3 months' },
-              { label: 'Team', value: 'DataOps (PM, PO, 3 Engineers), 1 additional Product Designer' },
-              { label: 'Role', value: 'Product Designer. Research, strategy, design, testing, metrics.' },
-            ]} />
+      <FadeUp delay={100}>
+        <BackButton />
+        <h1 className="text-4xl font-bold mb-2 text-gray-900">
+          Making risky commits feel safe: designing Git Diff for data engineers
+        </h1>
+        <p className="text-lg text-gray-700 mt-4 mb-6 leading-relaxed">
+          Data engineers at Matillion couldn't see what they were about to change before committing, so they hesitated, made mistakes and undid their own work. I designed a side-by-side comparison that shows every change before the point of no return.
+        </p>
+        <CaseImage
+          src="/images/diff_screen.png"
+          alt="The Git Diff design: Compare changes shows the last commit on the left and local changes on the right, line by line, beside the Commit changes drawer"
+          onOpen={open}
+        />
+        <AtAGlance items={[
+          { label: 'Role', value: 'Product Designer, leading research, design, testing and success metrics' },
+          { label: 'Team', value: 'DataOps (PM, PO, 3 engineers), plus 1 other product designer, who supported the interviews and workshop' },
+          { label: 'Timeline', value: 'January to March 2025' },
+          { label: 'Results', value: '34% more successful commits and 15% fewer error recoveries in the first 30 days. 5 of 5 testers completed the task.' },
+        ]} />
+      </FadeUp>
 
-            <img
-                src="/images/matillion-bg.png"
-                alt="Git Diff"
-                className="w-full rounded-lg mb-8 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => setSelectedImage({ src: '/images/matillion-bg.png', alt: 'Git Diff' })}
-            />
-            </FadeUp>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>The problem</SectionLabel>
+          <h2 className={H2}>Engineers couldn't trust a commit they couldn't see</h2>
+          <p className={P}>In Matillion's Data Productivity Cloud, data engineers save their pipeline work with version control. Before committing, they had no way to see exactly what would change.</p>
+          <ul className={UL}>
+            <li><span className={LABEL}>For users:</span> they hesitated, made mistakes and undid their own work. Some avoided version control altogether.</li>
+            <li><span className={LABEL}>For the business:</span> serious mistakes pulled engineers or support staff in to help, collaboration suffered, and Matillion felt less reliable than the developer tools engineers already trusted.</li>
+          </ul>
+        </section>
+      </FadeUp>
 
-            <FadeUp delay={100}>
-            <div className="space-y-8 mb-12 pb-12 border-b border-gray-200">
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">The Problem</h3>
-                    <div className="border-l-4 border-yellow-500 p-6 mb-6 bg-yellow-50">
-                        <p className="mb-6" style={{ color: '#374151' }}>
-                            ⚠️ <span className='font-bold' style={{ color: '#374151' }}>At Matillion, data engineers build and manage cloud data pipelines using version control to track and save their work.</span> Version control works by letting engineers commit changes, essentially saving a snapshot of their work at a given point. But before committing, engineers had no way to see exactly what they were about to change.
-                        </p>
-                        <p className="mb-6" style={{ color: '#374151' }}>
-                            They were flying blind.
-                        </p>
-                        <p className="mb-6" style={{ color: '#374151' }}>
-                            The result was predictable. Engineers hesitated. They made mistakes. They undid their own work at high rates. And they started avoiding version control features altogether, which undermined collaboration across the whole team.
-                        </p>
-                        <p style={{ color: '#374151' }}>
-                            The challenge wasn't to add a feature. <span className='font-bold' style={{ color: '#374151' }}>It was to give engineers the confidence to act.</span>
-                        </p>
-                    </div>
-                </div>
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">My Role</h3>
-                    <p className="text-gray-700 leading-relaxed mb-2">I led the full design process end-to-end:</p>
-                    <div className="text-gray-700 mb-6">
-                        <ul className='list-disc list-inside'>
-                            <li>Discovery planning and user research</li>
-                            <li>Competitive analysis of how other developer tools handle this problem</li>
-                            <li>Co-design workshop facilitation</li>
-                            <li>Prototyping and testing</li>
-                            <li>UX delivery, design QA, and analytics setup</li>
-                            <li>Post-launch tracking and iteration planning</li>
-                        </ul>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed mb-2">This project touched research, product strategy, engineering alignment, interaction design, and behavioural change.</p>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Research</SectionLabel>
+          <h2 className={H2}>What engineers needed was clarity, not more features</h2>
+          <p className={P}>I compared how VS Code, GitHub Desktop and JetBrains show changes, interviewed 1 external customer and 4 internal data engineers, and ran a cross-functional workshop (How Might We framing, two rounds of sketching and dot voting).</p>
+          <p className={P}>Four needs came out of it:</p>
+          <ol className="list-decimal pl-5 text-gray-700 leading-relaxed mb-6 space-y-2">
+            <li>See what changed between my local version and what's already saved.</li>
+            <li>Scan it side by side, because inline views hide context.</li>
+            <li>Tell additions from removals at a glance.</li>
+            <li>Choose to see every file, or only the ones that changed.</li>
+          </ol>
+          <CaseImage
+            src="/images/diff_workshop.png"
+            alt="The remote Git Diff workshop board: How Might We notes, two rounds of paper sketches and dot voting, with the team on video"
+            onOpen={open}
+          />
+          <CaseImage
+            src="/images/diff_research_1.png"
+            alt="A recorded research session: a data engineer walks through a commit's changes in GitHub's side-by-side view"
+            onOpen={open}
+          />
+        </section>
+      </FadeUp>
 
-                </div>
-                <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Results</h3>
-                    <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-0">
-                        <p className="text-gray-700 bg-emerald-50 mb-2">
-                            <span className="font-bold bg-emerald-50">✅ 34% more successful commits and 15% fewer error recoveries</span> in the first 30 days
-                        </p>
-                        <p className="text-gray-700 bg-emerald-50 mb-0">
-                            <span className=" font-bold bg-emerald-50">✅ 100% task success rate</span> in usability testing
-                        </p>
-                    </div>
-                </div>
-            </div>
+      {PERSONAS && (
+        <FadeUp delay={100}>
+          <section className="mb-12">
+            <SectionLabel>Personas</SectionLabel>
+            <h2 className={H2}>{PERSONAS.heading}</h2>
+            <p className={P}>{PERSONAS.intro}</p>
+            <PersonaCards people={PERSONAS.people} />
+            <p className={P}><span className={LABEL}>How this shaped the design:</span> {PERSONAS.shaped}</p>
+            {PERSONAS.image && <CaseImage src={PERSONAS.image.src} alt={PERSONAS.image.alt} onOpen={open} />}
+          </section>
+        </FadeUp>
+      )}
 
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Context</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    Matillion's Data Productivity Cloud helps data engineers build and manage cloud-native data pipelines. Version control was already part of the workflow, but users had no way to see what changed before saving their work. That lack of visibility created uncertainty, mistakes, and frequent undos, making version control feel risky rather than reliable.
-                </p>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    Data engineers needed clarity before they could trust the process.
-                </p>
-            </section>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Decisions</SectionLabel>
+          <h2 className={`${H2} mb-6`}>Three decisions that shaped it</h2>
+          <Decision
+            n={1}
+            title="Side by side, not inline"
+            onOpen={open}
+            parts={[
+              { label: 'Options:', text: 'an inline comparison, familiar from command-line tools and lighter to build, or a side-by-side view like the IDEs engineers already use.' },
+              { label: 'Why I chose side by side:', text: "it matches the mental model engineers bring from VS Code, keeps the surrounding context visible, and separates what changed from what didn't. Testing with internal engineers confirmed it felt clearer and more trustworthy." },
+              { label: 'Trade-off:', text: "building a side-by-side view from scratch would have taken too long, so we built on VS Code's open-source diff view instead. It shipped sooner and already felt familiar to engineers, but it meant designing within what that component could do." },
+            ]}
+          />
+          <Decision
+            n={2}
+            title="Colour plus labels, added after testing"
+            onOpen={open}
+            parts={[
+              { label: 'What happened:', text: 'the first design showed additions and removals in red and green, like most diff tools. Nobody misread it, but in testing a participant pointed out that someone with a visual impairment might not be able to tell them apart.' },
+              { label: 'What I changed:', text: 'I added labels and states alongside the colour, as IDEs do, so every change reads at a glance without relying on colour.' },
+              { label: 'What I learned:', text: "accessibility should be designed in from the start, not found in testing. Next time, I'd check colour use against accessibility guidelines before the first test." },
+            ]}
+          />
+          <Decision
+            n={3}
+            title="Show the changes first; keep or discard later"
+            onOpen={open}
+            parts={[
+              { label: 'Options:', text: 'ship a full comparison with keeping or discarding each change straight away, or ship a view-only comparison first and add control later.' },
+              { label: 'Why phased:', text: 'we needed to ship quickly, and engineering had other priorities alongside this. A clear view of changes solved the core problem, confidence before committing, so control over individual changes could come next.' },
+              { label: 'Trade-off:', text: 'engineers could see every change, but not act on one from the comparison. Keeping or discarding individual changes was planned as the next step.' },
+            ]}
+          />
+        </section>
+      </FadeUp>
 
-            <section className="mb-12">
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Final design</SectionLabel>
+          <h2 className={H2}>Every change visible before committing</h2>
+          <CaseImage
+            src="/images/diff_screen.png"
+            alt="The final Git Diff design with numbered markers: 1 the side-by-side comparison, 2 additions and removals, 3 the file filter, 4 the unified view toggle, 5 Compare in the commit drawer"
+            markers={FINAL_DESIGN_MARKERS}
+            onOpen={open}
+          />
+          <ol className="cs-marked-list">
+            <li><MarkerNumber n={1} /><span><span className="sr-only">1. </span><span className={LABEL}>Compare changes:</span> the last commit on the left, local changes on the right, line by line.</span></li>
+            <li><MarkerNumber n={2} /><span><span className="sr-only">2. </span><span className={LABEL}>Additions and removals:</span> marked with colour, labels and states, never colour alone.</span></li>
+            <li><MarkerNumber n={3} /><span><span className="sr-only">3. </span><span className={LABEL}>File filter:</span> "All files" or "Modified files only", so engineers focus on what matters.</span></li>
+            <li><MarkerNumber n={4} /><span><span className="sr-only">4. </span><span className={LABEL}>Unified view:</span> a toggle back to a single-column view, for people who prefer it.</span></li>
+            <li><MarkerNumber n={5} /><span><span className="sr-only">5. </span><span className={LABEL}>Compare where you commit:</span> Compare appears beside each file in the commit drawer, at the moment of risk, so checking becomes part of committing, not a separate trip.</span></li>
+          </ol>
+          <p className={P}>States and constraints I designed for:</p>
+          <ul className={UL}>
+            <li><span className={LABEL}>Nothing to compare:</span> an empty state when a branch has no uncommitted changes.</li>
+            <li><span className={LABEL}>Compare, not edit:</span> the comparison is read-only, so it can't change the file by accident.</li>
+            <li><span className={LABEL}>Last commit only:</span> it compares against the most recent commit, keeping version one simple.</li>
+            <li><span className={LABEL}>Every changed file listed:</span> the commit drawer lists each one, with its own Compare trigger.</li>
+          </ul>
+          <CaseImage
+            src="/images/diff_flow.png"
+            alt="User flow: open a branch, open one or more files, trigger Git Diff and compare local, uncommitted changes with the last commit; with no changes, an empty state"
+            onOpen={open}
+          />
+        </section>
+      </FadeUp>
 
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Design Goals</h3>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>Give engineers real-time visibility of what changed before they commit</li>
-                        <li>Maintain familiarity for engineers already comfortable with developer tool workflows</li>
-                        <li>Increase confidence through clarity, not through adding more UI</li>
-                    </ul>
-                </div>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-                    <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 Value to the business and user</p>
-                    <p className="text-gray-700 bg-blue-50">
-                        Better visibility would increase user confidence, reduce errors, and improve team collaboration, ultimately driving adoption of version control features within Matillion.
-                    </p>
-                </div>
-            </section>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Results</SectionLabel>
+          <h2 className={H2}>Tested before launch, measured after</h2>
+          <p className={P}><span className={LABEL}>Usability testing:</span> five data engineers, screened on UserTesting and new to the feature, had to find and use Git Diff in realistic tasks.</p>
+          <ul className={UL}>
+            <li>All 5 completed the task, with no misclicks.</li>
+            <li>3 rated it "very easy" (5 of 5) and 2 rated it 4 of 5. One summed it up as "exactly what we needed".</li>
+          </ul>
+          <p className={P}><span className={LABEL}>After launch:</span> I set up tracking in Heap before release, then compared the first 30 days after launch with the period before.</p>
+          <ul className={UL}>
+            <li>34% more successful commits.</li>
+            <li>15% fewer error recoveries (times engineers had to undo or reset their work; serious ones needed engineers or support staff to step in).</li>
+          </ul>
+          <CaseImage
+            src="/images/testing2.png"
+            alt="UserTesting results: all 5 participants completed the task; on difficulty, 3 rated it 5 (very easy) and 2 rated it 4"
+            onOpen={open}
+          />
+        </section>
+      </FadeUp>
 
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Research and Discovery</h2>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">What I conducted</h3>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>Competitive analysis of how VS Code, GitHub Desktop, and JetBrains handle this problem</li>
-                        <li><span className='font-bold'>1 external customer* and 4 internal data engineer interviews</span> covering the full user spectrum</li>
-                        <li>A cross-functional workshop to explore different visualisation approaches</li>
-                        <li>Workflow mapping to understand when and why engineers need to see what changed</li>
-                    </ul>
-                </div>
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Reflection</SectionLabel>
+          <h2 className={H2}>Clarity creates confidence</h2>
+          <p className={P}>Showing engineers exactly what would change was enough to change how they worked: more commits, fewer recoveries. Researching first meant we tested side by side against inline, instead of shipping a basic view and hoping.</p>
+          <p className={P}><span className={LABEL}>What I'd do differently:</span> time allowed only 1 external customer interview, so I'd push for more customers earlier. I'd also measure adoption, which was a goal but wasn't tracked, and check accessibility before testing rather than after.</p>
+          <p className={P}><span className={LABEL}>Next:</span> keeping or discarding individual changes, comparing whole branches before merging, resolving conflicts, and comparing any two commits.</p>
+        </section>
+      </FadeUp>
 
-                <p>* Due to time constraints, only 1 external customer was available for interview.</p>
-
-                <img
-                    src="/images/diff_research_1.png"
-                    alt="Git Diff research"
-                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setSelectedImage({ src: '/images/diff_research_1.png', alt: 'Git Diff research' })}
-                />
-
-                <p className='mb-8 text-xs'>User interviews exploring topics such as experience with existing Git functions, what worked well, what needed improvement, workarounds, priority of information, and defining the Minimum Viable Product from the user's perspective.</p>
-
-                <img
-                    src="/images/diff_workshop.png"
-                    alt="Git Diff workshop"
-                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setSelectedImage({ src: '/images/diff_workshop.png', alt: 'Git Diff workshop' })}
-                />
-                <p className='mb-8 text-xs'>A collaborative workshop that moved from discovery and scoping through How Might We framing, two rounds of ideation, and group voting to select iterations to progress into design.</p>
-
-                <img
-                    src="/images/diff_flow.png"
-                    alt="Git Diff flow"
-                    className="w-full rounded-lg mt-4 mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setSelectedImage({ src: '/images/diff_flow.png', alt: 'Git Diff flow' })}
-                />
-                <p className='mb-8 text-xs'>The flow illustrates how Git Diff activates within a branch showing the relationship between local (uncommitted) and remote (committed) changes. It defines when users can trigger a diff, view comparisons, or see an empty state, ensuring clarity and control throughout the workflow.</p>
-
-
-                <h3 className="text-xl font-semibold mb-4 text-gray-900">Key user needs (framed as problems)</h3>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside font-bold'>
-                        <li>"I need to easily understand what changed between my local version and what has been saved."</li>
-                        <li>"I need a scannable, side-by-side view because inline comparisons hide too much context."</li>
-                        <li>"I need clear indicators of what was added and what was removed."</li>
-                        <li>"I need control. Show me all files, or only the ones that matter."</li>
-                    </ul>
-
-                </div>
-                <p className="text-gray-700 leading-relaxed mb-2">These weren't feature requests. They were framed as problems to solve.</p>
-                </div>
-            </section>
-
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Ideation and Design</h2>
-                <p className="text-gray-700 leading-relaxed mb-6">Using insights from the workshop, I explored two directions:</p>
-                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept A: Inline comparison</p>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>Lightweight</li>
-                        <li>Familiar to engineers used to command-line tools</li>
-                        <li>But less visual clarity, harder to scan quickly</li>
-                    </ul>
-                </div>
-                <p className="text-gray-700 leading-relaxed mb-2 font-bold">Concept B: Side-by-side comparison, inspired by IDE tools (chosen)</p>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>Mirrors the mental model engineers already have from tools like VS Code</li>
-                        <li>Clearer structure, better scannability</li>
-                        <li>Stronger visual separation between what changed and what didn't</li>
-                    </ul>
-                </div>
-                <p className="text-gray-700 leading-relaxed mb-2">Testing with internal engineers confirmed <span className="font-bold">Concept B</span> was more intuitive and trustworthy. We developed it further through:</p>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>An interactive comparison view with contextual filters</li>
-                        <li>A transparent, scannable layout that built user confidence</li>
-                        <li>Visual indicators that made additions and deletions immediately obvious</li>
-                    </ul>
-                </div>
-            </section>
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Execution</h2>
-                <p className="text-gray-700 leading-relaxed mb-2">I partnered closely with engineering to:</p>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li>Deliver a scalable, technically feasible feature</li>
-                        <li>Balance performance with clarity throughout</li>
-                        <li>Ensure the final implementation matched the intended UX through regular QA checks</li>
-                    </ul>
-                </div>
-                <p className="text-gray-700 leading-relaxed mb-6">Regular check-ins with Product helped prioritise and sequence improvements for rollout.</p>
-
-                <img
-                    src="/images/diff_screen.png"
-                    alt="Git Diff screen"
-                    className="w-full mb-4 rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setSelectedImage({ src: '/images/diff_screen.png', alt: 'Git Diff screen' })}
-                />
-
-                <p className='mb-8 text-xs'>The Git Diff design providing a side-by-side comparison view showing exactly what changed between local and committed versions. Visual indicators highlight additions and deletions, while contextual filters like All files or Modified files only give users flexible control.</p>
-            </section>
-
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Validation and Testing</h2>
-                <p className="text-gray-700 leading-relaxed mb-2">Usability testing with five data engineers:</p>
-                <div className="text-gray-700 mb-6">
-                    <ul className='list-disc list-inside'>
-                        <li><span className='font-bold'>100% task success rate</span></li>
-                        <li>All participants rated the flow <span className='font-bold'>"easy" or "very easy"</span></li>
-                        <li>Zero misclicks or moments of confusion</li>
-                    </ul>
-                </div>
-
-                <p className="text-gray-700 leading-relaxed mb-2">Participants described the experience as:</p>
-                <div className="text-gray-700">
-                    <ul className='list-disc list-inside mb-6'>
-                        <li>"Clear"</li>
-                        <li>"Intuitive"</li>
-                        <li>"Exactly what we needed"</li>
-                    </ul>
-                </div>
-                <img
-                    src="/images/testing1.png"
-                    alt="Git Diff testing"
-                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setSelectedImage({ src: '/images/testing1.png', alt: 'Git Diff testing' })}
-                />
-                <p className='mb-8 text-xs'>I ran tests with data engineers to test Git Diff's findability and clarity. Participants were asked to locate and use the feature within realistic tasks, all successfully completed the comparison flow, describing it as "clear," "easy," and "intuitive."</p>
-
-                <img
-                    src="/images/testing2.png"
-                    alt="Git Diff testing"
-                    className="w-full rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setSelectedImage({ src: '/images/testing2.png', alt: 'Git Diff testing' })}
-                />
-                <p className='mb-8 text-xs'>All participants successfully completed the Git Diff task, confirming the feature was easy to find and understand. Most rated the experience as "very easy," validating the clarity of the design and overall discoverability of the comparison flow.</p>
-
-            </section>
-
-
-
-            <section className="mb-12">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Outcomes and Impact</h2>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Results</h3>
-
-                <div className="bg-emerald-50 border-l-4 border-emerald-500 p-6 mb-3">
-                    <p className="text-gray-700 bg-emerald-50 mb-2">
-                        <span className="font-bold bg-emerald-50">✅ 34% more successful commits and 15% fewer error recoveries</span> in the first 30 days
-                    </p>
-                    <p className="text-gray-700 bg-emerald-50 mb-0">
-                        <span className=" font-bold bg-emerald-50">✅ 100% success rate</span> in usability testing
-                    </p>
-                </div>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Business outcome</h3>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
-                    <p className="font-semibold text-gray-900 bg-blue-50 mb-2">🎯 Better version control visibility increased overall platform trust:</p>
-                    <div className="text-gray-700 bg-blue-50">
-                        <ul className='list-disc list-inside'>
-                            <li>Lower cognitive load on engineering teams</li>
-                            <li>Fewer support tickets related to version control errors</li>
-                            <li>Teams trusting Matillion's workflows more, reducing reliance on external tools</li>
-                            <li>Increased commit confidence leading to faster pipelines shipped</li>
-                            <li>More time focused on real work, not recovering from mistakes</li>
-                            <li>Matillion feeling more like a reliable IDE, not just a data tool</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">The cost of skipping validation</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    Without a research-led approach, the team would have shipped a basic comparison view with no grounding in how data engineers actually think about changes. The scannability vs inline debate wouldn't have been tested. Edge cases around file filtering would have been missed. There would have been no metric baseline to measure whether the feature actually changed behaviour.
-                </p>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    The 34% more successful commits and 15% fewer error recoveries in the first 30 days are not just outcomes. They are evidence that the design changed how engineers work, not just how the screen looks.
-                </p>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Reflection</h3>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                    This project reinforced a principle I keep coming back to: <span className="font-semibold">clarity creates confidence, and confidence drives adoption.</span>
-                </p>
-
-                <p className="text-gray-700 leading-relaxed mb-6">I also learned the value of shaping not just the UI, but the behaviour around it. Supporting engineers in shifting to integrated version control workflows, with less friction and more trust in the tool, was the real outcome. The numbers confirmed it.</p>
-
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Next steps</h3>
-                <div className="text-gray-700 leading-relaxed">
-                    <ul className='list-disc list-inside'>
-                        <li>Merge-level comparisons</li>
-                        <li>Conflict resolution flows</li>
-                        <li>Commit-to-commit comparisons</li>
-                    </ul>
-
-                </div>
-            </section>
-            </FadeUp>
-            <OtherCaseStudies currentId="git-diff" />
-            <Footer />
-            <ImageModal
-                isOpen={!!selectedImage}
-                src={selectedImage?.src}
-                alt={selectedImage?.alt}
-                onClose={() => setSelectedImage(null)}
-            />
-        </div>
-    );
+      <OtherCaseStudies currentId="git-diff" />
+      <Footer />
+      <ImageModal
+        isOpen={!!selectedImage}
+        src={selectedImage?.src}
+        alt={selectedImage?.alt}
+        markers={selectedImage?.markers}
+        onClose={() => setSelectedImage(null)}
+      />
+    </div>
+  );
 }
