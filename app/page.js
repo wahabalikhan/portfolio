@@ -183,11 +183,11 @@ export default function HomePage() {
         </div>
       </FadeUp>
 
-      {/* Sections are separated by .home-divider, with the same space above and below it
-          (--home-space in globals.css), down to the footer. */}
+      {/* Sections are separated by space alone (.home-divider, --home-section-gap in
+          globals.css), down to the footer: no lines. */}
       <div id="case-studies">
         <FadeUp delay={0}>
-        <section className="home-divider border-t border-gray-200" />
+        <div className="home-divider" aria-hidden="true" />
         <h2 className="text-2xl font-bold mb-6 text-gray-900">Case studies</h2>
 
         {/* Tabs */}
@@ -290,7 +290,7 @@ export default function HomePage() {
 
       {/* Writing: compact rows, like the Journey on bobbybuilds.app. */}
       <FadeUp>
-        <section className="home-divider border-t border-gray-200" />
+        <div className="home-divider" aria-hidden="true" />
         <h2 className="text-2xl font-bold mb-6 text-gray-900">Writing</h2>
         <ol className="writing-list" aria-label="Writing">
           {blogPosts.map((post) => (

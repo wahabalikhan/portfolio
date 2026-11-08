@@ -167,6 +167,24 @@ const CLEARANCE = 6;     // gap kept between a card and a control
 const CONTROL_SELECTOR = 'button, a, input, textarea, select, [role="button"], .hero-accent-word';
 const MAX_LINK_AREA = 40000; // px²; anything larger is a block link, not a control
 
+// Collapsed comments are small round pins (like Figma's), opened one at a time.
+const PIN_SIZE = 26;                 // the round pin
+const PIN_BOX = { w: 34, h: 34 };    // the room it needs, with its reply-count badge
+const PIN_GAP = 6;                   // space kept between two pins in the same margin
+const MARGIN_MIN = 36;               // a margin at least this wide (px) holds the pins (the
+                                     // container's 40px padding keeps every desktop width above it)
+const MARGIN_OFFSET = 44;            // a margin pin's centre: this far out from the text, at most
+const OPEN_CARD_W = 248;             // an open card's width, for choosing the side it opens on
+const PREVIEW_W = 240;               // the hover preview's widest
+
+// White or near-black initials, whichever reads better on the pin's colour.
+const pinTextColor = (hex) => {
+  const n = parseInt(hex.slice(1), 16);
+  const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const L = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+  return (1.05 / (L + 0.05)) >= ((L + 0.05) / 0.0617) ? '#ffffff' : '#111827';
+};
+
 // Page-coordinate rectangles of every visible control on the page (at the current
 // layout). Controls in the fixed nav count where they sit at the top of the page; other
 // fixed things (comment toolbar, scroll-to-top) float over everything, so they're skipped.
@@ -194,7 +212,7 @@ const measureBlockers = () => {
 // the card on the page (inside the window's width, below the nav, above the page's end)
 // and off every control, searching up and down first, then sideways.
 const resolveCardPosition = (cx, cy, blockers, pageHeight, box = CARD_BOX) => {
-  const hw = Math.max(CARD_BOX.w, box.w) / 2, hh = Math.max(CARD_BOX.h, box.h) / 2;
+  const hw = box.w / 2, hh = box.h / 2;
   const minX = hw + 8, maxX = Math.max(minX, window.innerWidth - hw - 8);
   const minY = NAV_HEIGHT + hh + 4, maxY = Math.max(minY, pageHeight - hh - 8);
   const clampX = (x) => Math.min(maxX, Math.max(minX, x));
@@ -445,8 +463,10 @@ export default function CommentPins({ page, activeTab }) {
   // height is the content column's own rendered height — used as the y denominator so pin
   // positions are consistent across screen sizes (document.scrollHeight inflates on taller
   // monitors due to min-height: 100vh, causing y-axis drift).
-  const [contentMetrics, setContentMetrics] = useState({ left: 0, width: 768, absTop: 0, height: 0 });
-  const contentMetricsRef = useRef({ left: 0, width: 768, absTop: 0, height: 0 });
+  // textLeft/textRight: the container's inner edges (inside its padding), in page pixels:
+  // where the text column ends and the margins, which hold the pins, begin.
+  const [contentMetrics, setContentMetrics] = useState({ left: 0, width: 768, absTop: 0, height: 0, textLeft: 0, textRight: 0 });
+  const contentMetricsRef = useRef({ left: 0, width: 768, absTop: 0, height: 0, textLeft: 0, textRight: 0 });
 
   // Portal root: a div appended to document.body that hosts the full-page overlay.
   const [portalRoot, setPortalRoot] = useState(null);
@@ -475,9 +495,6 @@ export default function CommentPins({ page, activeTab }) {
   // Page height and control rectangles, for keeping pins on the page and off controls.
   const [pageHeight, setPageHeight] = useState(0);
   const [blockers, setBlockers]     = useState([]);
-  // Each drawn pin's real size (a waiting comment, with its Approve/Delete bar, is taller
-  // than a collapsed card), so the whole card is kept on the page and off controls.
-  const [pinSizes, setPinSizes]     = useState({});
   // True only for the one owner account (the database's is_comments_owner(), by user ID);
   // any other signed-in account is treated as a visitor.
   const [isOwner, setIsOwner]         = useState(false);
@@ -596,12 +613,16 @@ export default function CommentPins({ page, activeTab }) {
     // getBoundingClientRect().left differs between browsers (Chrome vs Safari) due to
     // scrollbar-width handling. For a centred max-width container this is always correct.
     const newLeft = (window.innerWidth - newWidth) / 2;
+    const cs = getComputedStyle(el);
+    const textLeft  = rect.left + parseFloat(cs.paddingLeft);
+    const textRight = rect.right - parseFloat(cs.paddingRight);
     const r = Math.round;
     setContentMetrics(prev => {
-      if (r(prev.left) === r(newLeft) && r(prev.width) === r(newWidth) && r(prev.absTop) === r(newAbsTop) && r(prev.height) === r(newHeight)) return prev;
-      return { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight };
+      if (r(prev.left) === r(newLeft) && r(prev.width) === r(newWidth) && r(prev.absTop) === r(newAbsTop) && r(prev.height) === r(newHeight)
+        && r(prev.textLeft) === r(textLeft) && r(prev.textRight) === r(textRight)) return prev;
+      return { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight, textLeft, textRight };
     });
-    contentMetricsRef.current = { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight };
+    contentMetricsRef.current = { left: newLeft, width: newWidth, absTop: newAbsTop, height: newHeight, textLeft, textRight };
     measureLayout();
   };
 
@@ -615,27 +636,6 @@ export default function CommentPins({ page, activeTab }) {
   };
 
   useLayoutEffect(() => { updateContentMetrics(); }, []);
-
-  // Measure every drawn pin after each render. offsetWidth/Height ignore the tilt; the
-  // "N replies" line hangs below the card, so its room is added. Expanded (hovered) cards
-  // aren't measured, so a pin doesn't jump while it's being read.
-  useLayoutEffect(() => {
-    const next = {};
-    document.querySelectorAll('[data-pin-id]').forEach((el) => {
-      if (el.querySelector('.cc-card-expanded')) return;
-      const card = el.querySelector('.cc-card');
-      if (!card) return;
-      const replies = el.querySelector('.cc-reply-count') ? 18 : 0;
-      next[el.dataset.pinId] = { w: card.offsetWidth + 4, h: card.offsetHeight + replies + 4 };
-    });
-    setPinSizes((prev) => {
-      const ids = Object.keys(next);
-      // Only the pins measured this time are compared, so a skipped (expanded) one can't
-      // cause an update loop.
-      const same = ids.every((k) => prev[k] && Math.abs(prev[k].w - next[k].w) < 2 && Math.abs(prev[k].h - next[k].h) < 2);
-      return same ? prev : { ...prev, ...next };
-    });
-  });
 
   // Re-measure after a tab switch, and again once the fade-in animations have settled
   // (they move things by a few pixels while they run).
@@ -1006,17 +1006,23 @@ export default function CommentPins({ page, activeTab }) {
     return () => window.removeEventListener('mousemove', onMove);
   }, []);
 
+  // An open card closes on a click anywhere else, or on Escape (focus goes back to its pin).
   useEffect(() => {
     if (!expandedId) return;
     const close = (e) => {
-      if (editingId) return;
-      if (e.target.closest('.cc-delete, .cc-edit-btn, .cc-edit-form')) return;
-      setExpandedId(null);
-      setEditingId(null);
+      if (e.target.closest?.('[data-pin-id]')) return;
+      setExpandedId(null); setReplyingToId(null); setOpenCarouselId(null); setEditingId(null);
+    };
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      const id = expandedId;
+      setExpandedId(null); setReplyingToId(null); setOpenCarouselId(null); setEditingId(null);
+      document.querySelector(`[data-pin-id="${id}"] .cc-pin`)?.focus();
     };
     document.addEventListener('click', close);
-    return () => document.removeEventListener('click', close);
-  }, [expandedId, editingId]);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('click', close); document.removeEventListener('keydown', onKey); };
+  }, [expandedId]);
 
   useEffect(() => {
     if (!openCarouselId) return;
@@ -1120,6 +1126,7 @@ export default function CommentPins({ page, activeTab }) {
             }, 100);
 
             justDraggedRef.current = true;
+            setExpandedId(prev => (prev === meta.id ? null : prev));
           }
         }
       }
@@ -1492,14 +1499,12 @@ export default function CommentPins({ page, activeTab }) {
       offsetY_px: pageY - (y_pct / 100) * Y_REFERENCE_HEIGHT,
     };
     dragPosRef.current = { x_pct, y_pct };
-    setExpandedId(null);
     setDraggingId(id);
   };
 
   const handleOverlayClick = (e) => {
     if (justDraggedRef.current) { justDraggedRef.current = false; return; }
-    setExpandedId(null);
-    setOpenCarouselId(null);
+    closeCard();
     if (mode !== 'comment' || draft) return;
     const m = contentMetricsRef.current;
     if (m.width === 0) return;
@@ -1537,6 +1542,9 @@ export default function CommentPins({ page, activeTab }) {
       if (enteredName && enteredName !== 'Anonymous') {
         try { localStorage.setItem('wahab_visitor_name', enteredName); } catch {}
       }
+      // The new comment opens as a full card straight away. (Only the owner's shows at
+      // once: a visitor's waits for approval, and they see a note saying so.)
+      if (isOwner && row.id) setExpandedId(row.id);
     }
     cancelDraft();
   };
@@ -1635,42 +1643,80 @@ export default function CommentPins({ page, activeTab }) {
     else { setShowLogin(false); setLoginError(''); setLoginEmail(''); setLoginPw(''); }
   };
 
-  const getDeg = (id) => {
-    const deg = cardRotation(id);
-    return isMobile ? Math.max(-1, Math.min(1, deg)) : deg;
+  // Opening and closing a comment. Only one card is open at a time; closing it also closes
+  // its reply form, reply list and edit form.
+  const closeCard = () => {
+    setExpandedId(null); setReplyingToId(null); setOpenCarouselId(null); setEditingId(null);
   };
-
-  const onCardEnter = (id) => {
-    if (isTouchDevice()) return;
-    if (openCarouselId !== null && openCarouselId !== id) {
-      setOpenCarouselId(null);
-      if (replyingToId === null) setExpandedId(id);
-      return;
-    }
-    if (replyingToId === null && openCarouselId === null) setExpandedId(id);
-  };
-  const onCardLeave = (id) => {
-    if (isTouchDevice()) return;
-    if (replyingToId === null && openCarouselId === null) setExpandedId(null);
-  };
-  const onCardClick = (e, id) => {
+  const onPinClick = (e, id) => {
     e.stopPropagation();
+    // A drag that moved isn't a click. (Enter or Space on the pin is: e.detail is 0.)
     const start = dragStartRef.current;
-    const moved = start && (Math.abs(e.clientX - start.x) > 5 || Math.abs(e.clientY - start.y) > 5);
-    if (moved) return;
-    if (isTouchDevice()) setExpandedId(prev => prev === id ? null : id);
+    dragStartRef.current = null;
+    if (start && e.detail > 0 && (Math.abs(e.clientX - start.x) > 5 || Math.abs(e.clientY - start.y) > 5)) return;
+    if (expandedId === id) { closeCard(); return; }
+    setReplyingToId(null); setOpenCarouselId(null); setEditingId(null);
+    setExpandedId(id);
   };
 
-  const { left: cLeft, width: cWidth, absTop: cAbsTop, height: cHeight } = contentMetrics;
+  const { left: cLeft, width: cWidth, absTop: cAbsTop, height: cHeight, textLeft, textRight } = contentMetrics;
 
-  // A pin's stored spot (x_pct of the content column, y_pct of Y_REFERENCE_HEIGHT) → where
-  // it's actually drawn: on the page and off every control. Stored positions are never
-  // rewritten by this, so a pin moves back if the layout later frees up its spot.
+  // Which pins show: every comment on the page, whichever home-page tab is open (each pin
+  // is kept on the page and off controls, so a shorter tab can't hide one); unapproved ones
+  // only for the owner. The tab a comment was left on is stored but not used to hide it.
+  const isVisibleTo = (c) => c.approved !== false || isOwner;
+  const annotationReady = cHeight > 0 && cAbsTop > 0;
+
+  // Where each pin is drawn. A pin's stored spot (x_pct of the content column, y_pct of
+  // Y_REFERENCE_HEIGHT) is never rewritten by this, so it moves back if the layout frees up.
+  //  - Margins wide enough (MARGIN_MIN): every pin goes into the margin on its side of the
+  //    text column, at its own height, so pins never cover text, images or cards. Pins in
+  //    the same margin are spaced so they don't overlap.
+  //  - Otherwise: at its stored spot, nudged on to the page and off buttons and links.
+  const viewW = typeof document !== 'undefined' ? document.documentElement.clientWidth : 0;
+  const marginRoom = Math.min(textLeft, viewW - textRight);
+  const inMargins = cWidth > 0 && textRight > textLeft && marginRoom >= MARGIN_MIN;
+  const pinLayout = {};
+  if (pageHeight && cWidth > 0 && !hidden) {
+    const want = comments.filter(c => !c.parent_id && isVisibleTo(c)).map((c) => {
+      const cached = commentPosCache[c.id];
+      const x = cached ? cached.x_pct : c.x_pct;
+      const y = cached ? cached.y_pct : c.y_pct;
+      return { id: c.id, cx: cLeft + (x / 100) * cWidth, cy: (y / 100) * Y_REFERENCE_HEIGHT };
+    });
+    if (inMargins) {
+      const mid = (textLeft + textRight) / 2;
+      const d = Math.min(MARGIN_OFFSET, marginRoom / 2);
+      const hw = PIN_BOX.w / 2, hh = PIN_BOX.h / 2;
+      const hits = (x, y) => blockers.some((b) =>
+        x - hw < b.right + CLEARANCE && x + hw > b.left - CLEARANCE && y - hh < b.bottom + CLEARANCE && y + hh > b.top - CLEARANCE);
+      for (const side of ['left', 'right']) {
+        const x = side === 'left' ? textLeft - d : textRight + d;
+        let floor = NAV_HEIGHT + hh + 8;
+        want.filter((p) => (p.cx < mid) === (side === 'left')).sort((p, q) => p.cy - q.cy).forEach((p) => {
+          let y = Math.max(p.cy, floor);
+          for (let n = 0; n < 80 && hits(x, y); n++) y += 8;
+          pinLayout[p.id] = { left: x, top: y, side };
+          floor = y + PIN_BOX.h + PIN_GAP;
+        });
+      }
+    } else {
+      want.forEach((p) => {
+        const { x, y } = resolveCardPosition(p.cx, p.cy, blockers, pageHeight, PIN_BOX);
+        pinLayout[p.id] = { left: x, top: y, side: null };
+      });
+    }
+  }
+
+  // A spot in stored units → where it's drawn. With an id, the pin's laid-out place;
+  // without (a new comment's draft card), the nearest spot that's on the page and off
+  // every control.
   const resolvePx = (x_pct, y_pct, id) => {
+    if (id && pinLayout[id]) return { left: pinLayout[id].left, top: pinLayout[id].top };
     const cx = cLeft + (x_pct / 100) * cWidth;
     const cy = (y_pct / 100) * Y_REFERENCE_HEIGHT;
     if (!pageHeight || cWidth === 0) return { left: cx, top: cy };
-    const { x, y } = resolveCardPosition(cx, cy, blockers, pageHeight, (id && pinSizes[id]) || CARD_BOX);
+    const { x, y } = resolveCardPosition(cx, cy, blockers, pageHeight, CARD_BOX);
     return { left: x, top: y };
   };
   // Same, in stored units: used when a pin is placed or dropped.
@@ -1679,71 +1725,94 @@ export default function CommentPins({ page, activeTab }) {
     return { x_pct: ((left - cLeft) / cWidth) * 100, y_pct: (top / Y_REFERENCE_HEIGHT) * 100 };
   };
 
-  // Which pins show: every comment on the page, whichever home-page tab is open (each pin
-  // is kept on the page and off controls by resolvePx, so a shorter tab can't hide one);
-  // unapproved ones only for the owner. The tab a comment was left on is stored but not
-  // used to hide it.
-  const isVisibleTo = (c) => c.approved !== false || isOwner;
-  const annotationReady = cHeight > 0 && cAbsTop > 0;
-
-
+  // Which side a pin's preview or open card goes: outwards, into the margin, when it fits
+  // there; otherwise towards the text (it only covers it while it's open).
+  const sideFor = (pos, width) => {
+    const half = PIN_SIZE / 2 + 10;
+    const fitsLeft = pos.left - half >= width + 8;
+    const fitsRight = viewW - pos.left - half >= width + 8;
+    if (pos.side === 'left') return fitsLeft ? 'left' : 'right';
+    if (pos.side === 'right') return fitsRight ? 'right' : 'left';
+    return fitsRight ? 'right' : 'left';
+  };
 
   const renderCard = (id, author, body, color, x_pct, y_pct, isDragging, sessionToken, isPending) => {
     const remoteMove = remoteCardMoves[id];
-    let displayX = x_pct;
-    let displayY = y_pct;
-    let isRemotelyMoving = false;
-
-    if (isDragging && dragPos) {
-      displayX = dragPos.x_pct;
-      displayY = dragPos.y_pct;
-    } else if (remoteMove) {
-      displayX = remoteMove.x_pct;
-      displayY = remoteMove.y_pct;
-      isRemotelyMoving = true;
-    }
-
-    const isExpanded     = expandedId === id;
+    const isRemotelyMoving = !isDragging && !!remoteMove;
+    const isExpanded     = expandedId === id;   // its full card is open
     const isLockedActive = id === replyingToId || id === openCarouselId;
-    const deg            = getDeg(id);
     const isOwnCard  = !!sessionToken && !!ownTokenHash && sessionToken === ownTokenHash;
     const canDrag    = isOwner || isOwnCard;
     const canDelete  = isOwner || isOwnCard;
     const canEdit    = isOwner || isOwnCard;
 
-    // While dragging, the card follows the pointer exactly; otherwise it's drawn at its
-    // resolved spot (on the page, off controls), and a drag starts from there.
+    // While it's dragged (here or by the owner elsewhere), the pin follows the pointer;
+    // otherwise it's at its laid-out place, and a drag starts from there.
     const drawn = resolvePctRef.current(x_pct, y_pct, id);
-    const placed = (isDragging && dragPos) ? null : resolvePx(displayX, displayY, id);
-    const wrapperStyle = {
-      ...cardWrapperStyle(displayX, displayY, deg, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
-      ...(placed ? { left: `${placed.left}px`, top: `${placed.top}px` } : {}),
-      cursor: canDrag ? (isDragging ? (isFinePointerRef.current ? "url('/cursors/grab.svg') 32 26, grabbing" : 'grabbing') : (isFinePointerRef.current ? "url('/cursors/hover.svg') 32 18, grab" : 'grab')) : 'inherit',
-      ...(isDragging ? { willChange: 'transform' } : {}),
-      ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
-      ...(isLockedActive ? { zIndex: 1001 } : {}),
-    };
+    const moving = (isDragging && dragPos) ? dragPos : (isRemotelyMoving ? remoteMove : null);
+    const pos = moving
+      ? { left: cLeft + (moving.x_pct / 100) * cWidth, top: (moving.y_pct / 100) * Y_REFERENCE_HEIGHT, side: null }
+      : (pinLayout[id] || { ...resolvePx(x_pct, y_pct), side: null });
+    const showCard = isExpanded && !moving;
+    const cardSide = sideFor(pos, OPEN_CARD_W);
+    const previewSide = sideFor(pos, PREVIEW_W);
+    // Near the end of the page an open card grows upwards, so it can always be read.
+    const opensUp = pageHeight > 0 && pos.top > pageHeight - 280;
 
-    const cardClass = [
-      'cc-card',
-      isExpanded       ? 'cc-card-expanded'     : '',
-      isRemotelyMoving ? 'cc-card-remote-moving' : '',
-      isPending        ? 'cc-pending'            : '',
-    ].filter(Boolean).join(' ');
+    const replies = comments
+      .filter(c => c.parent_id === id && isVisibleTo(c))
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    const replyCount = replies.length;
+    const initial = (author.trim()[0] || 'A').toUpperCase();
+    const pinLabel = `Comment by ${author}: ${truncate(body, 12)}`
+      + (replyCount ? `, ${replyCount === 1 ? '1 reply' : `${replyCount} replies`}` : '')
+      + (isPending ? ', waiting for approval' : '');
+
+    const wrapperStyle = {
+      position: 'absolute',
+      left: `${pos.left}px`,
+      top: `${pos.top}px`,
+      transform: 'translate(-50%, -50%)',
+      pointerEvents: 'auto',
+      zIndex: showCard ? 1001 : 31,
+      ...(isDragging ? { willChange: 'left, top' } : {}),
+      ...(isRemotelyMoving ? { transition: 'left 0.05s linear, top 0.05s linear' } : {}),
+    };
+    const grabCursor = canDrag
+      ? (isDragging ? (isFinePointerRef.current ? "url('/cursors/grab.svg') 32 26, grabbing" : 'grabbing') : (isFinePointerRef.current ? "url('/cursors/hover.svg') 32 18, grab" : 'grab'))
+      : 'pointer';
+
+    const cardClass = ['cc-card', 'cc-card-expanded', isPending ? 'cc-pending' : ''].filter(Boolean).join(' ');
 
     return (
       <div
         key={id}
         data-pin-id={id}
-        className={`cc-card-wrapper${isLockedActive ? ' cc-locked-active' : ''}${canDrag ? ' cc-can-drag' : ''}`}
+        className={`cc-pin-wrap cc-pin-side-${pos.side || 'none'}${showCard ? ' cc-pin-open' : ''}${isLockedActive ? ' cc-locked-active' : ''}${canDrag ? ' cc-can-drag' : ''}`}
         style={wrapperStyle}
-        onMouseDown={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel,.cc-pending-bar')) return; startDrag(e, id, drawn.x_pct, drawn.y_pct); } : undefined}
-        onTouchStart={canDrag ? (e) => { if (e.target.closest('.cc-delete,.cc-edit-btn,.cc-edit-form,.cc-like-btn,.cc-like-row,.cc-reply-btn,.cc-reply-count,.cc-carousel,.cc-pending-bar')) return; startDrag(e, id, drawn.x_pct, drawn.y_pct); } : undefined}
-        onClick={(e) => onCardClick(e, id)}
-        onMouseEnter={() => onCardEnter(id)}
-        onMouseLeave={() => onCardLeave(id)}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className={cardClass}>
+        <button
+          type="button"
+          className={`cc-pin${isPending ? ' cc-pin-pending' : ''}${isRemotelyMoving ? ' cc-pin-remote-moving' : ''}`}
+          style={{ backgroundColor: color, color: pinTextColor(color), cursor: grabCursor }}
+          aria-label={pinLabel}
+          aria-expanded={showCard}
+          onMouseDown={canDrag ? (e) => { if (e.button === 0) startDrag(e, id, drawn.x_pct, drawn.y_pct); } : undefined}
+          onTouchStart={canDrag ? (e) => startDrag(e, id, drawn.x_pct, drawn.y_pct) : undefined}
+          onClick={(e) => onPinClick(e, id)}
+        >
+          <span aria-hidden="true">{initial}</span>
+          {replyCount > 0 && <span className="cc-pin-count" aria-hidden="true">{replyCount}</span>}
+        </button>
+        {!showCard && !moving && (
+          <span className={`cc-pin-preview cc-pin-preview-${previewSide}`} aria-hidden="true">
+            <span className="cc-pin-preview-author">{author}</span> {truncate(body, 9)}
+          </span>
+        )}
+        {showCard && (
+          <div className={`cc-pin-card cc-pin-card-${cardSide}${opensUp ? ' cc-pin-card-up' : ''}`}>
+            <div className={cardClass}>
           <div className="cc-header">
             <span className="cc-dot" style={{ backgroundColor: color }} />
             <span className="cc-author">{author}</span>
@@ -1911,7 +1980,9 @@ export default function CommentPins({ page, activeTab }) {
             </>
           );
         })()}
-        </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };

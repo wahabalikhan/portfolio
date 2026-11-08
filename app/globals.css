@@ -301,8 +301,117 @@ html.dark .app-root {
 
 html.dark .cs-thumb { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
 
-.cc-card-wrapper:hover { z-index: 1000 !important; }
-[data-locked] .cc-card-wrapper:not(.cc-locked-active) { pointer-events: none; }
+.cc-pin-wrap:hover,
+.cc-pin-wrap:focus-within { z-index: 1000 !important; }
+.cc-pin-wrap.cc-pin-open { z-index: 1001 !important; }
+[data-locked] .cc-pin-wrap:not(.cc-locked-active) { pointer-events: none; }
+
+/* ─── Comment pins (components/CommentPins.jsx) ──────────────────────────────
+   Collapsed, each comment is a small round pin with its author's initial (like Figma's
+   collapsed comments) and a badge counting its replies. Hover or keyboard focus shows a
+   one-line preview; clicking (or Enter) opens the full card beside it. */
+.cc-pin-wrap { width: 26px; height: 26px; }
+.cc-pin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid #ffffff;
+  border-radius: 50% 50% 50% 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(17, 24, 39, 0.06);
+  animation: cc-pin-in 0.2s ease-out both;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.cc-pin:hover,
+.cc-pin-open .cc-pin { transform: scale(1.12); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(17, 24, 39, 0.08); }
+.cc-pin:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+/* Waiting for approval (only the owner sees these): an amber ring. */
+.cc-pin-pending { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #D97706; }
+/* Being moved by the owner in another window. */
+.cc-pin-remote-moving { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #7F77DD; }
+.cc-pin-count {
+  position: absolute;
+  top: -7px;
+  right: -6px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 9999px;
+  background: #111827;
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  line-height: 12px;
+  text-align: center;
+  box-sizing: border-box;
+}
+/* In the left margin the pin points right, towards the text, and its badge sits on the
+   outer side, so neither reaches the text. */
+.cc-pin-side-left .cc-pin { border-radius: 50% 50% 4px 50%; }
+.cc-pin-side-left .cc-pin-count { right: auto; left: -6px; }
+/* The one-line preview: hover (on devices that hover) or keyboard focus. */
+.cc-pin-preview {
+  position: absolute;
+  top: 50%;
+  max-width: 240px;
+  padding: 0.3rem 0.55rem;
+  border-radius: 6px;
+  background: #111827;
+  color: #E5E7EB;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+.cc-pin-preview-right { left: calc(100% + 10px); }
+.cc-pin-preview-left { right: calc(100% + 10px); }
+.cc-pin-preview-author { font-weight: 600; color: #ffffff; }
+@media (hover: hover) {
+  .cc-pin-wrap:hover .cc-pin-preview { opacity: 1; }
+}
+.cc-pin:focus-visible ~ .cc-pin-preview { opacity: 1; }
+/* The open card, beside its pin: outwards into the margin where it fits. */
+.cc-pin-card {
+  position: absolute;
+  top: -8px;
+  width: 248px;
+  animation: cc-card-in 0.14s ease-out both;
+}
+.cc-pin-card-up { top: auto; bottom: -8px; }
+.cc-pin-card-right { left: calc(100% + 10px); }
+.cc-pin-card-left { right: calc(100% + 10px); }
+.cc-pin-card .cc-card {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.5rem 0.7rem 0.6rem;
+  animation: none;
+}
+@keyframes cc-pin-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes cc-card-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+html.dark .cc-pin { border-color: #1e1e2e; }
+html.dark .cc-pin-count { border-color: #1e1e2e; }
+@media (prefers-reduced-motion: reduce) {
+  .cc-pin, .cc-pin-card, .cc-card, .floating-annotation { animation: none !important; }
+  .cc-pin, .cc-pin-preview, .cc-body, .cc-preview,
+  .cc-carousel-item, .cc-carousel-card { transition: none !important; }
+  .cc-pin:hover, .cc-pin-open .cc-pin { transform: none; }
+}
 
 /* ─── Handwritten Annotation (floating/draggable) ─────────────────────────── */
 .floating-annotation {
@@ -2499,7 +2608,6 @@ html.dark .build-log-stack-reason { color: #6b7280; }
   border-radius: 8px;
   padding: 1rem 1.25rem 0.875rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  overflow-x: auto;
   margin-bottom: 2rem;
 }
 
@@ -2513,23 +2621,14 @@ html.dark .build-log-stack-reason { color: #6b7280; }
   color: #374151;
 }
 
-.gh-contrib-months {
-  display: grid;
-  margin-bottom: 4px;
-  min-width: 600px;
-}
-
-.gh-contrib-month-label {
-  font-size: 0.6875rem;
-  color: #9ca3af;
-}
-
-.gh-contrib-grid {
-  display: grid;
-  grid-auto-rows: 11px;
-  gap: 2px;
-  min-width: 600px;
-}
+/* The graph (one SVG, components/GitHubContributions.jsx) fills the card's width and scales
+   as a whole, so squares and gaps stay square. Below 640px wide it stops shrinking (about
+   9.5px squares) and scrolls sideways inside its own box instead. */
+.gh-contrib-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
+.gh-contrib-scroll:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; border-radius: 4px; }
+.gh-contrib-svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.gh-contrib-month-label { font-size: 10px; fill: #9ca3af; }
+.gh-contrib-skeleton-rect { fill: #f0f1f3; }
 
 .gh-contrib-cell {
   width: 100%;
@@ -2626,11 +2725,11 @@ html.dark .build-log-stack-reason { color: #6b7280; }
     cursor: url('/cursors/zoom.svg') 19 17, zoom-in !important;
   }
 
-  .cc-card-wrapper.cc-can-drag {
+  .cc-pin-wrap.cc-can-drag .cc-pin {
     cursor: url('/cursors/hover.svg') 32 18, grab !important;
   }
 
-  .cc-card-wrapper.cc-can-drag:active {
+  .cc-pin-wrap.cc-can-drag .cc-pin:active {
     cursor: url('/cursors/grab.svg') 32 26, grabbing !important;
   }
 }
@@ -2643,14 +2742,14 @@ html.dark .build-log-stack-reason { color: #6b7280; }
 .project-row-line,
 .writing-summary { max-width: 65ch; }
 
-/* Section spacing: the same space above and below each divider (hero → Case studies →
-   Writing) and the footer's top border. */
-.home-page { --home-space: 2.5rem; }
+/* Section spacing, with no dividing lines: the same gap between the hero, Case studies,
+   Writing and the footer. (The footer keeps its top line on other pages.) */
+.home-page { --home-section-gap: 4rem; }
 @media (min-width: 768px) {
-  .home-page { --home-space: 3rem; }
+  .home-page { --home-section-gap: 5rem; }
 }
-.home-divider { margin-top: var(--home-space); margin-bottom: var(--home-space); }
-.home-page footer { margin-top: var(--home-space); padding-top: var(--home-space); }
+.home-divider { height: 0; margin: 0; padding-top: var(--home-section-gap); }
+.home-page footer { margin-top: var(--home-section-gap); padding-top: 0; border-top-width: 0; }
 
 /* Case-study cards: one column on phones, two from 768px. */
 /* minmax(0, 1fr): long text mustn't widen its column. */
@@ -2779,20 +2878,18 @@ html.dark .cs-hero-art { border-color: rgba(255, 255, 255, 0.12); }
 .product-link { margin-top: auto; padding-top: 0.75rem; color: #2563eb; font-weight: 500; font-size: 0.9375rem; align-self: flex-start; }
 .product-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-/* The contribution graph, kept small above the earlier projects. */
-.gh-contrib-small { max-width: 44rem; margin-bottom: 1.25rem; }
+/* The contribution graph, the full width of the content column, above the earlier projects. */
+.gh-contrib-small { margin-bottom: 1.25rem; }
 
-/* Dividers between rows only: none above the first or below the last. */
+/* Rows separated by space, not lines. */
 .project-rows { margin: 0; padding: 0; list-style: none; }
 .project-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #E5E7EB;
 }
-.project-row:last-child { border-bottom: none; }
+.project-row + .project-row { margin-top: 1.75rem; }
 .project-row-main { min-width: 0; }
 .project-row-name { font-weight: 600; color: #111827; margin-right: 0.5rem; }
 .project-row-line { color: #4B5563; line-height: 1.55; }
