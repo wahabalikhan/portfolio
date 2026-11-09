@@ -9,10 +9,6 @@ const VISITOR_COLORS = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '
 const CURSOR_COLORS = ['#F97316', '#3B82F6', '#EC4899', '#FACC15', '#14B8A6', '#8B5CF6', '#EF4444', '#06B6D4'];
 
 
-// Maximum play area width: 14-inch MacBook Pro logical CSS pixels (1512px).
-// Comments cannot be placed or dragged outside this centered boundary.
-const PLAY_AREA_WIDTH = 1300;
-
 // Fixed y-coordinate denominator. Must not change across tabs or screen sizes.
 // scrollHeight was rejected because it varies per tab (Design: ~3678, Development: ~1975, Just for fun: ~1846),
 // causing comments to jump when switching tabs. 4000 exceeds the tallest tab's height on any screen.
@@ -23,37 +19,32 @@ const Y_REFERENCE_HEIGHT = 4000;
 // (850px).
 const COMMENT_COLUMN_WIDTH = 768;
 
-// Returns the min/max x_pct values (content-relative) that correspond to the PLAY_AREA_WIDTH
-// boundary centered on the current viewport. Allows pins to reach the edge of a 14" MBP screen
-// but no further, regardless of how wide the actual viewport is.
-const getPlayAreaXBounds = (contentLeft, contentWidth) => {
-  const halfPlay   = PLAY_AREA_WIDTH / 2;
-  const pageCenter = window.innerWidth / 2;
-  const playLeft   = pageCenter - halfPlay;
-  const playRight  = pageCenter + halfPlay;
-  return {
-    minX: (playLeft  - contentLeft) / contentWidth * 100,
-    maxX: (playRight - contentLeft) / contentWidth * 100,
-  };
+// Where a comment is stored (x_pct, y_pct): relative to the page layout, so a pin stays next
+// to the same thing at any window width.
+//   x_pct    0 … 100   inside the text column (the container, inside its padding): a
+//                      fraction of the column's width
+//   x_pct    0 … -100  left of the column: a fraction of the way from the column's edge to
+//                      the window's left edge (so it never slides into the content)
+//   x_pct  100 … 200   right of the column: the same, towards the window's right edge
+//   y_pct              page pixels over Y_REFERENCE_HEIGHT. The column is the same 770px
+//                      wide at every width from 850px up, so the page lays out the same and
+//                      a height stays next to the same thing.
+// g = { textLeft, textRight, viewW } (page pixels; the page never scrolls sideways).
+const toPagePx = (x_pct, y_pct, g) => {
+  const x = Math.max(-100, Math.min(200, x_pct));
+  let left;
+  if (x < 0) left = g.textLeft * (1 + x / 100);
+  else if (x > 100) left = g.textRight + ((x - 100) / 100) * (g.viewW - g.textRight);
+  else left = g.textLeft + (x / 100) * (g.textRight - g.textLeft);
+  return { left, top: (y_pct / 100) * Y_REFERENCE_HEIGHT };
 };
-
-// Coordinate system:
-//   x_pct = (clientX - contentLeft) / contentWidth * 100
-//     → content-container-relative; 0 = left edge, 100 = right edge,
-//       negative = left of content, >100 = right of content.
-//   y_pct = (pageY - contentAbsTop) / contentHeight * 100
-//     → content-height-relative from the content container's absolute top.
-//     Uses content column height (not document.scrollHeight) so positions are
-//     consistent across screen sizes — scrollHeight inflates on tall monitors
-//     due to min-height: 100vh, causing y-axis drift if used as denominator.
-//
-// Rendering converts back to absolute page pixels:
-//   left = contentLeft + x_pct/100 * contentWidth
-//   top  = contentAbsTop + y_pct/100 * contentHeight
-//
-// The overlay is a portal on document.body (position:absolute, top:0, left:0, full page).
-// Pins can be placed and dragged anywhere on the page, not just within the content column.
-//
+const fromPagePx = (left, top, g) => {
+  let x_pct;
+  if (left < g.textLeft) x_pct = g.textLeft > 0 ? -100 * (g.textLeft - left) / g.textLeft : 0;
+  else if (left > g.textRight) x_pct = g.viewW > g.textRight ? 100 + 100 * (left - g.textRight) / (g.viewW - g.textRight) : 100;
+  else x_pct = 100 * (left - g.textLeft) / Math.max(1, g.textRight - g.textLeft);
+  return { x_pct, y_pct: (top / Y_REFERENCE_HEIGHT) * 100 };
+};
 
 const randomId = () =>
   (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).slice(2);
@@ -132,19 +123,7 @@ const overlayStyle = (mode, height, finePointer) => ({
   height: height > 0 ? `${height}px` : '100%',
   zIndex: 30,
   pointerEvents: mode === 'comment' ? 'auto' : 'none',
-  cursor: mode === 'comment' ? (finePointer ? "url('/cursors/add.svg') 5 3, copy" : 'copy') : 'inherit',
-});
-
-// Converts content-relative x_pct and page-relative y_pct to absolute pixel positions
-// within the full-page overlay. contentLeft/contentWidth/contentAbsTop come from
-// measuring the contentAnchorRef div inside the content container.
-const cardWrapperStyle = (xPct, yPct, deg, contentLeft, contentWidth, contentAbsTop, overlayHeight) => ({
-  position: 'absolute',
-  left: `${contentLeft + (xPct / 100) * contentWidth}px`,
-  top: `${contentAbsTop + (yPct / 100) * overlayHeight}px`,
-  transform: `translate(-50%, -50%) rotate(${deg}deg)`,
-  pointerEvents: 'auto',
-  zIndex: 31,
+  cursor: mode === 'comment' ? (finePointer ? "url('/cursors/add.svg') 5 3, copy" : 'copy') : 'inherit',  // anywhere on the page
 });
 
 const cursorStyle = (xPct, yPct, color, contentLeft, contentWidth, contentAbsTop, overlayHeight) => ({
@@ -158,10 +137,7 @@ const cursorStyle = (xPct, yPct, color, contentLeft, contentWidth, contentAbsTop
 });
 
 // ── Keeping pins on the page and clear of controls ──────────────────────────────
-// Room a collapsed card needs (max-width 220px plus the "N replies" line and its tilt).
-const CARD_BOX = { w: 224, h: 48 };
 const NAV_HEIGHT = 64;   // the fixed top nav bar (4rem)
-const CLEARANCE = 6;     // gap kept between a card and a control
 // Controls a card must never cover. Big block links (whole case-study, repo and blog
 // cards) are left out: pins may sit over those, just not over buttons and inline links.
 const CONTROL_SELECTOR = 'button, a, input, textarea, select, [role="button"], .hero-accent-word';
@@ -170,10 +146,7 @@ const MAX_LINK_AREA = 40000; // px²; anything larger is a block link, not a con
 // Collapsed comments are small round pins (like Figma's), opened one at a time.
 const PIN_SIZE = 26;                 // the round pin
 const PIN_BOX = { w: 34, h: 34 };    // the room it needs, with its reply-count badge
-const PIN_GAP = 6;                   // space kept between two pins in the same margin
-const MARGIN_MIN = 36;               // a margin at least this wide (px) holds the pins (the
-                                     // container's 40px padding keeps every desktop width above it)
-const MARGIN_OFFSET = 44;            // a margin pin's centre: this far out from the text, at most
+const PIN_GAP = 6;                   // space between pins stacked at the end of the page
 const OPEN_CARD_W = 248;             // an open card's width, for choosing the side it opens on
 const PREVIEW_W = 240;               // the hover preview's widest
 
@@ -208,33 +181,27 @@ const measureBlockers = () => {
   return out;
 };
 
-// Takes a card's wanted centre (page pixels) and returns the nearest centre that keeps
-// the card on the page (inside the window's width, below the nav, above the page's end)
-// and off every control, searching up and down first, then sideways.
-const resolveCardPosition = (cx, cy, blockers, pageHeight, box = CARD_BOX) => {
-  const hw = box.w / 2, hh = box.h / 2;
-  const minX = hw + 8, maxX = Math.max(minX, window.innerWidth - hw - 8);
-  const minY = NAV_HEIGHT + hh + 4, maxY = Math.max(minY, pageHeight - hh - 8);
-  const clampX = (x) => Math.min(maxX, Math.max(minX, x));
-  const clampY = (y) => Math.min(maxY, Math.max(minY, y));
-  const free = (x, y) => !blockers.some((b) =>
-    x - hw < b.right + CLEARANCE && x + hw > b.left - CLEARANCE &&
-    y - hh < b.bottom + CLEARANCE && y + hh > b.top - CLEARANCE);
-  const x0 = clampX(cx), y0 = clampY(cy);
-  if (free(x0, y0)) return { x: x0, y: y0 };
-  for (let d = 8; d <= 640; d += 8) {
-    for (const y of [y0 + d, y0 - d]) {
-      const yc = clampY(y);
-      if (free(x0, yc)) return { x: x0, y: yc };
+// Pins go anywhere on the page except on buttons and links: a pin dropped on one moves to
+// the nearest clear spot, in any direction, just clear of it. bounds keeps it on the page.
+const PIN_HIT = 30;      // a pin with its white ring
+const PIN_CLEAR = 4;     // the gap kept from a button or link
+const pinFree = (x, y, blockers, bounds) =>
+  x >= bounds.minX && x <= bounds.maxX && y >= bounds.minY && y <= bounds.maxY &&
+  !blockers.some((b) => x - PIN_HIT / 2 < b.right + PIN_CLEAR && x + PIN_HIT / 2 > b.left - PIN_CLEAR &&
+    y - PIN_HIT / 2 < b.bottom + PIN_CLEAR && y + PIN_HIT / 2 > b.top - PIN_CLEAR);
+const RING = [0, 180, 90, 270, 45, 135, 225, 315, 22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5]
+  .map((d) => [Math.cos(d * Math.PI / 180), Math.sin(d * Math.PI / 180)]);
+const nearestFreeSpot = (x, y, blockers, bounds) => {
+  const cx = Math.max(bounds.minX, Math.min(bounds.maxX, x));
+  const cy = Math.max(bounds.minY, Math.min(bounds.maxY, y));
+  if (pinFree(cx, cy, blockers, bounds)) return { left: cx, top: cy };
+  for (let r = 2; r <= 600; r += 2) {
+    for (const [dx, dy] of RING) {
+      const px = cx + r * dx, py = cy + r * dy;
+      if (pinFree(px, py, blockers, bounds)) return { left: px, top: py };
     }
   }
-  for (let d = 8; d <= 640; d += 8) {
-    for (const x of [x0 - d, x0 + d]) {
-      const xc = clampX(x);
-      if (free(xc, y0)) return { x: xc, y: y0 };
-    }
-  }
-  return { x: x0, y: y0 };
+  return { left: cx, top: cy };
 };
 
 // Tells BobbyBuilds HQ how many comments are waiting for approval (comments_waiting).
@@ -442,13 +409,10 @@ export default function CommentPins({ page, activeTab }) {
   const preDragPosRef   = useRef(null);
   const dbWriteTimerRef = useRef(null);
   const likeInFlight   = useRef({});
-  const resolvePctRef  = useRef((x_pct, y_pct) => ({ x_pct, y_pct })); // set each render below
+  // Page geometry for the drag and click handlers (set each render): stored ⇄ page pixels,
+  // and the nearest spot a pin may sit.
+  const geoRef         = useRef(null);
 
-  const annotationDragMetaRef = useRef(null);
-  const annotationDragPosRef  = useRef(null);
-
-  const annotation2DragMetaRef = useRef(null);
-  const annotation2DragPosRef  = useRef(null);
 
   // Remote move auto-clear timers
   const remoteMoveTimers = useRef({});
@@ -527,13 +491,6 @@ export default function CommentPins({ page, activeTab }) {
   const [editingId, setEditingId] = useState(null);
   const [editBody,  setEditBody]  = useState('');
 
-  const [annotationPos, setAnnotationPos]       = useState({ x_pct: 15, y_pct: 45 });
-  const [annotationDragging, setAnnotationDragging] = useState(false);
-  const [annotationDragPos, setAnnotationDragPos]   = useState(null);
-
-  const [annotation2Pos, setAnnotation2Pos]         = useState(null); // null = not yet loaded from Supabase
-  const [annotation2Dragging, setAnnotation2Dragging] = useState(false);
-  const [annotation2DragPos, setAnnotation2DragPos]   = useState(null);
 
   const displayNameRef = useRef(''); // synced to getDisplayName(isOwner) on every render
 
@@ -557,26 +514,6 @@ export default function CommentPins({ page, activeTab }) {
   // Clear any stale visitor-position overrides from localStorage — positions now live
   // entirely in the DB and are loaded via the comments state on every mount.
   try { localStorage.removeItem('visitor-comment-positions'); } catch {}
-
-  // Load annotation position from Supabase on mount. The hand-written notes only exist
-  // on the home page; asking for them elsewhere failed (406, no such row).
-  useEffect(() => {
-    if (page !== 'home') return;
-    supabase.from('pin_positions').select('*')
-      .eq('id', 'annotation').eq('page', page).single()
-      .then(({ data }) => {
-        if (data) setAnnotationPos({ x_pct: data.x_pct, y_pct: data.y_pct });
-      });
-  }, [page]);
-
-  useEffect(() => {
-    if (page !== 'home') return;
-    supabase.from('pin_positions').select('*')
-      .eq('id', 'annotation2').eq('page', page).single()
-      .then(({ data }) => {
-        setAnnotation2Pos(data ? { x_pct: data.x_pct, y_pct: data.y_pct } : { x_pct: 22, y_pct: 3.5 });
-      });
-  }, [page]);
 
   // Create the portal root div and append it to body.
   useEffect(() => {
@@ -626,7 +563,7 @@ export default function CommentPins({ page, activeTab }) {
     measureLayout();
   };
 
-  // Page height and control rectangles (see resolveCardPosition). Only updates state when
+  // Page height and control rectangles (see nearestFreeSpot). Only updates state when
   // something actually moved, so it's safe to call on every resize.
   const measureLayout = () => {
     const h = document.documentElement.scrollHeight;
@@ -831,12 +768,6 @@ export default function CommentPins({ page, activeTab }) {
           });
         }
       })
-      .on('broadcast', { event: 'annotation_move' }, ({ payload }) => {
-        setAnnotationPos({ x_pct: payload.x_pct, y_pct: payload.y_pct });
-      })
-      .on('broadcast', { event: 'annotation2_move' }, ({ payload }) => {
-        setAnnotation2Pos({ x_pct: payload.x_pct, y_pct: payload.y_pct });
-      })
       .on('presence', { event: 'sync' }, () => {
         setViewerCount(Object.keys(channel.presenceState()).length);
       })
@@ -985,27 +916,6 @@ export default function CommentPins({ page, activeTab }) {
     return () => window.removeEventListener('mousemove', onMove);
   }, [sessionId, cursorColor, isMobile]);
 
-  // Cursor style: copy (can place) vs not-allowed (outside play area).
-  // Runs unthrottled on mousemove and writes directly to the overlay's DOM style
-  // to avoid triggering React re-renders on every mouse movement.
-  useEffect(() => {
-    if (isTouchDevice()) return;
-    const onMove = (e) => {
-      if (!overlayRef.current) return;
-      if (modeRef.current !== 'comment') return;
-      const m = contentMetricsRef.current;
-      if (m.width === 0) return;
-      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
-      const x_pct = (e.clientX - m.left) / m.width * 100;
-      const fp = isFinePointerRef.current;
-      overlayRef.current.style.cursor = (x_pct >= minX && x_pct <= maxX)
-        ? (fp ? "url('/cursors/add.svg') 5 3, copy" : 'copy')
-        : (fp ? "url('/cursors/not-allowed.svg') 5 3, not-allowed" : 'not-allowed');
-    };
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, []);
-
   // An open card closes on a click anywhere else, or on Escape (focus goes back to its pin).
   useEffect(() => {
     if (!expandedId) return;
@@ -1041,6 +951,7 @@ export default function CommentPins({ page, activeTab }) {
     document.body.style.userSelect = 'none';
 
     let lastUpdate = 0;
+    let frame = 0;
 
     const getXY = (e) => {
       if (e.changedTouches && e.changedTouches.length > 0) {
@@ -1054,19 +965,20 @@ export default function CommentPins({ page, activeTab }) {
       if (!meta) return;
       const { clientX, clientY, pageY } = getXY(e);
 
-      const m = contentMetricsRef.current;
-      if (m.width === 0) return;
-      const relX = clientX - m.left;
-      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
-      const x_pct = Math.max(minX, Math.min(maxX, (relX - meta.offsetX_px) / m.width * 100));
-      // Same y scale as placing and drawing a pin: page pixels over Y_REFERENCE_HEIGHT.
-      const y_pct = Math.max(0, Math.min(95, ((pageY - meta.offsetY_px) / Y_REFERENCE_HEIGHT) * 100));
+      const geo = geoRef.current;
+      if (!geo) return;
+      // The pin goes where the pointer takes it; on a button or link it shows, as it moves,
+      // just clear of it. What's shown while dragging is exactly what's saved on drop.
+      const spot = geo.place(clientX - meta.offsetX_px, pageY - meta.offsetY_px);
+      const { x_pct, y_pct } = geo.fromPx(spot.left, spot.top);
       dragPosRef.current = { x_pct, y_pct };
+      // Drawn every frame from the latest position, so the pin on screen is always exactly
+      // the spot that will be saved (no throttled frame left behind).
+      if (!frame) frame = requestAnimationFrame(() => { frame = 0; if (dragPosRef.current) setDragPos({ ...dragPosRef.current }); });
 
       const now = performance.now();
       if (now - lastUpdate >= 33) {
         lastUpdate = now;
-        setDragPos({ x_pct, y_pct });
         if (!meta.isDraft && channelRef.current?.state === 'joined') {
           channelRef.current.send({ type: 'broadcast', event: 'card_move', payload: {
             id: meta.id, x_pct, y_pct, dragging: true,
@@ -1080,8 +992,8 @@ export default function CommentPins({ page, activeTab }) {
       const pos  = dragPosRef.current;
 
       if (meta && pos) {
-        // Where it lands: kept on the page and off any button or link.
-        const landed = resolvePctRef.current(pos.x_pct, pos.y_pct);
+        // Where it lands: exactly the spot shown while dragging.
+        const landed = pos;
         if (meta.isDraft) {
           setDraft(prev => prev ? { ...prev, x_pct: landed.x_pct, y_pct: landed.y_pct } : null);
           justDraggedRef.current = true;
@@ -1174,137 +1086,10 @@ export default function CommentPins({ page, activeTab }) {
       window.removeEventListener('touchend',    onUp);
       window.removeEventListener('touchcancel', onCancel);
       window.removeEventListener('keydown',     onEscape);
+      if (frame) cancelAnimationFrame(frame);
       document.body.style.userSelect = '';
     };
   }, [draggingId]);
-
-  useEffect(() => {
-    if (!annotationDragging) return;
-    document.body.style.userSelect = 'none';
-
-    const onMove = (e) => {
-      const meta = annotationDragMetaRef.current;
-      if (!meta) return;
-      const clientX = e.clientX ?? (e.changedTouches?.[0]?.clientX) ?? 0;
-      const pageY   = e.pageY   ?? (e.changedTouches?.[0]?.pageY)   ?? 0;
-      const m = contentMetricsRef.current;
-      if (m.width === 0) return;
-      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
-      const x_pct = Math.max(minX, Math.min(maxX, ((clientX - m.left) - meta.offsetX_px) / m.width * 100));
-      const y_pct = Math.max(0, Math.min(95, (pageY - meta.offsetY_px) / Y_REFERENCE_HEIGHT * 100));
-      annotationDragPosRef.current = { x_pct, y_pct };
-      setAnnotationDragPos({ x_pct, y_pct });
-      if (channelRef.current?.state === 'joined') {
-        channelRef.current.send({ type: 'broadcast', event: 'annotation_move', payload: { x_pct, y_pct, dragging: true } });
-      }
-    };
-
-    const onUp = async () => {
-      const pos = annotationDragPosRef.current;
-      if (pos) {
-        const { x_pct, y_pct } = pos;
-        setAnnotationPos({ x_pct, y_pct });
-        if (channelRef.current?.state === 'joined') {
-          channelRef.current.send({ type: 'broadcast', event: 'annotation_move', payload: { x_pct, y_pct, dragging: false } });
-        }
-        await supabase.from('pin_positions').upsert({
-          id: 'annotation', x_pct, y_pct, type: 'annotation', page,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'id' });
-      }
-      document.body.style.userSelect = '';
-      setAnnotationDragging(false);
-      setAnnotationDragPos(null);
-      annotationDragMetaRef.current = null;
-      annotationDragPosRef.current  = null;
-    };
-
-    const onCancel = () => {
-      document.body.style.userSelect = '';
-      setAnnotationDragging(false);
-      setAnnotationDragPos(null);
-      annotationDragMetaRef.current = null;
-      annotationDragPosRef.current  = null;
-    };
-
-    window.addEventListener('mousemove',   onMove);
-    window.addEventListener('mouseup',     onUp);
-    window.addEventListener('touchmove',   onMove, { passive: false });
-    window.addEventListener('touchend',    onUp);
-    window.addEventListener('touchcancel', onCancel);
-    return () => {
-      window.removeEventListener('mousemove',   onMove);
-      window.removeEventListener('mouseup',     onUp);
-      window.removeEventListener('touchmove',   onMove);
-      window.removeEventListener('touchend',    onUp);
-      window.removeEventListener('touchcancel', onCancel);
-      document.body.style.userSelect = '';
-    };
-  }, [annotationDragging, page]);
-
-  useEffect(() => {
-    if (!annotation2Dragging) return;
-    document.body.style.userSelect = 'none';
-
-    const onMove = (e) => {
-      const meta = annotation2DragMetaRef.current;
-      if (!meta) return;
-      const clientX = e.clientX ?? (e.changedTouches?.[0]?.clientX) ?? 0;
-      const pageY   = e.pageY   ?? (e.changedTouches?.[0]?.pageY)   ?? 0;
-      const m = contentMetricsRef.current;
-      if (m.width === 0) return;
-      const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
-      const x_pct = Math.max(minX, Math.min(maxX, ((clientX - m.left) - meta.offsetX_px) / m.width * 100));
-      const y_pct = Math.max(0, Math.min(95, (pageY - meta.offsetY_px) / Y_REFERENCE_HEIGHT * 100));
-      annotation2DragPosRef.current = { x_pct, y_pct };
-      setAnnotation2DragPos({ x_pct, y_pct });
-      if (channelRef.current?.state === 'joined') {
-        channelRef.current.send({ type: 'broadcast', event: 'annotation2_move', payload: { x_pct, y_pct, dragging: true } });
-      }
-    };
-
-    const onUp = async () => {
-      const pos = annotation2DragPosRef.current;
-      if (pos) {
-        const { x_pct, y_pct } = pos;
-        setAnnotation2Pos({ x_pct, y_pct });
-        if (channelRef.current?.state === 'joined') {
-          channelRef.current.send({ type: 'broadcast', event: 'annotation2_move', payload: { x_pct, y_pct, dragging: false } });
-        }
-        await supabase.from('pin_positions').upsert({
-          id: 'annotation2', x_pct, y_pct, type: 'annotation', page,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'id' });
-      }
-      document.body.style.userSelect = '';
-      setAnnotation2Dragging(false);
-      setAnnotation2DragPos(null);
-      annotation2DragMetaRef.current = null;
-      annotation2DragPosRef.current  = null;
-    };
-
-    const onCancel = () => {
-      document.body.style.userSelect = '';
-      setAnnotation2Dragging(false);
-      setAnnotation2DragPos(null);
-      annotation2DragMetaRef.current = null;
-      annotation2DragPosRef.current  = null;
-    };
-
-    window.addEventListener('mousemove',   onMove);
-    window.addEventListener('mouseup',     onUp);
-    window.addEventListener('touchmove',   onMove, { passive: false });
-    window.addEventListener('touchend',    onUp);
-    window.addEventListener('touchcancel', onCancel);
-    return () => {
-      window.removeEventListener('mousemove',   onMove);
-      window.removeEventListener('mouseup',     onUp);
-      window.removeEventListener('touchmove',   onMove);
-      window.removeEventListener('touchend',    onUp);
-      window.removeEventListener('touchcancel', onCancel);
-      document.body.style.userSelect = '';
-    };
-  }, [annotation2Dragging, page]);
 
   // Cancel owner-initiated drag if they log out mid-drag.
   useEffect(() => {
@@ -1324,52 +1109,19 @@ export default function CommentPins({ page, activeTab }) {
   const startDraftDrag = (e) => {
     if (!draft) return;
     e.stopPropagation();
-    const m = contentMetricsRef.current;
     const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
     const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
     const pageY   = e.pageY ?? e.touches?.[0]?.pageY ?? (clientY + window.scrollY);
+    const at = geoRef.current.toPx(draft.x_pct, draft.y_pct);
     dragMetaRef.current = {
       id: '__draft__',
       isDraft: true,
       sessionToken: null,
-      offsetX_px: (clientX - m.left) - (draft.x_pct / 100) * m.width,
-      offsetY_px: pageY - (draft.y_pct / 100) * Y_REFERENCE_HEIGHT,
+      offsetX_px: clientX - at.left,
+      offsetY_px: pageY - at.top,
     };
     dragPosRef.current = { x_pct: draft.x_pct, y_pct: draft.y_pct };
     setDraggingId('__draft__');
-  };
-
-  const startAnnotationDrag = (e) => {
-    if (!isOwner) return;
-    e.stopPropagation();
-    e.preventDefault();
-    const m = contentMetricsRef.current;
-    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
-    const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
-    const pageY   = e.pageY   ?? e.touches?.[0]?.pageY   ?? (clientY + window.scrollY);
-    annotationDragMetaRef.current = {
-      offsetX_px: (clientX - m.left) - (annotationPos.x_pct / 100) * m.width,
-      offsetY_px: pageY - (annotationPos.y_pct / 100) * Y_REFERENCE_HEIGHT,
-    };
-    annotationDragPosRef.current = { x_pct: annotationPos.x_pct, y_pct: annotationPos.y_pct };
-    setAnnotationDragging(true);
-  };
-
-  const startAnnotation2Drag = (e) => {
-    if (!isOwner) return;
-    e.stopPropagation();
-    e.preventDefault();
-    const m = contentMetricsRef.current;
-    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
-    const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
-    const pageY   = e.pageY   ?? e.touches?.[0]?.pageY   ?? (clientY + window.scrollY);
-    const ann2 = annotation2Pos ?? { x_pct: 22, y_pct: 3.5 };
-    annotation2DragMetaRef.current = {
-      offsetX_px: (clientX - m.left) - (ann2.x_pct / 100) * m.width,
-      offsetY_px: pageY - (ann2.y_pct / 100) * Y_REFERENCE_HEIGHT,
-    };
-    annotation2DragPosRef.current = { x_pct: ann2.x_pct, y_pct: ann2.y_pct };
-    setAnnotation2Dragging(true);
   };
 
   const handleEdit = async (id, newBody) => {
@@ -1486,17 +1238,17 @@ export default function CommentPins({ page, activeTab }) {
   const startDrag = (e, id, x_pct, y_pct) => {
     if (!isOwner && !localSessionToken.current) return;
     if (e.stopPropagation) e.stopPropagation();
-    const m = contentMetricsRef.current;
     const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
     const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
     const pageY   = e.pageY   ?? e.touches?.[0]?.pageY   ?? (clientY + window.scrollY);
     dragStartRef.current  = { x: clientX, y: clientY };
     preDragPosRef.current = { x_pct, y_pct };
+    const at = geoRef.current.toPx(x_pct, y_pct);
     dragMetaRef.current = {
       id,
       sessionToken: isOwner ? null : localSessionToken.current,
-      offsetX_px: (clientX - m.left) - (x_pct / 100) * m.width,
-      offsetY_px: pageY - (y_pct / 100) * Y_REFERENCE_HEIGHT,
+      offsetX_px: clientX - at.left,
+      offsetY_px: pageY - at.top,
     };
     dragPosRef.current = { x_pct, y_pct };
     setDraggingId(id);
@@ -1506,15 +1258,11 @@ export default function CommentPins({ page, activeTab }) {
     if (justDraggedRef.current) { justDraggedRef.current = false; return; }
     closeCard();
     if (mode !== 'comment' || draft) return;
-    const m = contentMetricsRef.current;
-    if (m.width === 0) return;
-    // Reject clicks outside the 1512px centered play area
-    const { minX, maxX } = getPlayAreaXBounds(m.left, m.width);
-    const x_pct = ((e.clientX - m.left) / m.width) * 100;
-    if (x_pct < minX || x_pct > maxX) return;
-    const y_pct = (e.pageY / Y_REFERENCE_HEIGHT) * 100;
-    // Nudged to the nearest spot that's on the page and off any button or link.
-    setDraft(resolvePctRef.current(x_pct, y_pct));
+    const geo = geoRef.current;
+    if (!geo) return;
+    // Anywhere on the page; on a button or link, just clear of it.
+    const spot = geo.place(e.clientX, e.pageY);
+    setDraft(geo.fromPx(spot.left, spot.top));
     const savedRealName = isOwner ? 'Wahab' : (() => { try { return localStorage.getItem('wahab_visitor_name') || ''; } catch { return ''; } })();
     setDraftAuthor(savedRealName); setDraftBody('');
   };
@@ -1665,65 +1413,39 @@ export default function CommentPins({ page, activeTab }) {
   // is kept on the page and off controls, so a shorter tab can't hide one); unapproved ones
   // only for the owner. The tab a comment was left on is stored but not used to hide it.
   const isVisibleTo = (c) => c.approved !== false || isOwner;
-  const annotationReady = cHeight > 0 && cAbsTop > 0;
 
-  // Where each pin is drawn. A pin's stored spot (x_pct of the content column, y_pct of
-  // Y_REFERENCE_HEIGHT) is never rewritten by this, so it moves back if the layout frees up.
-  //  - Margins wide enough (MARGIN_MIN): every pin goes into the margin on its side of the
-  //    text column, at its own height, so pins never cover text, images or cards. Pins in
-  //    the same margin are spaced so they don't overlap.
-  //  - Otherwise: at its stored spot, nudged on to the page and off buttons and links.
+  // Where each pin is drawn: exactly at its stored spot (see toPagePx), anywhere on the
+  // page, inside or outside the container, over text and images. The only exceptions:
+  //  - on a button or link (the layout moved one under it): just clear of it;
+  //  - stored past the end of the page (left on a longer tab): at the end, and if several
+  //    are, stacked upwards so they don't sit on each other.
+  // Stored spots are never rewritten by this, so a pin moves back if the layout frees up.
   const viewW = typeof document !== 'undefined' ? document.documentElement.clientWidth : 0;
-  const marginRoom = Math.min(textLeft, viewW - textRight);
-  const inMargins = cWidth > 0 && textRight > textLeft && marginRoom >= MARGIN_MIN;
+  const geo = { textLeft, textRight, viewW };
+  const pinBounds = {
+    minX: PIN_SIZE / 2 + 4, maxX: Math.max(PIN_SIZE / 2 + 4, viewW - PIN_SIZE / 2 - 4),
+    minY: NAV_HEIGHT + PIN_SIZE / 2 + 4, maxY: Math.max(NAV_HEIGHT + PIN_SIZE / 2 + 4, pageHeight - PIN_SIZE / 2 - 4),
+  };
+  const ready = pageHeight > 0 && textRight > textLeft && viewW > 0;
+  const toPx = (x_pct, y_pct) => toPagePx(x_pct, y_pct, geo);
+  const fromPx = (left, top) => fromPagePx(left, top, geo);
+  const place = (left, top) => nearestFreeSpot(left, top, blockers, pinBounds);
+  const sideOf = (left) => (left < textLeft ? 'left' : left > textRight ? 'right' : null);
+  geoRef.current = ready ? { toPx, fromPx, place } : null;
+
   const pinLayout = {};
-  if (pageHeight && cWidth > 0 && !hidden) {
+  if (ready && !hidden) {
     const want = comments.filter(c => !c.parent_id && isVisibleTo(c)).map((c) => {
       const cached = commentPosCache[c.id];
-      const x = cached ? cached.x_pct : c.x_pct;
-      const y = cached ? cached.y_pct : c.y_pct;
-      return { id: c.id, cx: cLeft + (x / 100) * cWidth, cy: (y / 100) * Y_REFERENCE_HEIGHT };
+      return { id: c.id, ...toPx(cached ? cached.x_pct : c.x_pct, cached ? cached.y_pct : c.y_pct) };
     });
-    if (inMargins) {
-      const mid = (textLeft + textRight) / 2;
-      const d = Math.min(MARGIN_OFFSET, marginRoom / 2);
-      const hw = PIN_BOX.w / 2, hh = PIN_BOX.h / 2;
-      const hits = (x, y) => blockers.some((b) =>
-        x - hw < b.right + CLEARANCE && x + hw > b.left - CLEARANCE && y - hh < b.bottom + CLEARANCE && y + hh > b.top - CLEARANCE);
-      for (const side of ['left', 'right']) {
-        const x = side === 'left' ? textLeft - d : textRight + d;
-        let floor = NAV_HEIGHT + hh + 8;
-        want.filter((p) => (p.cx < mid) === (side === 'left')).sort((p, q) => p.cy - q.cy).forEach((p) => {
-          let y = Math.max(p.cy, floor);
-          for (let n = 0; n < 80 && hits(x, y); n++) y += 8;
-          pinLayout[p.id] = { left: x, top: y, side };
-          floor = y + PIN_BOX.h + PIN_GAP;
-        });
-      }
-    } else {
-      want.forEach((p) => {
-        const { x, y } = resolveCardPosition(p.cx, p.cy, blockers, pageHeight, PIN_BOX);
-        pinLayout[p.id] = { left: x, top: y, side: null };
-      });
-    }
+    const pastEnd = want.filter((p) => p.top > pinBounds.maxY).sort((p, q) => p.top - q.top);
+    pastEnd.forEach((p, i) => { p.top = pinBounds.maxY - (pastEnd.length - 1 - i) * (PIN_BOX.h + PIN_GAP); });
+    want.forEach((p) => {
+      const spot = place(p.left, p.top);
+      pinLayout[p.id] = { ...spot, side: sideOf(spot.left) };
+    });
   }
-
-  // A spot in stored units → where it's drawn. With an id, the pin's laid-out place;
-  // without (a new comment's draft card), the nearest spot that's on the page and off
-  // every control.
-  const resolvePx = (x_pct, y_pct, id) => {
-    if (id && pinLayout[id]) return { left: pinLayout[id].left, top: pinLayout[id].top };
-    const cx = cLeft + (x_pct / 100) * cWidth;
-    const cy = (y_pct / 100) * Y_REFERENCE_HEIGHT;
-    if (!pageHeight || cWidth === 0) return { left: cx, top: cy };
-    const { x, y } = resolveCardPosition(cx, cy, blockers, pageHeight, CARD_BOX);
-    return { left: x, top: y };
-  };
-  // Same, in stored units: used when a pin is placed or dropped.
-  resolvePctRef.current = (x_pct, y_pct, id) => {
-    const { left, top } = resolvePx(x_pct, y_pct, id);
-    return { x_pct: ((left - cLeft) / cWidth) * 100, y_pct: (top / Y_REFERENCE_HEIGHT) * 100 };
-  };
 
   // Which side a pin's preview or open card goes: outwards, into the margin, when it fits
   // there; otherwise towards the text (it only covers it while it's open).
@@ -1746,13 +1468,14 @@ export default function CommentPins({ page, activeTab }) {
     const canDelete  = isOwner || isOwnCard;
     const canEdit    = isOwner || isOwnCard;
 
-    // While it's dragged (here or by the owner elsewhere), the pin follows the pointer;
-    // otherwise it's at its laid-out place, and a drag starts from there.
-    const drawn = resolvePctRef.current(x_pct, y_pct, id);
+    // While it's dragged here, the pin is drawn where it will land (dragPos is already the
+    // allowed spot); moved by the owner elsewhere, it follows their position. Otherwise
+    // it's at its laid-out place, and a drag starts from there.
+    const here = pinLayout[id] || { ...toPx(x_pct, y_pct), side: null };
+    const drawn = fromPx(here.left, here.top);
     const moving = (isDragging && dragPos) ? dragPos : (isRemotelyMoving ? remoteMove : null);
-    const pos = moving
-      ? { left: cLeft + (moving.x_pct / 100) * cWidth, top: (moving.y_pct / 100) * Y_REFERENCE_HEIGHT, side: null }
-      : (pinLayout[id] || { ...resolvePx(x_pct, y_pct), side: null });
+    const movingPx = moving && toPx(moving.x_pct, moving.y_pct);
+    const pos = moving ? { ...movingPx, side: sideOf(movingPx.left) } : here;
     const showCard = isExpanded && !moving;
     const cardSide = sideFor(pos, OPEN_CARD_W);
     const previewSide = sideFor(pos, PREVIEW_W);
@@ -2001,31 +1724,6 @@ export default function CommentPins({ page, activeTab }) {
         return renderCard(pin.id, pin.author || 'Anonymous', pin.body, visitorColor(pin.id), x, y, pin.id === draggingId, pin.session_token, pin.approved === false);
       })}
 
-      {page === 'home' && !hidden && annotationReady && annotation2Pos !== null && (() => {
-        const ann2X = (annotation2Dragging && annotation2DragPos) ? annotation2DragPos.x_pct : annotation2Pos.x_pct;
-        const ann2Y = (annotation2Dragging && annotation2DragPos) ? annotation2DragPos.y_pct : annotation2Pos.y_pct;
-        return (
-          <div
-            className="floating-annotation"
-            style={{
-              ...cardWrapperStyle(ann2X, ann2Y, 2, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
-              pointerEvents: isOwner ? 'auto' : 'none',
-              cursor: isOwner ? (annotation2Dragging ? 'grabbing' : 'grab') : 'default',
-              userSelect: 'none',
-            }}
-            onMouseDown={isOwner ? startAnnotation2Drag : undefined}
-            onTouchStart={isOwner ? startAnnotation2Drag : undefined}
-          >
-            <div>Turn off comments if you</div>
-            <div>want using the toolbar!</div>
-            <svg width="34" height="31" viewBox="0 0 48 44" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '2px 0 0 0', transform: 'scaleX(-1)' }}>
-              <path d="M 40 6 C 44 18 24 36 8 28" strokeWidth="2" strokeLinecap="round" fill="none" stroke="currentColor" />
-              <path d="M 16 22 L 8 28 L 16 34" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" stroke="currentColor" />
-            </svg>
-          </div>
-        );
-      })()}
-
       {Object.entries(cursors).map(([id, c]) => (
         <div key={id} style={cursorStyle(c.x_pct, c.y_pct, c.color, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT)}>
           <MousePointer2 size={20} fill={c.color} fillOpacity={0.25} />
@@ -2052,14 +1750,21 @@ export default function CommentPins({ page, activeTab }) {
         </div>
       ))}
 
-      {draft && !hidden && (() => {
-        const draftX = (draggingId === '__draft__' && dragPos) ? dragPos.x_pct : draft.x_pct;
-        const draftY = (draggingId === '__draft__' && dragPos) ? dragPos.y_pct : draft.y_pct;
+      {draft && !hidden && ready && (() => {
+        // A new comment: a pin where it will be saved, with the form beside it (like an
+        // open comment). Its handle moves it, with the same rules as dragging a pin.
+        const at = (draggingId === '__draft__' && dragPos) ? dragPos : draft;
+        const px = toPx(at.x_pct, at.y_pct);
+        const dpos = { ...px, side: sideOf(px.left) };
         return (
-        <div style={{
-          ...cardWrapperStyle(draftX, draftY, 0, cLeft, cWidth, 0, Y_REFERENCE_HEIGHT),
-          cursor: draggingId === '__draft__' ? 'grabbing' : 'default', zIndex: 40,
-        }}>
+        <div
+          className={`cc-pin-wrap cc-pin-open cc-pin-side-${dpos.side || 'none'}`}
+          data-draft-pin=""
+          style={{ position: 'absolute', left: `${px.left}px`, top: `${px.top}px`, transform: 'translate(-50%, -50%)', pointerEvents: 'auto', zIndex: 1002 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span className="cc-pin cc-pin-draft" aria-hidden="true">+</span>
+          <div className={`cc-pin-card cc-pin-card-${sideFor(dpos, OPEN_CARD_W)}${pageHeight > 0 && px.top > pageHeight - 280 ? ' cc-pin-card-up' : ''}`}>
           <div className="cc-card cc-draft" onClick={(e) => e.stopPropagation()}>
             <div
               className="cc-draft-handle"
@@ -2095,6 +1800,7 @@ export default function CommentPins({ page, activeTab }) {
                 {saving ? 'Saving…' : 'Save'}
               </button>
             </div>
+          </div>
           </div>
         </div>
         );
