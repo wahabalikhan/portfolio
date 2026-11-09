@@ -30,8 +30,8 @@ export const caseStudies = [
     description: "Tech jobs straight from employers' own sites: 1,800+ jobs from 290+ companies.",
     // Shown semibold in the main text colour; must appear word for word in the description (null: none).
     metric: '1,800+ jobs from 290+ companies',
-    // Card logos show at 20-24px, so they use the simpler small icon.
-    logo_src: '/images/icons/realtechjobs-small.svg',
+    // The full icon: card logos show at 20-24px, and the small icon is only for below 20px.
+    logo_src: '/images/icons/realtechjobs.svg',
     company: 'RealTechJobs',
     // No screenshot yet: with bg_src null, the card shows thumb_icon centred on thumb_bg (the
     // brand blue) instead. Set bg_src (the search page with the preview open) when it's ready.
