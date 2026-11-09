@@ -25,7 +25,7 @@ const REALTECHJOBS_STATUS = 'building';
 const PRODUCTS = [
   {
     name: 'RealTechJobs',
-    icon: '/images/icons/techjobs.png',
+    icon: '/images/icons/realtechjobs.svg',
     problem: "UK tech jobs straight from companies' own careers pages, every ad in one readable shape.",
     result: '1,800+ jobs from 290+ companies',
     url: 'https://realtechjobs.co.uk',

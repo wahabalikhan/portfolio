@@ -58,7 +58,7 @@ export default function TechJobsPage() {
           <CaseImage src={HERO.src} alt={HERO.alt} onOpen={open} />
         ) : (
           <div className="cs-hero-art">
-            <IconArt src="/images/icons/techjobs-512.png" alt="The RealTechJobs icon, a white T with a green dot, on a dark background" />
+            <IconArt src="/images/icons/realtechjobs-reverse.svg" bg="#1D4ED8" alt="The RealTechJobs icon, a blue R with an arrow on a white square, on a blue background" />
           </div>
         )}
         <AtAGlance items={[

@@ -3079,9 +3079,10 @@ html.dark .home-cs-card:focus-visible .home-cs-title { color: #60a5fa; }
 .home-cs-card-compact .home-cs-title { font-size: 0.875rem; line-height: 1.4; }
 .home-cs-card-compact .home-cs-text { font-size: 0.8125rem; line-height: 1.4; min-height: 2.8em; color: #6b7280; }
 
-/* A product's icon centred on a dark background, standing in for screenshots
+/* A product's icon centred on a background, standing in for screenshots
    (components/IconArt.jsx). It fills its box: the card thumbnail, or .cs-hero-art.
-   The background is a little lighter than the RealTechJobs icon, so the icon's edge shows. */
+   The default background is a dark grey; IconArt's bg prop sets a product's own colour
+   (RealTechJobs: its brand blue, with the reversed white icon). */
 .icon-art {
   display: flex;
   align-items: center;
@@ -3099,6 +3100,9 @@ html.dark .home-cs-card:focus-visible .home-cs-title { color: #60a5fa; }
   border-radius: 22%;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
+/* On a brand colour (IconArt's bg): a small, faint navy shadow instead, so the blue doesn't
+   turn muddy around the white icon. */
+.icon-art-on-brand .icon-art-img { box-shadow: 0 2px 6px rgba(23, 37, 84, 0.2); }
 /* The hero version: 16:10 like the card thumbnails, with the case-study image border. */
 .cs-hero-art {
   aspect-ratio: 16 / 10;
@@ -3141,7 +3145,8 @@ html.dark .cs-hero-art { border-color: rgba(255, 255, 255, 0.12); }
   background: #F9FAFB;
 }
 .product-head { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.5rem; }
-.product-icon { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; }
+/* No rounding: each product icon draws its own rounded corners. */
+.product-icon { width: 32px; height: 32px; flex-shrink: 0; }
 .product-name { font-size: 1.0625rem; font-weight: 700; color: #111827; }
 .product-problem { color: #374151; line-height: 1.55; }
 .product-result { color: #111827; font-weight: 700; line-height: 1.55; margin-top: 0.25rem; }

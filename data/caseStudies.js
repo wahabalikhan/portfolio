@@ -30,12 +30,14 @@ export const caseStudies = [
     description: "Tech jobs straight from employers' own sites: 1,800+ jobs from 290+ companies.",
     // Shown semibold in the main text colour; must appear word for word in the description (null: none).
     metric: '1,800+ jobs from 290+ companies',
-    logo_src: '/images/icons/techjobs.png',
+    // Card logos show at 20-24px, so they use the simpler small icon.
+    logo_src: '/images/icons/realtechjobs-small.svg',
     company: 'RealTechJobs',
-    // No screenshot yet: with bg_src null, the card shows thumb_icon centred on a dark
-    // background instead. Set bg_src (the search page with the preview open) when it's ready.
+    // No screenshot yet: with bg_src null, the card shows thumb_icon centred on thumb_bg (the
+    // brand blue) instead. Set bg_src (the search page with the preview open) when it's ready.
     bg_src: null,
-    thumb_icon: '/images/icons/techjobs-512.png',
+    thumb_icon: '/images/icons/realtechjobs-reverse.svg',
+    thumb_bg: '#1D4ED8',
     link: '/realtechjobs',
     // The browser-tab and search title: the product's name, then the page's H1.
     headline: 'RealTechJobs: taking the faff out of finding a tech job',
