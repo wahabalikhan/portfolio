@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { blogPosts } from '@/data/blogPosts';
 import { caseStudies } from '@/data/caseStudies';
@@ -105,6 +105,18 @@ export default function HomePage() {
       } catch {}
     }, []);
 
+    // Keep an open tooltip inside the window: if it would run off an edge, slide it back in
+    // (its arrow stays over the word).
+    useLayoutEffect(() => {
+      const tip = document.querySelector('.hero-word-tooltip');
+      if (!tip) return;
+      tip.style.setProperty('--tip-shift', '0px');
+      const r = tip.getBoundingClientRect();
+      const vw = document.documentElement.clientWidth;
+      const shift = r.right > vw - 12 ? vw - 12 - r.right : r.left < 12 ? 12 - r.left : 0;
+      tip.style.setProperty('--tip-shift', `${Math.round(shift)}px`);
+    }, [activeTooltip]);
+
     const showTooltip = (word) => {
       if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current);
       setActiveTooltip(word);
@@ -143,15 +155,15 @@ export default function HomePage() {
         </div>
 
         <div className="hero-body">
-          <h1 className="font-bold mb-2 text-gray-900" style={{ fontSize: '2.75rem', lineHeight: '1.12' }}>
-            Hey <span className="nav-wave">👋</span> I'm Wahab (Bobby). I{' '}
+          <h1 className="font-bold mb-2 text-gray-900" style={{ fontSize: '2.65rem', lineHeight: '1.12' }}>
+            Hey <span className="nav-wave">👋</span> I'm Wahab (Bobby).{' '}<br className="hero-break" />I{' '}
             <span className="hero-accent-word hero-accent-design" onClick={() => showTooltip('design')}>
               {activeTooltip === 'design' && <span className="hero-word-tooltip">Figma, mostly 👀</span>}
               design
             </span>
-            {' '}products and help{' '}
+            {' '}products and{' '}
             <span className="hero-accent-word hero-accent-ship" onClick={() => showTooltip('ship')}>
-              {activeTooltip === 'ship' && <span className="hero-word-tooltip">Claude Code helped 🤝</span>}
+              {activeTooltip === 'ship' && <span className="hero-word-tooltip">With engineers at work, and with Claude Code on my own products.</span>}
               ship
             </span>
             {' '}them.
