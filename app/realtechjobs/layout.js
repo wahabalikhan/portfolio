@@ -1,11 +1,11 @@
 import { pageMetadata } from '@/lib/metadata';
 import { caseStudies } from '@/data/caseStudies';
 
-const study = caseStudies.find(s => s.id === 'techjobs');
+const study = caseStudies.find(s => s.id === 'realtechjobs');
 
 export const metadata = pageMetadata({
   name: study.headline,
-  path: '/techjobs/',
+  path: '/realtechjobs/',
   description: study.seoDescription,
 });
 

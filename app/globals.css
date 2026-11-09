@@ -130,9 +130,9 @@ html.dark .hero-subtitle { color: #aaa; }
   color: #6b7280;
   margin-top: 0.75rem;
 }
-/* TechJobs' status, matching BobbyBuilds' status dots (its --warning / --good colours and
+/* RealTechJobs' status, matching BobbyBuilds' status dots (its --warning / --good colours and
    live-pulse): Building is a still amber dot, Live a pulsing green one (still for reduced
-   motion). The status is set in app/page.js (TECHJOBS_STATUS). */
+   motion). The status is set in app/page.js (REALTECHJOBS_STATUS). */
 .hero-status-dot {
   width: 6px;
   height: 6px;
@@ -3081,7 +3081,7 @@ html.dark .home-cs-card:focus-visible .home-cs-title { color: #60a5fa; }
 
 /* A product's icon centred on a dark background, standing in for screenshots
    (components/IconArt.jsx). It fills its box: the card thumbnail, or .cs-hero-art.
-   The background is a little lighter than the TechJobs icon, so the icon's edge shows. */
+   The background is a little lighter than the RealTechJobs icon, so the icon's edge shows. */
 .icon-art {
   display: flex;
   align-items: center;
@@ -3109,7 +3109,7 @@ html.dark .home-cs-card:focus-visible .home-cs-title { color: #60a5fa; }
 }
 html.dark .cs-hero-art { border-color: rgba(255, 255, 255, 0.12); }
 
-/* "Try TechJobs ↗" under a case study's summary. */
+/* "Try RealTechJobs ↗" under a case study's summary. */
 .cs-try-link { color: #2563eb; font-weight: 500; }
 .cs-try-link:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
 @media (hover: hover) {

@@ -11,9 +11,9 @@ import OtherCaseStudies from '@/components/OtherCaseStudies';
 import { AtAGlance, CaseImage, Decision, imageExists, PersonaCards, SectionLabel, ShippedFirst, SimpleBars, VisualSlot } from '@/components/CaseStudyParts';
 
 // Screenshots: each shows once its file is in public/images (VisualSlot). Until the hero
-// (techjobs-search.png) is added, the hero shows the TechJobs icon on a dark background.
+// (techjobs-search.png) is added, the hero shows the RealTechJobs icon on a dark background.
 // When it is, use it for the card thumbnail too (bg_src in data/caseStudies.js).
-const HERO = { src: '/images/techjobs-search.png', alt: 'TechJobs search results with a job open in the preview beside them' };
+const HERO = { src: '/images/techjobs-search.png', alt: 'RealTechJobs search results with a job open in the preview beside them' };
 const SCREENSHOTS = {
   admin: null, // The admin review queue, under "Behind the scenes": set to { src, alt }.
 };
@@ -47,18 +47,18 @@ export default function TechJobsPage() {
         <BackButton />
         <h1 className="text-4xl font-bold mb-2 text-gray-900">Taking the faff out of finding a tech job</h1>
         <p className="text-lg text-gray-700 mt-4 mb-3 leading-relaxed">
-          Job boards bury real roles under recruiter reposts, old listings and walls of text. I designed and built TechJobs, a UK job board that lists jobs straight from employers' own careers pages, so people can judge a role quickly and apply at the source.
+          Job boards bury real roles under recruiter reposts, old listings and walls of text. I designed and built RealTechJobs, a UK job board that lists jobs straight from employers' own careers pages, so people can judge a role quickly and apply at the source. (It launched as TechJobs, and was renamed RealTechJobs in November 2026.)
         </p>
         <p className="mb-6">
-          <a href="https://techjobs.bobbybuilds.app" target="_blank" rel="noopener noreferrer" className="cs-try-link">
-            Try TechJobs ↗<span className="sr-only"> (opens in a new tab)</span>
+          <a href="https://realtechjobs.co.uk" target="_blank" rel="noopener noreferrer" className="cs-try-link">
+            Try RealTechJobs ↗<span className="sr-only"> (opens in a new tab)</span>
           </a>
         </p>
         {imageExists(HERO.src) ? (
           <CaseImage src={HERO.src} alt={HERO.alt} onOpen={open} />
         ) : (
           <div className="cs-hero-art">
-            <IconArt src="/images/icons/techjobs-512.png" alt="The TechJobs icon, a white T with a green dot, on a dark background" />
+            <IconArt src="/images/icons/techjobs-512.png" alt="The RealTechJobs icon, a white T with a green dot, on a dark background" />
           </div>
         )}
         <AtAGlance items={[
@@ -73,7 +73,7 @@ export default function TechJobsPage() {
         <section className="mb-12">
           <SectionLabel>The problem</SectionLabel>
           <h2 className={H2}>Finding a real tech job meant wading through noise</h2>
-          <p className={P}>I started TechJobs after being made redundant in June 2026, and spending months on job boards myself.</p>
+          <p className={P}>I started RealTechJobs after being made redundant in June 2026, and spending months on job boards myself.</p>
           <ul className={UL}>
             <li><span className={LABEL}>For job seekers:</span> the same role appears several times through different recruiters, old listings stay up long after they've closed, and every ad is written differently, so comparing roles means reading thousands of words.</li>
             <li><span className={LABEL}>For trust:</span> "Remote" often means remote somewhere else, and a board full of reposts and dead links makes every listing feel unreliable.</li>
@@ -87,7 +87,7 @@ export default function TechJobsPage() {
           <h2 className={H2}>Goals for users and the business</h2>
           <ul className={UL}>
             <li><span className={LABEL}>For job seekers:</span> find real jobs fast, judge them at a glance, and apply at the source.</li>
-            <li><span className={LABEL}>For TechJobs:</span> earn trust, so people come back and recommend it, and so a Pro plan can work later.</li>
+            <li><span className={LABEL}>For RealTechJobs:</span> earn trust, so people come back and recommend it, and so a Pro plan can work later.</li>
             <li><span className={LABEL}>How I'd know:</span> more searches that lead to Apply, people returning, and few reports of wrong jobs.</li>
           </ul>
         </section>
@@ -175,9 +175,9 @@ export default function TechJobsPage() {
             <li><span className={LABEL}>Saved jobs with "To apply" and "Applied" tabs,</span> plus an "I've applied" tick, so the urgent seeker can track where they are.</li>
             <li><span className={LABEL}>Job alerts you can edit in place,</span> with pause, resume and undo.</li>
           </ol>
-          <VisualSlot src="/images/techjobs-job.png" alt="A TechJobs job page: the role, company, salary, working pattern and level at the top, and an Apply button that goes to the employer's own site" onOpen={open} />
-          <VisualSlot src="/images/techjobs-saved.png" alt="The TechJobs Saved page, with To apply and Applied tabs and an I've applied tick on each job" onOpen={open} />
-          <VisualSlot src="/images/techjobs-alerts.png" alt="TechJobs job alerts, each editable in place, with pause, resume and undo" onOpen={open} />
+          <VisualSlot src="/images/techjobs-job.png" alt="A RealTechJobs job page: the role, company, salary, working pattern and level at the top, and an Apply button that goes to the employer's own site" onOpen={open} />
+          <VisualSlot src="/images/techjobs-saved.png" alt="The RealTechJobs Saved page, with To apply and Applied tabs and an I've applied tick on each job" onOpen={open} />
+          <VisualSlot src="/images/techjobs-alerts.png" alt="RealTechJobs job alerts, each editable in place, with pause, resume and undo" onOpen={open} />
           <p className="text-gray-700 leading-relaxed mb-2"><span className={LABEL}>Details that build trust:</span></p>
           <ul className={UL}>
             <li>One message colour rule: green for success, blue for information, amber for warnings and red for errors, the same everywhere.</li>
@@ -197,7 +197,7 @@ export default function TechJobsPage() {
           <h2 className={H2}>Fewer jobs at first, then more that you can trust</h2>
           <SimpleBars
             bars={LISTINGS}
-            caption="Jobs listed on TechJobs at each stage."
+            caption="Jobs listed on RealTechJobs at each stage."
             summary="Bar chart of jobs listed: about 5,000 before, about 1,000 after switching to jobs only from employers' own sites, and 1,834 after keeping jobs while the employer still lists them."
           />
           <ul className={UL}>
@@ -220,7 +220,7 @@ export default function TechJobsPage() {
         </section>
       </FadeUp>
 
-      <OtherCaseStudies currentId="techjobs" />
+      <OtherCaseStudies currentId="realtechjobs" />
       <Footer />
       <ImageModal
         isOpen={!!selectedImage}

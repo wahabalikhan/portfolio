@@ -2,3 +2,7 @@
 # The HTML CV page was removed: the PDF (Resume ↓ in the nav) covers it.
 /cv   /  301
 /cv/  /  301
+# TechJobs was renamed RealTechJobs (November 2026); old CV links point at /techjobs/.
+/techjobs    /realtechjobs/  301
+/techjobs/   /realtechjobs/  301
+/techjobs/*  /realtechjobs/  301

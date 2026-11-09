@@ -15,20 +15,20 @@ import GitHubContributions from '@/components/GitHubContributions';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import { smoothScrollToElement } from '@/utils/smoothScroll';
 
-// TechJobs' status on BobbyBuilds: 'building' (still amber dot) or 'live' (pulsing green).
+// RealTechJobs' status on BobbyBuilds: 'building' (still amber dot) or 'live' (pulsing green).
 // Set by hand: BobbyBuilds has no public status feed to read it from, so change this when
-// TechJobs' status changes there.
-const TECHJOBS_STATUS = 'building';
+// RealTechJobs' status changes there.
+const REALTECHJOBS_STATUS = 'building';
 
 // "Things I've built" → Products: my own products, each with a one-line problem, one result
 // (optional) and a link to try it.
 const PRODUCTS = [
   {
-    name: 'TechJobs',
+    name: 'RealTechJobs',
     icon: '/images/icons/techjobs.png',
     problem: "UK tech jobs straight from companies' own careers pages, every ad in one readable shape.",
     result: '1,800+ jobs from 290+ companies',
-    url: 'https://techjobs.bobbybuilds.app',
+    url: 'https://realtechjobs.co.uk',
   },
   {
     name: 'BobbyBuilds',
@@ -178,11 +178,11 @@ export default function HomePage() {
           </p>
 
           <p className="hero-status">
-            <span className={`hero-status-dot is-${TECHJOBS_STATUS}`} aria-hidden="true" />
+            <span className={`hero-status-dot is-${REALTECHJOBS_STATUS}`} aria-hidden="true" />
             <span>
               Currently building{' '}
-              <a href="https://techjobs.bobbybuilds.app" target="_blank" rel="noopener noreferrer">
-                TechJobs ↗
+              <a href="https://realtechjobs.co.uk" target="_blank" rel="noopener noreferrer">
+                RealTechJobs ↗
               </a>
               , a UK job board with 1,800+ jobs, at{' '}
               <a href="https://bobbybuilds.app" target="_blank" rel="noopener noreferrer">

@@ -3,7 +3,7 @@
 // Sends BobbyBuilds HQ the number of comments waiting for approval, as the product
 // number "comments_waiting" (admin-only in HQ: its public switch stays off). The site
 // nudges this after a visitor posts or edits, and after the owner approves or deletes.
-// Like Tech Jobs' review_waiting, it goes to HQ's /v1/metrics with the project's secret
+// Like RealTechJobs' review_waiting, it goes to HQ's /v1/metrics with the project's secret
 // key, so it has to run here, never in the browser.
 //
 // Needs, in the Pages project's settings (Production):

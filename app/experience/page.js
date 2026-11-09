@@ -16,7 +16,7 @@ const EXPERIENCE = [
     logo: '/images/icons/bobbybuilds.png',
     bullets: [
       <>Designing and building my own products in public, with honest numbers for each, at <a href="https://bobbybuilds.app" target="_blank" rel="noopener noreferrer" className={BB_LINK}>bobbybuilds.app</a>.</>,
-      <><a href="https://techjobs.bobbybuilds.app" target="_blank" rel="noopener noreferrer" className={BB_LINK}>TechJobs</a>: a UK job board with 1,800+ tech jobs taken straight from 290+ companies' own careers pages, designed and built with Claude Code.</>,
+      <><a href="https://realtechjobs.co.uk" target="_blank" rel="noopener noreferrer" className={BB_LINK}>RealTechJobs</a> (renamed from TechJobs): a UK job board with 1,800+ tech jobs taken straight from 290+ companies' own careers pages, designed and built with Claude Code.</>,
       'Set the AI up to succeed: studied 6,466 real job ads, then wrote the rules and examples it uses to sort every ad into the same sections.',
       'Checked the AI rather than trusting it: built an answer sheet of hand-checked ads, overruled the AI where it was confidently wrong, and tested it on ads it had never seen (79% correct with rules alone, between 87% and 92% with AI).',
       "Chose quality over volume, listing only jobs from employers' own sites, and improved the product through a UX audit.",
