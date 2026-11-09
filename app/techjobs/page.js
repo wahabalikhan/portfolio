@@ -8,17 +8,22 @@ import Footer from '@/components/Footer';
 import IconArt from '@/components/IconArt';
 import ImageModal from '@/components/ImageModal';
 import OtherCaseStudies from '@/components/OtherCaseStudies';
-import { AtAGlance, CaseImage, Decision, PersonaCards, SectionLabel } from '@/components/CaseStudyParts';
+import { AtAGlance, CaseImage, Decision, imageExists, PersonaCards, SectionLabel, ShippedFirst, SimpleBars, VisualSlot } from '@/components/CaseStudyParts';
 
-// Screenshots, to add later: set one to { src, alt } and it shows in its place. Until then
-// nothing shows, except the hero, which shows the TechJobs icon on a dark background.
-// When the hero screenshot is added, use it for the card thumbnail too (bg_src in
-// data/caseStudies.js).
+// Screenshots: each shows once its file is in public/images (VisualSlot). Until the hero
+// (techjobs-search.png) is added, the hero shows the TechJobs icon on a dark background.
+// When it is, use it for the card thumbnail too (bg_src in data/caseStudies.js).
+const HERO = { src: '/images/techjobs-search.png', alt: 'TechJobs search results with a job open in the preview beside them' };
 const SCREENSHOTS = {
-  hero: null, // The search page with the preview open.
-  saved: null, // The Saved page, under "Final design".
-  admin: null, // The admin review queue, under "Behind the scenes".
+  admin: null, // The admin review queue, under "Behind the scenes": set to { src, alt }.
 };
+
+// Jobs listed at each stage, for the chart above the results.
+const LISTINGS = [
+  { label: 'Before', value: 5000, display: '~5,000' },
+  { label: 'Company-first', value: 1000, display: '~1,000' },
+  { label: 'Kept while listed', value: 1834 },
+];
 
 const PERSONAS = [
   { name: 'The focused switcher', text: 'In work, browsing on their phone in spare moments. They want to judge a role in seconds, and only see ones worth their time.' },
@@ -49,8 +54,8 @@ export default function TechJobsPage() {
             Try TechJobs ↗<span className="sr-only"> (opens in a new tab)</span>
           </a>
         </p>
-        {SCREENSHOTS.hero ? (
-          <CaseImage src={SCREENSHOTS.hero.src} alt={SCREENSHOTS.hero.alt} onOpen={open} />
+        {imageExists(HERO.src) ? (
+          <CaseImage src={HERO.src} alt={HERO.alt} onOpen={open} />
         ) : (
           <div className="cs-hero-art">
             <IconArt src="/images/icons/techjobs-512.png" alt="The TechJobs icon, a white T with a green dot, on a dark background" />
@@ -72,6 +77,18 @@ export default function TechJobsPage() {
           <ul className={UL}>
             <li><span className={LABEL}>For job seekers:</span> the same role appears several times through different recruiters, old listings stay up long after they've closed, and every ad is written differently, so comparing roles means reading thousands of words.</li>
             <li><span className={LABEL}>For trust:</span> "Remote" often means remote somewhere else, and a board full of reposts and dead links makes every listing feel unreliable.</li>
+          </ul>
+        </section>
+      </FadeUp>
+
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Goals</SectionLabel>
+          <h2 className={H2}>Goals for users and the business</h2>
+          <ul className={UL}>
+            <li><span className={LABEL}>For job seekers:</span> find real jobs fast, judge them at a glance, and apply at the source.</li>
+            <li><span className={LABEL}>For TechJobs:</span> earn trust, so people come back and recommend it, and so a Pro plan can work later.</li>
+            <li><span className={LABEL}>How I'd know:</span> more searches that lead to Apply, people returning, and few reports of wrong jobs.</li>
           </ul>
         </section>
       </FadeUp>
@@ -102,7 +119,7 @@ export default function TechJobsPage() {
       <FadeUp delay={100}>
         <section className="mb-12">
           <SectionLabel>Decisions</SectionLabel>
-          <h2 className={`${H2} mb-6`}>Four decisions that shaped it</h2>
+          <h2 className={`${H2} mb-6`}>Saying no to volume</h2>
           <Decision
             n={1}
             title="Quality over volume: jobs only from employers' own sites"
@@ -139,9 +156,11 @@ export default function TechJobsPage() {
             parts={[
               { label: 'Options:', text: 'use AI to rearrange every job ad into the same sections, or start with only the facts I could prove were right.' },
               { label: 'What happened:', text: 'I built an answer sheet of hand-checked ads and tested the AI on ads it had never seen. It scored well on companies it knew, but not well enough on new ones: a wrongly sorted ad would mislead people.' },
-              { label: 'Why I held back:', text: "the four key facts (salary, working pattern, contract and level) were right 99.7% of the time using rules alone. So those ship first, after a week running quietly in the background, and the full layout waits until it's earned." },
+              { label: 'Why I held back:', text: "the four key facts (salary, working pattern, contract and level) were right 99.7% of the time using rules alone." },
             ]}
-          />
+          >
+            <ShippedFirst>The four facts people check first: salary, working pattern, contract and level. The full layout waits until it's earned.</ShippedFirst>
+          </Decision>
         </section>
       </FadeUp>
 
@@ -149,7 +168,6 @@ export default function TechJobsPage() {
         <section className="mb-12">
           <SectionLabel>Final design</SectionLabel>
           <h2 className={H2}>From search to the employer's site in a few clicks</h2>
-          {SCREENSHOTS.saved && <CaseImage src={SCREENSHOTS.saved.src} alt={SCREENSHOTS.saved.alt} onOpen={open} />}
           <ol className="list-decimal pl-5 text-gray-700 leading-relaxed mb-6 space-y-2">
             <li><span className={LABEL}>Search that understands plain English:</span> "product designer over 60k in Leeds" is read as a role, a salary and a place, without any forms to fill in.</li>
             <li><span className={LABEL}>Filters for what matters:</span> working pattern, salary, level and "Remote from the UK", with the job count shown before you apply them.</li>
@@ -157,11 +175,16 @@ export default function TechJobsPage() {
             <li><span className={LABEL}>Saved jobs with "To apply" and "Applied" tabs,</span> plus an "I've applied" tick, so the urgent seeker can track where they are.</li>
             <li><span className={LABEL}>Job alerts you can edit in place,</span> with pause, resume and undo.</li>
           </ol>
+          <VisualSlot src="/images/techjobs-job.png" alt="A TechJobs job page: the role, company, salary, working pattern and level at the top, and an Apply button that goes to the employer's own site" onOpen={open} />
+          <VisualSlot src="/images/techjobs-saved.png" alt="The TechJobs Saved page, with To apply and Applied tabs and an I've applied tick on each job" onOpen={open} />
+          <VisualSlot src="/images/techjobs-alerts.png" alt="TechJobs job alerts, each editable in place, with pause, resume and undo" onOpen={open} />
           <p className="text-gray-700 leading-relaxed mb-2"><span className={LABEL}>Details that build trust:</span></p>
           <ul className={UL}>
             <li>One message colour rule: green for success, blue for information, amber for warnings and red for errors, the same everywhere.</li>
             <li>Honest freshness: "Last checked 3 days ago" instead of claiming a job is still open when that hasn't been checked recently.</li>
             <li>Phones first-class: no layout jump when results load, Back returns you to exactly where you were, 44px tap targets, and a skip link for keyboard users.</li>
+            <li>Honest labels: 'Reposted' on jobs that were taken down and listed again, and how long a job has been open, with the dates on hover.</li>
+            <li>Report this job: when three different people report a job, it's hidden while it's checked again.</li>
           </ul>
           <p className={P}><span className={LABEL}>Behind the scenes:</span> an admin review page where new companies are checked by an AI review assistant first. Companies are approved, held or rejected automatically, with an undo, so the board runs itself.</p>
           {SCREENSHOTS.admin && <CaseImage src={SCREENSHOTS.admin.src} alt={SCREENSHOTS.admin.alt} onOpen={open} />}
@@ -172,6 +195,11 @@ export default function TechJobsPage() {
         <section className="mb-12">
           <SectionLabel>Results</SectionLabel>
           <h2 className={H2}>Fewer jobs at first, then more that you can trust</h2>
+          <SimpleBars
+            bars={LISTINGS}
+            caption="Jobs listed on TechJobs at each stage."
+            summary="Bar chart of jobs listed: about 5,000 before, about 1,000 after switching to jobs only from employers' own sites, and 1,834 after keeping jobs while the employer still lists them."
+          />
           <ul className={UL}>
             <li>1,834 jobs from 291 companies, every one straight from the employer's own site.</li>
             <li>81% more listings after keeping jobs while they're still listed, without adding old ones.</li>
@@ -188,7 +216,7 @@ export default function TechJobsPage() {
           <h2 className={H2}>Trust is the product</h2>
           <p className={P}>Every big decision, from company-first to holding back the AI, came down to one question: will this make people trust what they see? Saying no to volume, and to an impressive-looking AI feature that wasn't ready, made the product better.</p>
           <p className={P}><span className={LABEL}>What I'd do differently:</span> test the AI on unseen examples from day one. My first results looked excellent only because I was measuring on the same examples I'd tuned it on.</p>
-          <p className={P}><span className={LABEL}>Next:</span> showing the four key facts on every job, "Open for 60 days" and "Reposted" labels, and a Pro plan.</p>
+          <p className={P}><span className={LABEL}>Next:</span> showing the key facts and the sorted layout on every job, and a Pro plan.</p>
         </section>
       </FadeUp>
 

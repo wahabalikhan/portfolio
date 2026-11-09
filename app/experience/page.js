@@ -147,13 +147,12 @@ export default function ExperiencePage() {
       <FadeUp delay={100}>
         <h1 className="text-3xl font-bold mb-6 text-gray-900">Experience</h1>
 
-        <div className="mb-10">
+        <div className="exp-list">
           {EXPERIENCE.map((job, i) => (
             <ExperienceItem key={i} job={job} />
           ))}
         </div>
 
-        <section className="border-t border-gray-200 pt-10 pb-0" />
         <h2 className="text-2xl font-bold mb-8 text-gray-900">References</h2>
 
         <div className="space-y-10 mb-10">

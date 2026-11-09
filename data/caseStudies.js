@@ -89,7 +89,7 @@ export const caseStudies = [
     metric: null,
     logo_src: '/images/adverity.jpg',
     company: 'Adverity',
-    bg_src: '/images/ai_workshop.png',
+    bg_src: '/images/ai_thumbnail.png',
     link: '/ai-workflow',
     // The case study page's H1, used as its browser-tab and search title.
     headline: 'Designing closer to the real product',
