@@ -2337,6 +2337,7 @@ html.dark .cs-eyebrow { color: #9CA3AF; }
   border: 1px solid #E5E7EB;
   transition: opacity 0.15s ease;
 }
+.cs-figure-button picture { display: block; }
 .cs-figure-button:focus-visible img { opacity: 0.9; }
 @media (hover: hover) {
   .cs-figure-button:hover img { opacity: 0.9; }
@@ -3081,8 +3082,7 @@ html.dark .home-cs-card:focus-visible .home-cs-title { color: #60a5fa; }
 
 /* A product's icon centred on a background, standing in for screenshots
    (components/IconArt.jsx). It fills its box: the card thumbnail, or .cs-hero-art.
-   The default background is a dark grey; IconArt's bg prop sets a product's own colour
-   (RealTechJobs: its brand blue, with the reversed white icon). */
+   The default background is a dark grey; IconArt's bg prop sets a product's own colour. */
 .icon-art {
   display: flex;
   align-items: center;
@@ -3112,6 +3112,51 @@ html.dark .home-cs-card:focus-visible .home-cs-title { color: #60a5fa; }
   overflow: hidden;
 }
 html.dark .cs-hero-art { border-color: rgba(255, 255, 255, 0.12); }
+
+/* The RealTechJobs thumbnail (components/RealTechJobsThumb.jsx): fills its box, with every size
+   in cqw (1% of its width), so it scales like an image but stays sharp. The icon, wordmark and
+   headline sizes match RealTechJobs' own thumbnail. The logo and
+   wordmark sit top left; the headline is left-aligned and centred vertically in the whole box.
+   The layout is on the inner box, because cqw units resolve against the parent container. */
+.rtj-thumb {
+  container-type: inline-size;
+  width: 100%;
+  height: 100%;
+  background: #1D4ED8;
+}
+.rtj-thumb-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding: 0 6.22cqw;
+  color: #FFFFFF;
+  font-family: 'Geist', 'Inter', sans-serif;
+  text-align: left;
+}
+.rtj-thumb-lockup {
+  position: absolute;
+  top: 6.02cqw;
+  left: 6.22cqw;
+  display: flex;
+  align-items: center;
+}
+.rtj-thumb-icon { width: 6.22cqw; height: 6.22cqw; display: block; flex-shrink: 0; }
+.rtj-thumb-wordmark {
+  margin-left: 1.87cqw;
+  font-size: 3.84cqw;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.rtj-thumb-headline {
+  margin: 0;
+  font-size: 7.05cqw;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
 
 /* "Try RealTechJobs ↗" under a case study's summary. */
 .cs-try-link { color: #2563eb; font-weight: 500; }

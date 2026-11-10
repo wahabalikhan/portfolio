@@ -34,6 +34,12 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&display=swap"
           rel="stylesheet"
         />
+        {/* Geist, RealTechJobs' font, for its thumbnail (components/RealTechJobsThumb.jsx): only
+            its two weights and only the letters it uses, so the file is tiny. */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@700;800&display=swap&text=RealTechJobs%20Only%20real%20tech%20jobs%2C%20straight%20from%20employers."
+          rel="stylesheet"
+        />
         {/* Bobby Builds: my own cookie-free analytics. Sends nothing with Global Privacy Control or Do Not Track on. */}
         <script
           defer

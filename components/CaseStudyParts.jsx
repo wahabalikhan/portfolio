@@ -46,11 +46,16 @@ export function MarkerLayer({ markers }) {
 
 // A case-study image that opens the click-to-enlarge viewer, optionally with markers
 // and a caption underneath.
-export function CaseImage({ src, alt, markers, caption, onOpen, className = '' }) {
+// For fast, sharp screenshots, pass `webp` (a srcset of WebP files at several widths), with
+// `src` as the PNG fallback, `width` and `height` (so the page doesn't jump as it loads) and
+// `full` (the largest file, for the viewer). Browsers pick the WebP that suits the screen.
+const COLUMN_SIZES = '(min-width: 768px) 720px, calc(100vw - 3rem)';
+export function CaseImage({ src, alt, markers, caption, onOpen, className = '', webp, width, height, full }) {
+  const img = <img src={src} alt={alt} width={width} height={height} loading={webp ? 'lazy' : undefined} decoding={webp ? 'async' : undefined} />;
   return (
     <figure className={`cs-figure ${className}`}>
-      <button type="button" className="cs-figure-button" onClick={() => onOpen({ src, alt, markers })} aria-label={`Enlarge image: ${alt}`}>
-        <img src={src} alt={alt} />
+      <button type="button" className="cs-figure-button" onClick={() => onOpen({ src: full || src, alt, markers })} aria-label={`Enlarge image: ${alt}`}>
+        {webp ? <picture><source type="image/webp" srcSet={webp} sizes={COLUMN_SIZES} />{img}</picture> : img}
         <MarkerLayer markers={markers} />
       </button>
       {caption && <figcaption className="cs-figure-caption">{caption}</figcaption>}

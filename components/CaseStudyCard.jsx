@@ -1,10 +1,14 @@
 import Link from 'next/link';
 import IconArt from '@/components/IconArt';
+import RealTechJobsThumb from '@/components/RealTechJobsThumb';
+
+// Thumbnails built in code, by a study's thumb_art.
+const THUMB_ART = { realtechjobs: RealTechJobsThumb };
 
 // A case-study card: the company logo with the headline beside it (two lines at most), the
 // description (up to two lines, including the headline result; every card keeps room for
-// two lines), then a 16:10 thumbnail cropped from the centre (or, with no bg_src yet, the
-// study's thumb_icon on its thumb_bg colour, or a dark background).
+// two lines), then a 16:10 thumbnail cropped from the centre (or, with no bg_src, the study's
+// thumb_art built in code, or its thumb_icon on its thumb_bg colour, or a dark background).
 // The company's name is the logo's alt text and shows in a tooltip on hover. The thumbnail
 // sits at the bottom of the card, so thumbnails line up across a row. Reads one entry of
 // data/caseStudies.js. `compact`: smaller type, for "Other case studies".
@@ -22,6 +26,7 @@ function Description({ text, metric }) {
 }
 
 export default function CaseStudyCard({ study, compact = false }) {
+  const Art = THUMB_ART[study.thumb_art];
   return (
     <Link href={study.link} className={`case-study-link home-cs-card group${compact ? ' home-cs-card-compact' : ''}`}>
       <div className="home-cs-body">
@@ -37,7 +42,9 @@ export default function CaseStudyCard({ study, compact = false }) {
         <p className="home-cs-text text-gray-500"><Description text={study.description} metric={study.metric} /></p>
       </div>
       <div className="cs-thumb home-cs-thumb">
-        {study.bg_src ? <img src={study.bg_src} alt={study.title} /> : <IconArt src={study.thumb_icon} bg={study.thumb_bg} />}
+        {study.bg_src ? <img src={study.bg_src} alt={study.title} />
+          : Art ? <Art alt={study.title} />
+          : <IconArt src={study.thumb_icon} bg={study.thumb_bg} />}
       </div>
     </Link>
   );

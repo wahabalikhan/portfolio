@@ -5,17 +5,37 @@ import BackButton from '@/components/BackButton';
 import CaseStudyReadTracker from '@/components/CaseStudyReadTracker';
 import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
-import IconArt from '@/components/IconArt';
 import ImageModal from '@/components/ImageModal';
 import OtherCaseStudies from '@/components/OtherCaseStudies';
-import { AtAGlance, CaseImage, Decision, imageExists, PersonaCards, SectionLabel, ShippedFirst, SimpleBars, VisualSlot } from '@/components/CaseStudyParts';
+import RealTechJobsThumb from '@/components/RealTechJobsThumb';
+import { AtAGlance, CaseImage, Decision, PersonaCards, SectionLabel, ShippedFirst, SimpleBars, VisualSlot } from '@/components/CaseStudyParts';
 
-// Screenshots: each shows once its file is in public/images (VisualSlot). Until the hero
-// (techjobs-search.png) is added, the hero shows the RealTechJobs icon on a dark background.
-// When it is, use it for the card thumbnail too (bg_src in data/caseStudies.js).
-const HERO = { src: '/images/techjobs-search.png', alt: 'RealTechJobs search results with a job open in the preview beside them' };
+// Screenshots in public/images/realtechjobs: each cropped to the page's content column, as WebP
+// at 720px (the column's width) and at full size (1040px, the capture's own resolution, for
+// sharp screens and the viewer), with a PNG fallback.
+const shot = (name, height) => ({
+  src: `/images/realtechjobs/${name}-1040.png`,
+  webp: `/images/realtechjobs/${name}-720.webp 720w, /images/realtechjobs/${name}-1040.webp 1040w`,
+  full: `/images/realtechjobs/${name}-1040.webp`,
+  width: 1040,
+  height,
+});
 const SCREENSHOTS = {
-  admin: null, // The admin review queue, under "Behind the scenes": set to { src, alt }.
+  search: {
+    ...shot('search-preview', 947),
+    alt: "RealTechJobs search results for 'product designer': 41 jobs on the left, each with its company, location and when it was posted, and a Senior Product Designer role at the Financial Times open in a preview on the right, showing 'Salary not stated', London, Senior, an 'Apply on Financial Times's site' button and the employer's own job description.",
+    caption: "Search with a job open in the preview. The facts come first, even when it's \"Salary not stated\", then the employer's own words, and Apply goes straight to their site, so people can compare roles without losing their place.",
+  },
+  approvals: {
+    ...shot('admin-approvals', 949),
+    alt: "The RealTechJobs admin page. A summary reads: This week: 82 checked, 39 approved automatically, 29 decided by you, 0 waiting, you agreed 27 of 28 (96%). Below it, 'Companies to review (0)' says nothing is waiting, 'On hold (13)' is collapsed, and 'Approved automatically this week (39)' lists THG, Sona and Neuphonic, each with the assistant's reason and an Undo button.",
+    caption: "The approvals queue. Each week's summary shows how often I agreed with the AI review assistant (27 of 28), which is what lets it approve companies on its own, and every automatic approval can be undone.",
+  },
+  onHold: {
+    ...shot('admin-on-hold', 947),
+    alt: "The RealTechJobs admin page with 'On hold (13)' open: JOOR, Oxa and Hearst, each held automatically, with a note saying why, such as a name that's a common word or most of a company's jobs being outside the UK, and a Back to queue button.",
+    caption: "Companies the assistant isn't sure about are held, not guessed at, with a note saying why, so a doubtful company never reaches the board without a person checking it.",
+  },
 };
 
 // Jobs listed at each stage, for the chart above the results.
@@ -54,13 +74,9 @@ export default function TechJobsPage() {
             Try RealTechJobs ↗<span className="sr-only"> (opens in a new tab)</span>
           </a>
         </p>
-        {imageExists(HERO.src) ? (
-          <CaseImage src={HERO.src} alt={HERO.alt} onOpen={open} />
-        ) : (
-          <div className="cs-hero-art">
-            <IconArt src="/images/icons/realtechjobs-reverse.svg" bg="#1D4ED8" alt="The RealTechJobs icon, a blue R with an arrow on a white square, on a blue background" />
-          </div>
-        )}
+        <div className="cs-hero-art">
+          <RealTechJobsThumb alt="RealTechJobs: its white icon and name on the brand blue, above the line 'Only real tech jobs, straight from employers.'" />
+        </div>
         <AtAGlance items={[
           { label: 'Role', value: 'Product designer and builder: research, product decisions, design, and building with Claude Code' },
           { label: 'Team', value: 'Just me' },
@@ -175,6 +191,7 @@ export default function TechJobsPage() {
             <li><span className={LABEL}>Saved jobs with "To apply" and "Applied" tabs,</span> plus an "I've applied" tick, so the urgent seeker can track where they are.</li>
             <li><span className={LABEL}>Job alerts you can edit in place,</span> with pause, resume and undo.</li>
           </ol>
+          <CaseImage {...SCREENSHOTS.search} onOpen={open} />
           <VisualSlot src="/images/techjobs-job.png" alt="A RealTechJobs job page: the role, company, salary, working pattern and level at the top, and an Apply button that goes to the employer's own site" onOpen={open} />
           <VisualSlot src="/images/techjobs-saved.png" alt="The RealTechJobs Saved page, with To apply and Applied tabs and an I've applied tick on each job" onOpen={open} />
           <VisualSlot src="/images/techjobs-alerts.png" alt="RealTechJobs job alerts, each editable in place, with pause, resume and undo" onOpen={open} />
@@ -186,8 +203,16 @@ export default function TechJobsPage() {
             <li>Honest labels: 'Reposted' on jobs that were taken down and listed again, and how long a job has been open, with the dates on hover.</li>
             <li>Report this job: when three different people report a job, it's hidden while it's checked again.</li>
           </ul>
-          <p className={P}><span className={LABEL}>Behind the scenes:</span> an admin review page where new companies are checked by an AI review assistant first. Companies are approved, held or rejected automatically, with an undo, so the board runs itself.</p>
-          {SCREENSHOTS.admin && <CaseImage src={SCREENSHOTS.admin.src} alt={SCREENSHOTS.admin.alt} onOpen={open} />}
+        </section>
+      </FadeUp>
+
+      <FadeUp delay={100}>
+        <section className="mb-12">
+          <SectionLabel>Back office</SectionLabel>
+          <h2 className={H2}>The internal tools that run the board</h2>
+          <p className={P}>Every new company is checked by an AI review assistant before its jobs are listed. Companies are approved, held or rejected automatically, with an undo, so the board runs itself, and I only step in when the assistant isn't sure.</p>
+          <CaseImage {...SCREENSHOTS.approvals} onOpen={open} />
+          <CaseImage {...SCREENSHOTS.onHold} onOpen={open} />
         </section>
       </FadeUp>
 

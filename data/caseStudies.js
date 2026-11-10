@@ -33,11 +33,10 @@ export const caseStudies = [
     // The full icon: card logos show at 20-24px, and the small icon is only for below 20px.
     logo_src: '/images/icons/realtechjobs.svg',
     company: 'RealTechJobs',
-    // No screenshot yet: with bg_src null, the card shows thumb_icon centred on thumb_bg (the
-    // brand blue) instead. Set bg_src (the search page with the preview open) when it's ready.
+    // No bg_src: the thumbnail is built in code (thumb_art: components/RealTechJobsThumb.jsx),
+    // so it stays sharp. The case study's hero uses the same one.
     bg_src: null,
-    thumb_icon: '/images/icons/realtechjobs-reverse.svg',
-    thumb_bg: '#1D4ED8',
+    thumb_art: 'realtechjobs',
     link: '/realtechjobs',
     // The browser-tab and search title: the product's name, then the page's H1.
     headline: 'RealTechJobs: taking the faff out of finding a tech job',
