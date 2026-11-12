@@ -10,6 +10,19 @@ const BB_LINK = 'link-text text-blue-600';
 
 const EXPERIENCE = [
   {
+    company: 'Empathy Labs',
+    role: 'UX Designer',
+    years: '2026 → Present',
+    // Empathy Labs' own icon (its apple-touch-icon, 180px, from empathylabs.co.uk).
+    logo: '/images/empathylabs.png',
+    bullets: [
+      'Complex results made clear: redesigning how teams see their results and what to act on, so the evidence behind every insight is easy to follow.',
+      'Product logic for several user types: mapping one end-to-end process for different roles across a clinical team, including the edge cases and incomplete states a real team runs into.',
+      'Information architecture: restructuring navigation so the places people return to are easy to find, and the steps of a process are clear, removing dead ends.',
+      'Turning feedback into design: mapping stakeholder and usability feedback into the redesign, so every change traces back to the evidence behind it, and observing usability research sessions.',
+    ],
+  },
+  {
     company: 'BobbyBuilds',
     role: 'Independent Product Designer',
     years: '2026 → Present',
