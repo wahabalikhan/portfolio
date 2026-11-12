@@ -11,13 +11,14 @@ const BB_LINK = 'link-text text-blue-600';
 const EXPERIENCE = [
   {
     company: 'Empathy Labs',
-    role: 'UX Designer',
+    role: 'UX Designer (part-time contract)',
     years: '2026 → Present',
+    note: 'Redesigning a B2B assessment tool for specialist teams.',
     // Empathy Labs' own icon (its apple-touch-icon, 180px, from empathylabs.co.uk).
     logo: '/images/empathylabs.png',
     bullets: [
       'Complex results made clear: redesigning how teams see their results and what to act on, so the evidence behind every insight is easy to follow.',
-      'Product logic for several user types: mapping one end-to-end process for different roles across a clinical team, including the edge cases and incomplete states a real team runs into.',
+      'Product logic for several user types: mapping one end-to-end process for different roles across a specialist team, including the edge cases and incomplete states a real team runs into.',
       'Information architecture: restructuring navigation so the places people return to are easy to find, and the steps of a process are clear, removing dead ends.',
       'Turning feedback into design: mapping stakeholder and usability feedback into the redesign, so every change traces back to the evidence behind it, and observing usability research sessions.',
     ],
@@ -26,9 +27,9 @@ const EXPERIENCE = [
     company: 'BobbyBuilds',
     role: 'Independent Product Designer',
     years: '2026 → Present',
+    note: <>Designing and building my own products in public, with honest numbers for each, at <a href="https://bobbybuilds.app" target="_blank" rel="noopener noreferrer" className={BB_LINK}>bobbybuilds.app</a>.</>,
     logo: '/images/icons/bobbybuilds.png',
     bullets: [
-      <>Designing and building my own products in public, with honest numbers for each, at <a href="https://bobbybuilds.app" target="_blank" rel="noopener noreferrer" className={BB_LINK}>bobbybuilds.app</a>.</>,
       <><a href="https://realtechjobs.co.uk" target="_blank" rel="noopener noreferrer" className={BB_LINK}>RealTechJobs</a> (renamed from TechJobs): a UK job board with 1,800+ tech jobs taken straight from 290+ companies' own careers pages, designed and built with Claude Code.</>,
       'Set the AI up to succeed: studied 6,466 real job ads, then wrote the rules and examples it uses to sort every ad into the same sections.',
       'Checked the AI rather than trusting it: built an answer sheet of hand-checked ads, overruled the AI where it was confidently wrong, and tested it on ads it had never seen (79% correct with rules alone, between 87% and 92% with AI).',
@@ -39,7 +40,7 @@ const EXPERIENCE = [
     company: 'Adverity',
     role: 'AI Product Designer',
     years: '2026 → 2026',
-    note: 'Role ended due to redundancy from organisational restructures.',
+    note: 'Data and marketing intelligence platform. Role ended in a company restructuring.',
     logo: '/images/adverity.jpg',
     bullets: [
       'Helped get an AI-assisted design workflow from half-built to team-wide, so designers started from the live product instead of rebuilding screens from memory.',
@@ -52,6 +53,7 @@ const EXPERIENCE = [
     company: 'Matillion',
     role: 'Product Designer',
     years: '2021 → 2026',
+    note: 'Data pipeline and integration platform used by data engineers to build, run and manage data workflows at scale.',
     logo: '/images/matillion-logo.svg',
     bullets: [
       'Designed the Git diff interface for high-risk pipeline actions, achieving 34% more successful commits and 15% fewer error recoveries in the first 30 days.',

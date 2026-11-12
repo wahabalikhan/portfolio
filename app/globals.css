@@ -123,7 +123,7 @@ html.dark .hero-subtitle { color: #aaa; }
    Dark: #848b99 on #050f1b is 5.62:1, a step below the subtext's #9ca3af. */
 .hero-status {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   font-size: 13px;
   line-height: 1.5;
@@ -138,6 +138,9 @@ html.dark .hero-subtitle { color: #aaa; }
   height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
+  /* Centred on the first line ("Currently"), not the whole block, when the text wraps:
+     half of one line (1.5em) minus half the dot. */
+  margin-top: calc((1.5em - 6px) / 2);
 }
 .hero-status-dot.is-building { background: #fab219; }
 .hero-status-dot.is-live {

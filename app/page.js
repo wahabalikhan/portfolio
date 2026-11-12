@@ -180,7 +180,7 @@ export default function HomePage() {
           <p className="hero-status">
             <span className={`hero-status-dot is-${REALTECHJOBS_STATUS}`} aria-hidden="true" />
             <span>
-              Currently building{' '}
+              Currently designing an assessment tool for specialist teams at Empathy Labs (part-time contract), and building{' '}
               <a href="https://realtechjobs.co.uk" target="_blank" rel="noopener noreferrer">
                 RealTechJobs ↗
               </a>
