@@ -7,12 +7,12 @@ import FadeUp from '@/components/FadeUp';
 import Footer from '@/components/Footer';
 import ImageModal from '@/components/ImageModal';
 import OtherCaseStudies from '@/components/OtherCaseStudies';
-import RealTechJobsThumb from '@/components/RealTechJobsThumb';
-import { AtAGlance, CaseImage, Decision, PersonaCards, SectionLabel, ShippedFirst, SimpleBars, VisualSlot } from '@/components/CaseStudyParts';
+import { AtAGlance, CaseImage, Decision, PersonaCards, SectionLabel, ShippedFirst, SimpleBars } from '@/components/CaseStudyParts';
 
-// Screenshots in public/images/realtechjobs: each cropped to the page's content column, as WebP
-// at 720px (the column's width) and at full size (1040px, the capture's own resolution, for
-// sharp screens and the viewer), with a PNG fallback.
+// Images in public/images/realtechjobs, shown in the page's content column.
+// The back office screenshots: each cropped to the column, as WebP at 720px (the column's width)
+// and at full size (1040px, the capture's own resolution, for sharp screens and the viewer), with
+// a PNG fallback.
 const shot = (name, height) => ({
   src: `/images/realtechjobs/${name}-1040.png`,
   webp: `/images/realtechjobs/${name}-720.webp 720w, /images/realtechjobs/${name}-1040.webp 1040w`,
@@ -20,11 +20,39 @@ const shot = (name, height) => ({
   width: 1040,
   height,
 });
+// The hero and final design images: finished images, 2080px wide for 1040px display, so one
+// WebP serves every screen, with a PNG fallback. `height` is the display height at 1040px.
+const art = (name, height) => ({
+  src: `/images/realtechjobs/rtj-${name}-1040.png`,
+  webp: `/images/realtechjobs/rtj-${name}-1040.webp 2080w`,
+  full: `/images/realtechjobs/rtj-${name}-1040.webp`,
+  width: 1040,
+  height,
+});
 const SCREENSHOTS = {
+  hero: {
+    ...art('hero', 600),
+    alt: 'RealTechJobs on a laptop and a phone: search results with a job open in the preview, and the same job\'s page on a phone.',
+  },
   search: {
-    ...shot('search-preview', 947),
-    alt: "RealTechJobs search results for 'product designer': 41 jobs on the left, each with its company, location and when it was posted, and a Senior Product Designer role at the Financial Times open in a preview on the right, showing 'Salary not stated', London, Senior, an 'Apply on Financial Times's site' button and the employer's own job description.",
-    caption: "Search with a job open in the preview. The facts come first, even when it's \"Salary not stated\", then the employer's own words, and Apply goes straight to their site, so people can compare roles without losing their place.",
+    ...art('search', 680),
+    alt: 'RealTechJobs search results for product designer, remote from the UK, with a Monzo Lead Product Designer job open in the preview.',
+    caption: "Results on the left, the job in a preview on the right. The facts come first, then the employer's own words, and Apply goes straight to their site.",
+  },
+  job: {
+    ...art('job', 680),
+    alt: 'A RealTechJobs job page: salary, location, working pattern, contract and level at the top, with a Checked for you panel beside the description.',
+    caption: 'Every job page leads with the facts people check first, and shows where the job came from and when it was last checked.',
+  },
+  phones: {
+    ...art('phones', 660),
+    alt: 'Three phones showing RealTechJobs in a mobile browser: search results, a job page and saved jobs.',
+    caption: 'The same site on phones: search, a job with Apply always in reach, and saved jobs with To apply and Applied tabs.',
+  },
+  alerts: {
+    ...art('alerts', 620),
+    alt: 'The RealTechJobs job alerts page: how alerts work, beside an example email made from real live jobs.',
+    caption: 'Job alerts explain how they work beside an example email made from real jobs.',
   },
   approvals: {
     ...shot('admin-approvals', 949),
@@ -74,9 +102,7 @@ export default function TechJobsPage() {
             Try RealTechJobs ↗<span className="sr-only"> (opens in a new tab)</span>
           </a>
         </p>
-        <div className="cs-hero-art">
-          <RealTechJobsThumb alt="RealTechJobs: the line 'Only real tech jobs, straight from employers.' in white on the brand blue, beside a phone showing a job's title and salary" />
-        </div>
+        <CaseImage {...SCREENSHOTS.hero} onOpen={open} />
         <AtAGlance items={[
           { label: 'Role', value: 'Product designer and builder: research, product decisions, design, and building with Claude Code' },
           { label: 'Team', value: 'Just me' },
@@ -192,9 +218,9 @@ export default function TechJobsPage() {
             <li><span className={LABEL}>Job alerts you can edit in place,</span> with pause, resume and undo.</li>
           </ol>
           <CaseImage {...SCREENSHOTS.search} onOpen={open} />
-          <VisualSlot src="/images/techjobs-job.png" alt="A RealTechJobs job page: the role, company, salary, working pattern and level at the top, and an Apply button that goes to the employer's own site" onOpen={open} />
-          <VisualSlot src="/images/techjobs-saved.png" alt="The RealTechJobs Saved page, with To apply and Applied tabs and an I've applied tick on each job" onOpen={open} />
-          <VisualSlot src="/images/techjobs-alerts.png" alt="RealTechJobs job alerts, each editable in place, with pause, resume and undo" onOpen={open} />
+          <CaseImage {...SCREENSHOTS.job} onOpen={open} />
+          <CaseImage {...SCREENSHOTS.phones} onOpen={open} />
+          <CaseImage {...SCREENSHOTS.alerts} onOpen={open} />
           <p className="text-gray-700 leading-relaxed mb-2"><span className={LABEL}>Details that build trust:</span></p>
           <ul className={UL}>
             <li>One message colour rule: green for success, blue for information, amber for warnings and red for errors, the same everywhere.</li>

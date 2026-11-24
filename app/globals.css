@@ -3084,7 +3084,7 @@ html.dark .home-cs-card:focus-visible .home-cs-title { color: #60a5fa; }
 .home-cs-card-compact .home-cs-text { font-size: 0.8125rem; line-height: 1.4; min-height: 2.8em; color: #6b7280; }
 
 /* A product's icon centred on a background, standing in for screenshots
-   (components/IconArt.jsx). It fills its box: the card thumbnail, or .cs-hero-art.
+   (components/IconArt.jsx). It fills its box: the card thumbnail.
    The default background is a dark grey; IconArt's bg prop sets a product's own colour. */
 .icon-art {
   display: flex;
@@ -3106,24 +3106,14 @@ html.dark .home-cs-card:focus-visible .home-cs-title { color: #60a5fa; }
 /* On a brand colour (IconArt's bg): a small, faint navy shadow instead, so the blue doesn't
    turn muddy around the white icon. */
 .icon-art-on-brand .icon-art-img { box-shadow: 0 2px 6px rgba(23, 37, 84, 0.2); }
-/* The hero version: 16:10 like the card thumbnails, with the case-study image border. */
-.cs-hero-art {
-  aspect-ratio: 16 / 10;
-  margin: 0 0 1.75rem;
-  border: 1px solid #E5E7EB;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-html.dark .cs-hero-art { border-color: rgba(255, 255, 255, 0.12); }
 
 /* The RealTechJobs thumbnail's colours (components/RealTechJobsThumb.jsx, laid out with Tailwind
-   there): the brand blue, the white headline, the light blue address, and the black phone with
-   its soft navy shadow. */
+   there): the brand blue, the white headline, the light blue address, and the phone's soft navy
+   shadow (a drop-shadow, so it follows the phone picture's rounded corners). */
 :root {
   --rtj-blue: #1D4ED8;
   --rtj-headline: #FFFFFF;
   --rtj-url: #BFDBFE;
-  --rtj-phone: #000000;
   --rtj-phone-shadow: 0 12px 32px rgba(23, 37, 84, 0.45);
 }
 
