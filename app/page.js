@@ -27,7 +27,7 @@ const PRODUCTS = [
     name: 'RealTechJobs',
     icon: '/images/icons/realtechjobs.svg',
     problem: "UK tech jobs straight from companies' own careers pages, every ad in one readable shape.",
-    result: '1,800+ jobs from 290+ companies',
+    result: '2,000+ jobs from 400+ companies',
     url: 'https://realtechjobs.co.uk',
   },
   {
@@ -184,7 +184,7 @@ export default function HomePage() {
               <a href="https://realtechjobs.co.uk" target="_blank" rel="noopener noreferrer">
                 RealTechJobs ↗
               </a>
-              , a UK job board with 1,800+ jobs, at{' '}
+              , a UK job board with 2,000+ jobs, at{' '}
               <a href="https://bobbybuilds.app" target="_blank" rel="noopener noreferrer">
                 BobbyBuilds ↗
               </a>

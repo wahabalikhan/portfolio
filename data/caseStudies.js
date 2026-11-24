@@ -27,9 +27,9 @@ export const caseStudies = [
     category: 'design',
     title: 'Taking the faff out of finding a tech job',
     // Card text: up to two lines, including the headline result.
-    description: "Tech jobs straight from employers' own sites: 1,800+ jobs from 290+ companies.",
+    description: "Tech jobs straight from employers' own sites: 2,000+ jobs from 400+ companies.",
     // Shown semibold in the main text colour; must appear word for word in the description (null: none).
-    metric: '1,800+ jobs from 290+ companies',
+    metric: '2,000+ jobs from 400+ companies',
     // The full icon: card logos show at 20-24px, and the small icon is only for below 20px.
     logo_src: '/images/icons/realtechjobs.svg',
     company: 'RealTechJobs',
@@ -41,7 +41,7 @@ export const caseStudies = [
     // The browser-tab and search title: the product's name, then the page's H1.
     headline: 'RealTechJobs: taking the faff out of finding a tech job',
     // Search and link-preview description: under 160 characters.
-    seoDescription: "How I designed and built RealTechJobs, a UK job board with 1,800+ jobs straight from employers' own careers pages, readable at a glance.",
+    seoDescription: "How I designed and built RealTechJobs, a UK job board with 2,000+ jobs straight from employers' own careers pages, readable at a glance.",
   },
   {
     id: 'design-system',

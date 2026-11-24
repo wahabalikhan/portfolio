@@ -75,13 +75,13 @@ export default function TechJobsPage() {
           </a>
         </p>
         <div className="cs-hero-art">
-          <RealTechJobsThumb alt="RealTechJobs: its white icon and name on the brand blue, above the line 'Only real tech jobs, straight from employers.'" />
+          <RealTechJobsThumb alt="RealTechJobs: the line 'Only real tech jobs, straight from employers.' in white on the brand blue, beside a phone showing a job's title and salary" />
         </div>
         <AtAGlance items={[
           { label: 'Role', value: 'Product designer and builder: research, product decisions, design, and building with Claude Code' },
           { label: 'Team', value: 'Just me' },
           { label: 'Timeline', value: 'October 2026 to now' },
-          { label: 'Results', value: "1,800+ jobs from 290+ companies, all from employers' own sites. Most searches show results in under a second." },
+          { label: 'Results', value: "2,000+ jobs from 400+ companies, all from employers' own sites. Most searches show results in under a second." },
         ]} />
       </FadeUp>
 
